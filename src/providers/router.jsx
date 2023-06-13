@@ -3,15 +3,25 @@ import {
   RouterProvider as BrowserRouterProvider,
 } from "react-router-dom";
 import Header from "../layouts/header";
+import Index from "../pages/index";
+import Search from "../pages/search";
+import ApplyJoin from "../pages/applyjoin";
 import Login from "../pages/login";
 import Register from "../pages/register";
-import ApplyJoin from "../pages/applyjoin";
 
 const routes = createBrowserRouter([
   {
     path: "/",
     element: <Header />,
     children: [
+      {
+        path: "/",
+        element: <Index />,
+      },
+      {
+        path: "/search",
+        element: <Search />,
+      },
       {
         path: "/login",
         element: <Login />,
