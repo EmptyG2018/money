@@ -375,7 +375,9 @@ const Component = () => {
         />
       </SearchPanel>
 
-      <Extension></Extension>
+      <Extension>
+
+      </Extension>
 
       <SectionHeader icon={<QqOutlined />} title="腾讯专区" />
       <Row

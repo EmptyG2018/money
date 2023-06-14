@@ -18,10 +18,11 @@ import { ConfigProvider, Divider, Dropdown, Input, Popover, theme } from "antd";
 import { styled } from "styled-components";
 import React, { useState } from "react";
 import defaultProps from "./_defaultProps";
-import { Outlet } from "react-router-dom";
+import { useLocation, useNavigate, Outlet } from "react-router-dom";
 
 export default () => {
-  const [pathname, setPathname] = useState("/list/sub-page/sub-sub-page1");
+  const location = useLocation();
+  const navigate = useNavigate();
   const [num, setNum] = useState(40);
   if (typeof document === "undefined") {
     return <div />;
@@ -46,7 +47,7 @@ export default () => {
             title="Github"
             {...defaultProps}
             location={{
-              pathname,
+              pathname: location.pathname,
             }}
             token={{
               header: {
@@ -79,7 +80,7 @@ export default () => {
             menuItemRender={(item, dom) => (
               <div
                 onClick={() => {
-                  setPathname(item.path || "/welcome");
+                  navigate(item.path);
                 }}
               >
                 {dom}

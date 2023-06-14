@@ -5,6 +5,8 @@ import {
 import Header from "../layouts/header";
 import Index from "../pages/index";
 import Search from "../pages/search";
+import BuyKey from "../pages/buykey";
+import Hall from "../pages/hall";
 import ApplyJoin from "../pages/applyjoin";
 import Login from "../pages/login";
 import Register from "../pages/register";
@@ -21,6 +23,14 @@ const routes = createBrowserRouter([
       {
         path: "/search",
         element: <Search />,
+      },
+      {
+        path: "/buykey",
+        element: <BuyKey />,
+      },
+      {
+        path: "/hall",
+        element: <Hall />
       },
       {
         path: "/login",
