@@ -3,11 +3,15 @@ import {
   RouterProvider as BrowserRouterProvider,
 } from "react-router-dom";
 import Header from "../layouts/header";
+import Settings from "../layouts/settings";
 import Index from "../pages/index";
 import Search from "../pages/search";
 import BuyKey from "../pages/buykey";
 import Hall from "../pages/hall";
 import ApplyJoin from "../pages/applyjoin";
+import User from "../pages/user";
+import Info from "../pages/info";
+import EditPwd from "../pages/editpwd";
 import Login from "../pages/login";
 import Register from "../pages/register";
 
@@ -30,7 +34,25 @@ const routes = createBrowserRouter([
       },
       {
         path: "/hall",
-        element: <Hall />
+        element: <Hall />,
+      },
+      {
+        path: "/user",
+        element: <User />,
+      },
+      {
+        path: "/settings",
+        element: <Settings />,
+        children: [
+          {
+            path: "/settings/info",
+            element: <Info />,
+          },
+          {
+            path: "/settings/editpwd",
+            element: <EditPwd />,
+          },
+        ],
       },
       {
         path: "/login",
