@@ -2,6 +2,7 @@ import {
   createBrowserRouter,
   RouterProvider as BrowserRouterProvider,
 } from "react-router-dom";
+import Auth from "../pages/_auth";
 import Header from "../layouts/header";
 import Settings from "../layouts/settings";
 import Index from "../pages/index";
@@ -14,6 +15,7 @@ import Info from "../pages/info";
 import EditPwd from "../pages/editpwd";
 import Login from "../pages/login";
 import Register from "../pages/register";
+import NoFound from "../pages/404";
 
 const routes = createBrowserRouter([
   {
@@ -38,11 +40,11 @@ const routes = createBrowserRouter([
       },
       {
         path: "/user",
-        element: <User />,
+        element: <Auth element={<User />} />,
       },
       {
         path: "/settings",
-        element: <Settings />,
+        element: <Auth element={<Settings />} />,
         children: [
           {
             path: "/settings/info",
@@ -56,40 +58,22 @@ const routes = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />,
+        element: <Auth element={<Login />} />,
       },
       {
         path: "/register",
-        element: <Register />,
+        element: <Auth element={<Register />} />,
       },
       {
         path: "/applyjoin",
         element: <ApplyJoin />,
       },
+      {
+        path: "*",
+        element: <NoFound />,
+      },
     ],
   },
-  // {
-  //   path: "",
-  //   element: <Tabbar />,
-  //   children: [
-  //     {
-  //       path: "/hall",
-  //       element: <Hall />,
-  //     },
-  //     {
-  //       path: "/conversation",
-  //       element: <Conversation />,
-  //     },
-  //     {
-  //       path: "/contact",
-  //       element: <Contact />,
-  //     },
-  //     {
-  //       path: "/user",
-  //       element: <User />,
-  //     },
-  //   ],
-  // },
 ]);
 
 const RouterProvider = () => {

@@ -1,11 +1,19 @@
 import { RouterProvider } from "./providers";
+import { Provider } from "react-redux";
 import GlobalStyle from "./globalStyle";
+import stores from "./stores";
+
+const ReduxProvider = ({ children }) => {
+  return <Provider store={stores}>{children}</Provider>;
+};
 
 const ConfigProvider = ({ children }) => {
   return (
     <>
-      <RouterProvider />
-      {children}
+      <ReduxProvider>
+        <RouterProvider />
+        {children}
+      </ReduxProvider>
     </>
   );
 };
