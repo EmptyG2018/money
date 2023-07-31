@@ -1,11 +1,64 @@
 import { useLocation, useNavigate, Link, Outlet } from "react-router-dom";
 import { ConfigProvider, Dropdown } from "antd";
-import { LogoutOutlined, LoginOutlined } from "@ant-design/icons";
+import {
+  SmileFilled,
+  UserOutlined,
+  DatabaseOutlined,
+  LogoutOutlined,
+  LoginOutlined,
+} from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
 import { styled } from "styled-components";
 import { useSelector } from "react-redux";
 import { useAuth, useSyncInfo } from "../hooks/user";
-import defaultProps from "./_defaultProps";
+
+const defaultProps = {
+  route: {
+    path: "/",
+    routes: [
+      {
+        path: "/buykey",
+        name: "购买卡密",
+        icon: <SmileFilled />,
+        component: "./buykey",
+      },
+      {
+        path: "/hall",
+        name: "广场",
+        icon: <SmileFilled />,
+        component: "./hall",
+      },
+      {
+        path: "/applyjoin",
+        name: "加盟申请",
+        icon: <SmileFilled />,
+        component: "./applyjoin",
+      },
+      {
+        path: "/join",
+        name: "加盟",
+        icon: <SmileFilled />,
+        component: "./join",
+      },
+      {
+        path: "/work",
+        name: "工作台",
+        icon: <SmileFilled />,
+        component: "./work",
+      },
+    ],
+  },
+  location: {
+    pathname: "/",
+  },
+
+  fixSiderbar: true,
+  fixedHeader: true,
+  layout: "top",
+  splitMenus: false,
+  contentWidth: "Fixed",
+  colorPrimary: "#1677FF",
+};
 
 const ComponentRoot = styled.div`
   height: 100vh;
@@ -29,15 +82,15 @@ export default () => {
   const menus = {
     info: {
       key: "info",
-      icon: <LogoutOutlined />,
+      icon: <UserOutlined />,
       label: "个人主页",
       trigger: () => navigate("/user"),
     },
     settings: {
       key: "settings",
-      icon: <LogoutOutlined />,
-      label: "个人设置",
-      trigger: () => navigate("/settings/info"),
+      icon: <DatabaseOutlined />,
+      label: "后台管理",
+      trigger: () => navigate("/admin/index"),
     },
     logout: {
       key: "logout",

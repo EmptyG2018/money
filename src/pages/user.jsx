@@ -1,11 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import { Avatar, Button, Card, Image, Tag, Row, Col, Space } from "antd";
 import {
   FolderOpenOutlined,
   PayCircleOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
-import { PageContainer, ProCard } from "@ant-design/pro-components";
+import { ProCard } from "@ant-design/pro-components";
+import { useSelector } from "react-redux";
 import { styled } from "styled-components";
+import Container from "../components/Container";
+import {
+  useUser,
+  useUsermarketList,
+  useUserJoinMarkeTeam,
+  useUserMarkeTeam,
+} from "../hooks/user";
 
 const TeamRoot = styled(Card)``;
 
@@ -118,30 +127,117 @@ const CollectFolderDate = styled.span`
   text-align: right;
 `;
 
-const CollectFolder = () => {
+const CollectFolder = ({
+  title,
+  avatar,
+  date,
+  cloneCount,
+  viewCount,
+  likeCount,
+}) => {
   return (
     <CollectFolderRoot
       bodyStyle={{ display: "flex", flexDirection: "column", padding: 14 }}
     >
-      <CollectFolderName>各类资源下载站</CollectFolderName>
+      <CollectFolderName>{title}</CollectFolderName>
       <CollectFolderStat>
         <Space>
           <span>
-            <FolderOpenOutlined /> 0
+            <FolderOpenOutlined /> {cloneCount}
           </span>
           <span>
-            <PayCircleOutlined /> 0
+            <PayCircleOutlined /> {likeCount}
           </span>
           <span>
-            <EyeOutlined /> 0
+            <EyeOutlined /> {viewCount}
           </span>
         </Space>
       </CollectFolderStat>
       <CollectFolderFooter>
-        <Avatar size={28} />
-        <CollectFolderDate>2023-04-26</CollectFolderDate>
+        <Avatar src={avatar} size={28} />
+        <CollectFolderDate>{date}</CollectFolderDate>
       </CollectFolderFooter>
     </CollectFolderRoot>
+  );
+};
+
+const CollectView = ({ userId }) => {
+  const { collects } = useUsermarketList({ userId, pageNum: 1, pageSize: 10 });
+
+  return (
+    <Row
+      gutter={[
+        { xs: 8, sm: 12, md: 18, lg: 20 },
+        { xs: 4, sm: 8, md: 12, lg: 16 },
+      ]}
+    >
+      {collects.map((item) => (
+        <Col xs={24} sm={12} lg={8}>
+          <CollectFolder
+            title={item.title}
+            cloneCount={item.cloneNumber}
+            likeCount={item.likeNumber}
+            viewCount={item.viewNumber}
+            avatar={item.photoUrl}
+            date={item.createTime}
+          />
+        </Col>
+      ))}
+    </Row>
+  );
+};
+
+const TeamView = ({ userId }) => {
+  const { teams } = useUserMarkeTeam({ userId, pageNum: 1, pageSize: 10 });
+
+  return (
+    <Row
+      gutter={[
+        { xs: 8, sm: 12, md: 18, lg: 20 },
+        { xs: 4, sm: 8, md: 12, lg: 16 },
+      ]}
+    >
+      {teams.map((item) => (
+        <Col xs={12} lg={8}>
+          <Team
+            title={item.title}
+            desc={item.description}
+            thumb={item.iconUri}
+            tags={item.tagVoList.map((item) => item.tagName)}
+            name={item.userName}
+            avatar={item.photoUrl}
+            date={item.createTime}
+          />
+        </Col>
+      ))}
+    </Row>
+  );
+};
+
+const JoinTeamView = ({ userId }) => {
+  const { teams } = useUserJoinMarkeTeam({ userId, pageNum: 1, pageSize: 10 });
+
+  return (
+    <Row
+      gutter={[
+        { xs: 8, sm: 12, md: 18, lg: 20 },
+        { xs: 4, sm: 8, md: 12, lg: 16 },
+      ]}
+    >
+      {teams.map((item) => (
+        <Col xs={12} lg={8}>
+          <Team
+            title={item.title}
+            desc={item.description}
+            thumb={item.iconUri}
+            tags={item.tagVoList.map((item) => item.tagName)}
+            name={item.userName}
+            avatar={item.photoUrl}
+            date={item.createTime}
+          />
+        </Col>
+      ))}
+    </Row>
   );
 };
 
@@ -183,6 +279,10 @@ const InfoDesc = styled.p`
 `;
 
 const Component = () => {
+  const navigate = useNavigate();
+  const { info } = useSelector(({ user }) => user);
+  const { user } = useUser(info?.id);
+
   const records = new Array(10).fill({
     title: "百度大数据",
     desc: "百度大数据",
@@ -196,118 +296,68 @@ const Component = () => {
   });
 
   return (
-    <PageContainer title={false}>
-      <ProCard gutter={[20, 20]} wrap>
-        <ProCard bordered colSpan={{ sm: 24, md: 8, lg: 6 }}>
+    <Container title={false} gutter={[0, 12]}>
+      <ProCard gutter={[24, 24]} wrap ghost>
+        <ProCard colSpan={{ sm: 24, md: 8, lg: 6 }}>
           <UserInfo>
-            <Avatar size={64} />
-            <NickName>羿铁示崖叙</NickName>
+            <Avatar size={64} src={info.photoUrl} />
+            <NickName>{info.username}</NickName>
             <InfoCell>
               <InfoCellItem>
-                0<br />
+                {user?.befollow}
+                <br />
                 关注者
               </InfoCellItem>
               <InfoCellItem>
-                0<br />
+                {user?.follow}
+                <br />
                 关注了
               </InfoCellItem>
             </InfoCell>
-            <InfoEditBtn type="primary" block>
+            <InfoEditBtn
+              type="primary"
+              block
+              onClick={() => navigate("/settings/info")}
+            >
               编辑资料
             </InfoEditBtn>
           </UserInfo>
           <InfoHeader>简介</InfoHeader>
           <InfoDesc>
-            创作1篇公开收藏集
+            创作{user?.clCount}篇公开收藏集
             <br />
-            获得1个赞
+            获得{user?.cllikeNumber}个赞
           </InfoDesc>
           <InfoDesc>
-            创作2篇公开团队
+            创作{user?.teamCount}篇公开团队
             <br />
-            获得0个赞
+            获得{user?.teamlikeNumber}个赞
           </InfoDesc>
         </ProCard>
         <ProCard
-          bordered
           colSpan={{ sm: 24, md: 16, lg: 18 }}
           tabs={{
             items: [
               {
                 label: `收藏集`,
                 key: "tab1",
-                children: (
-                  <Row
-                    gutter={[
-                      { xs: 8, sm: 12, md: 18, lg: 20 },
-                      { xs: 4, sm: 8, md: 12, lg: 16 },
-                    ]}
-                  >
-                    {new Array(10).fill().map((item) => (
-                      <Col xs={24} sm={12} lg={8}>
-                        <CollectFolder />
-                      </Col>
-                    ))}
-                  </Row>
-                ),
+                children: <CollectView userId={info.id} />,
               },
               {
                 label: `公开团队`,
                 key: "tab2",
-                children: (
-                  <Row
-                    gutter={[
-                      { xs: 8, sm: 12, md: 18, lg: 20 },
-                      { xs: 4, sm: 8, md: 12, lg: 16 },
-                    ]}
-                  >
-                    {records.map((item) => (
-                      <Col xs={12} lg={8}>
-                        <Team
-                          title={item.title}
-                          desc={item.desc}
-                          thumb={item.thumb}
-                          tags={item.tags}
-                          name={item.name}
-                          avatar={item.avatar}
-                          date={item.date}
-                        />
-                      </Col>
-                    ))}
-                  </Row>
-                ),
+                children: <TeamView userId={info.id} />,
               },
               {
                 label: `加入团队`,
                 key: "tab3",
-                children: (
-                  <Row
-                    gutter={[
-                      { xs: 8, sm: 12, md: 18, lg: 20 },
-                      { xs: 4, sm: 8, md: 12, lg: 16 },
-                    ]}
-                  >
-                    {records.map((item) => (
-                      <Col xs={12} lg={8}>
-                        <Team
-                          title={item.title}
-                          desc={item.desc}
-                          thumb={item.thumb}
-                          tags={item.tags}
-                          name={item.name}
-                          avatar={item.avatar}
-                          date={item.date}
-                        />
-                      </Col>
-                    ))}
-                  </Row>
-                ),
+                children: <JoinTeamView userId={info.id} />,
               },
             ],
           }}
         ></ProCard>
       </ProCard>
-    </PageContainer>
+    </Container>
   );
 };
 

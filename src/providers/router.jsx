@@ -5,17 +5,26 @@ import {
 import Auth from "../pages/_auth";
 import Header from "../layouts/header";
 import Settings from "../layouts/settings";
+import Admin from "../layouts/admin";
+import Work from "../layouts/work";
+
 import Index from "../pages/index";
 import Search from "../pages/search";
 import BuyKey from "../pages/buykey";
 import Hall from "../pages/hall";
 import ApplyJoin from "../pages/applyjoin";
+import Team from "../pages/team";
+import Collect from "../pages/collect";
 import User from "../pages/user";
 import Info from "../pages/info";
 import EditPwd from "../pages/editpwd";
 import Login from "../pages/login";
 import Register from "../pages/register";
 import NoFound from "../pages/404";
+
+import WorkIndex from "../pages/work/index";
+
+import AdminIndex from "../pages/admin/index";
 
 const routes = createBrowserRouter([
   {
@@ -37,6 +46,14 @@ const routes = createBrowserRouter([
       {
         path: "/hall",
         element: <Hall />,
+      },
+      {
+        path: "/team/:id",
+        element: <Team />,
+      },
+      {
+        path: "/collect/:id",
+        element: <Collect />,
       },
       {
         path: "/user",
@@ -71,6 +88,26 @@ const routes = createBrowserRouter([
       {
         path: "*",
         element: <NoFound />,
+      },
+    ],
+  },
+  {
+    path: "/work",
+    element: <Work />,
+    children: [
+      {
+        path: "/work/index",
+        element: <WorkIndex />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <Auth element={<Admin />} />,
+    children: [
+      {
+        path: "/admin/index",
+        element: <AdminIndex />,
       },
     ],
   },

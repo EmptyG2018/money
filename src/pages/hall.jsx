@@ -1,7 +1,12 @@
 import { Tabs, Card, Avatar, Space, Image, Row, Col, Tag } from "antd";
-import { PageContainer } from "@ant-design/pro-components";
 import { useState } from "react";
 import { styled } from "styled-components";
+import Container from "../components/Container";
+import {
+  useHallCagegory,
+  useMarkTeam,
+  useMarketCollection,
+} from "../hooks/hall";
 
 const TeamRoot = styled(Card)``;
 
@@ -31,7 +36,7 @@ const TeamTag = styled(Tag)`
   border: none;
   line-height: 18px;
   padding-inline: 4px;
-  color: rgba(0, 0, 0, .48);
+  color: rgba(0, 0, 0, 0.48);
 `;
 
 const TeamInfo = styled.div``;
@@ -58,7 +63,9 @@ const Team = ({ title, desc, thumb, tags, name, avatar, date }) => {
             <TeamTitle>{title}</TeamTitle>
             <TeamDesc>{desc}</TeamDesc>
             {tags.map((item, index) => (
-              <TeamTag bordered={false} key={index}>{item}</TeamTag>
+              <TeamTag bordered={false} key={index}>
+                {item}
+              </TeamTag>
             ))}
           </TeamCell>
         </Col>
@@ -86,6 +93,74 @@ const Team = ({ title, desc, thumb, tags, name, avatar, date }) => {
   );
 };
 
+const TeamView = ({ classId }) => {
+  const { teams } = useMarkTeam({
+    classId,
+    pageNum: 1,
+    pageSize: 12,
+    searchKey: "",
+  });
+
+  return (
+    <Container title={false} gutter={[12, 24]}>
+      <Row
+        gutter={[
+          { xs: 8, sm: 12, md: 18, lg: 20 },
+          { xs: 4, sm: 8, md: 12, lg: 16 },
+        ]}
+      >
+        {(teams?.rows || []).map((item) => (
+          <Col xs={12} sm={8} lg={6}>
+            <Team
+              title={item.title}
+              desc={item.description}
+              thumb={item.iconUri}
+              tags={item.tagVoList.map((item) => item.tagName)}
+              name={item.userName}
+              avatar={item.photoUrl}
+              date={item.createTime}
+            />
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
+};
+
+const CollectView = ({ classId }) => {
+  const { collects } = useMarketCollection({
+    classId,
+    pageNum: 1,
+    pageSize: 12,
+    searchKey: "",
+  });
+
+  return (
+    <Container title={false} gutter={[12, 24]}>
+      <Row
+        gutter={[
+          { xs: 8, sm: 12, md: 18, lg: 20 },
+          { xs: 4, sm: 8, md: 12, lg: 16 },
+        ]}
+      >
+        {(collects?.rows || []).map((item) => (
+          <Col xs={12} sm={8} lg={6}>
+            <Team
+              title={item.title}
+              desc={item.description}
+              thumb={item.iconUri}
+              tags={item.tagVoList.map((item) => item.tagName)}
+              name={item.userName}
+              avatar={item.photoUrl}
+              date={item.createTime}
+            />
+          </Col>
+        ))}
+      </Row>
+    </Container>
+  );
+};
+
 const BannerPanel = styled.div`
   background-color: #1677ff;
   color: #fff;
@@ -97,16 +172,6 @@ const Title = styled.h1`
 
 const Desc = styled.p`
   font-size: 14px;
-`;
-
-const FilterPanel = styled.div`
-  margin-bottom: 12px;
-`;
-
-const FilterPanelContainer = styled(PageContainer)`
-  .ant-pro-page-container-children-container {
-    padding-block: 8px;
-  }
 `;
 
 const NavBar = styled(Tabs)`
@@ -124,29 +189,12 @@ const CategoryBar = styled(NavBar)`
   }
 `;
 
-const Container = styled(PageContainer)`
-  .ant-pro-page-container-children-container {
-    padding-block: 0;
-  }
-`;
-
 const Component = () => {
+  const { categorys } = useHallCagegory();
+
   const navTabs = [
-    { key: "a", label: "优秀团队" },
-    { key: "b", label: "收藏夹" },
-  ];
-  const navCategorys = [
-    { key: "_", label: "全部" },
-    { key: "a", label: "英语" },
-    { key: "b", label: "数学" },
-    { key: "c", label: "语文" },
-    { key: "d", label: "体育" },
-    { key: "e", label: "大学" },
-    { key: "f", label: "测试" },
-    { key: "g", label: "巨额" },
-    { key: "h", label: "奖金" },
-    { key: "i", label: "形容" },
-    { key: "j", label: "行额" },
+    { key: "team", label: "优秀团队" },
+    { key: "collect", label: "收藏夹" },
   ];
 
   const records = new Array(10).fill({
@@ -161,57 +209,44 @@ const Component = () => {
     date: "2023-04-17",
   });
 
-  const [navTabKey, setNavTabKey] = useState("a");
+  const [navTabKey, setNavTabKey] = useState("team");
 
-  const [navCategoryKey, setNavCategoryKey] = useState("_");
+  const [navCategoryKey, setNavCategoryKey] = useState("");
+
+  const viewMap = {
+    team: TeamView,
+    collect: CollectView,
+  };
 
   return (
     <>
       <BannerPanel>
-        <PageContainer title={false}>
+        <Container title={false} gutter={[12, 24]}>
           <Title>发现你身边有趣好玩的事物</Title>
           <Desc>发现·收藏·分享--记忆·兴趣·智慧</Desc>
-        </PageContainer>
+        </Container>
       </BannerPanel>
-      <FilterPanel>
-        <FilterPanelContainer title={false}>
-          <NavBar
-            activeKey={navTabKey}
-            items={navTabs}
-            onChange={setNavTabKey}
-          />
-          <CategoryBar
-            size="small"
-            animated={false}
-            activeKey={navCategoryKey}
-            items={navCategorys}
-            onChange={setNavCategoryKey}
-          />
-        </FilterPanelContainer>
-      </FilterPanel>
-
-      <Container title={false}>
-        <Row
-          gutter={[
-            { xs: 8, sm: 12, md: 18, lg: 20 },
-            { xs: 4, sm: 8, md: 12, lg: 16 },
+      <Container title={false} gutter={[12, 0]}>
+        <NavBar activeKey={navTabKey} items={navTabs} onChange={setNavTabKey} />
+        <CategoryBar
+          size="small"
+          animated={false}
+          activeKey={navCategoryKey}
+          items={[
+            {
+              label: "全部",
+              key: "",
+            },
+            ...categorys.map((item) => ({
+              label: item.title,
+              key: item.id,
+            })),
           ]}
-        >
-          {records.map((item) => (
-            <Col xs={12} sm={8} lg={6}>
-              <Team
-                title={item.title}
-                desc={item.desc}
-                thumb={item.thumb}
-                tags={item.tags}
-                name={item.name}
-                avatar={item.avatar}
-                date={item.date}
-              />
-            </Col>
-          ))}
-        </Row>
+          onChange={setNavCategoryKey}
+        />
       </Container>
+
+      {viewMap[navTabKey] && viewMap[navTabKey]({ classId: navCategoryKey })}
     </>
   );
 };

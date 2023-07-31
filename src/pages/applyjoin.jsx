@@ -1,79 +1,163 @@
-import { Button } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { useRef } from "react";
+import { Button, message } from "antd";
+import { SyncOutlined } from "@ant-design/icons";
 import {
-  PageContainer,
   ProForm,
   ProFormText,
   ProFormRadio,
+  ProFormCheckbox,
   ProCard,
 } from "@ant-design/pro-components";
-import { styled } from "styled-components";
-
-const PageInner = styled.div`
-  background-color: red;
-`;
+import {
+  useSiteVersoin,
+  useSiteDomain,
+  useRandDomain,
+  useCreateDomain,
+} from "../hooks/applyjoin";
+import Container from "../components/Container";
 
 const Component = () => {
+  const applyjoinForm = useRef();
+  const [messageApi, contextHolder] = message.useMessage();
+  const { versions } = useSiteVersoin(1);
+  const { domains } = useSiteDomain();
+  const { rand } = useRandDomain();
+  const { create } = useCreateDomain();
+
+  const submit = async () => {
+    const fields = await applyjoinForm.current.validateFieldsReturnFormatValue();
+    const { pass, ...formData } = fields;
+    if (!pass) return messageApi.warning("需要先同意《会员服务条款》协议");
+    try {
+      await create(formData);
+      messageApi.success("创建成功！");
+    } catch (err) {
+      messageApi.error(err.message);
+    }
+  };
+
   return (
-    <PageContainer title={false}>
-      <ProCard title="申请加盟">
-        <ProForm
-          layout="horizontal"
-          onFinish={(values) => {
-            console.log(values);
-          }}
-          initialValues={{
-            name: "蚂蚁设计有限公司",
-            useMode: "chapter",
-          }}
-        >
-          <ProFormRadio.Group
-            name="radio-group"
-            label="分站版本"
-            radioType="button"
-            options={[
-              {
-                label: "初级站长¥1899",
-                value: "a",
-              },
-              {
-                label: "创业合伙人¥1877",
-                value: "b",
-              },
-            ]}
-          />
-          <ProFormText
-            width="md"
-            name="name"
-            label="分站名称"
-            placeholder="请输入网站地址"
-          />
-          <ProForm.Group title="二级域名">
-            <ProFormText width="xs" name="company" label="自定前缀" />
+    <>
+      {contextHolder}
+      <Container title={false} gutter={[12, 24]}>
+        <ProCard title="申请加盟" layout="center">
+          <ProForm
+            formRef={applyjoinForm}
+            layout="horizontal"
+            submitter={false}
+          >
             <ProFormRadio.Group
-              name="radio-group"
-              label="选择后缀"
+              name="id"
+              label="分站版本"
               radioType="button"
-              options={[
+              options={versions.map((item) => ({
+                label: item.name,
+                value: item.id,
+              }))}
+              rules={[
                 {
-                  label: "aya84.com",
-                  value: "a",
-                },
-                {
-                  label: "baidu.com",
-                  value: "b",
+                  required: true,
+                  message: "请选择分站版本",
                 },
               ]}
             />
-          </ProForm.Group>
-          <ProForm.Group title="账号管理">
-            <ProFormText width="sm" name="company" label="绑定微信" />
-            <ProFormText width="sm" name="company" label="绑定QQ" />
-            <ProFormText width="sm" name="company" label="输入卡密" />
-          </ProForm.Group>
-        </ProForm>
-      </ProCard>
-    </PageContainer>
+            <ProFormText
+              width="md"
+              name="webname"
+              label="分站名称"
+              placeholder="请输入网站地址"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入网站地址",
+                },
+              ]}
+            />
+            <ProForm.Group title="二级域名" direction="vertical">
+              <ProFormText
+                width="sm"
+                name="domain"
+                label="站点前缀"
+                fieldProps={{
+                  suffix: (
+                    <SyncOutlined
+                      onClick={async () => {
+                        const domain = await rand();
+                        applyjoinForm.current.setFieldsValue({
+                          domain: domain?.result,
+                        });
+                      }}
+                    />
+                  ),
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message: "请输入自定前缀",
+                  },
+                ]}
+              />
+              <ProFormRadio.Group
+                name="domainId"
+                label="站点后缀"
+                radioType="button"
+                options={domains.map((item) => ({
+                  label: item.domain,
+                  value: item.id,
+                }))}
+                rules={[
+                  {
+                    required: true,
+                    message: "前选择站点后缀",
+                  },
+                ]}
+              />
+            </ProForm.Group>
+            <ProForm.Group title="账号管理" direction="vertical">
+              <ProFormText
+                width="sm"
+                name="wx"
+                label="绑定微信"
+                rules={[
+                  {
+                    required: true,
+                    message: "请绑定微信",
+                  },
+                ]}
+              />
+              <ProFormText
+                width="sm"
+                name="qq"
+                label="绑定QQ"
+                rules={[
+                  {
+                    required: true,
+                    message: "请绑定QQ",
+                  },
+                ]}
+              />
+            </ProForm.Group>
+            <ProFormText.Password
+              width="md"
+              name="code"
+              label="输入卡密"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入卡密",
+                },
+              ]}
+            />
+            <ProFormCheckbox name="pass">
+              支付即视为您同意《会员服务条款》
+            </ProFormCheckbox>
+            <Button type="primary" onClick={submit}>
+              创建分站
+            </Button>
+          </ProForm>
+        </ProCard>
+      </Container>
+    </>
   );
 };
 

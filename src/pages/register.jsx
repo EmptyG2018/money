@@ -27,8 +27,7 @@ const Component = () => {
   const { register } = useRegister();
 
   const submit = async () => {
-    await registerForm.current.validateFieldsReturnFormatValue();
-    const formData = registerForm.current.getFieldsFormatValue();
+    const formData = await registerForm.current.validateFieldsReturnFormatValue();
     try {
       await register({
         dlId: 0,

@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import { Input, Tabs, Row, Col, Card, Image } from "antd";
+import { Input, Tabs, Row, Col, Card, Image, Tag, Space, Avatar } from "antd";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { PageContainer } from "@ant-design/pro-components";
 import { styled } from "styled-components";
+import Container from "../components/Container";
 import navigations from "../constant/navigation";
 import { navData, navMap } from "../constant/search";
+import {
+  useMarketCollect,
+  useMarketTeam,
+  useUserMarketTeam,
+} from "../hooks/index";
 
 const ApplicationRoot = styled(Card)`
   &:hover {
@@ -65,6 +70,85 @@ const SectionHeaderTitle = styled.p`
   margin: 0;
 `;
 
+const TeamRoot = styled(Card)``;
+
+const TeamCell = styled.div`
+  min-height: 52px;
+`;
+
+const TeamThumb = styled(Image)`
+  margin-bottom: 6px;
+`;
+
+const TeamTitle = styled.h2`
+  margin: 0;
+  padding: 0;
+  font-size: 15px;
+  color: #000;
+`;
+
+const TeamDesc = styled.p`
+  margin: 0;
+  padding: 0;
+  color: #5f5f5f;
+  font-size: 12px;
+`;
+
+const TeamInfo = styled.div``;
+
+const TeamInfoItem = styled.span`
+  color: #666;
+  font-size: 12px;
+`;
+
+const Team = ({ title, desc, thumb, name, avatar, date }) => {
+  return (
+    <TeamRoot
+      bodyStyle={{ display: "flex", flexDirection: "column", padding: 14 }}
+    >
+      <Row>
+        <Col span={16}>
+          <TeamCell>
+            <TeamTitle>{title}</TeamTitle>
+            <TeamDesc>{desc}</TeamDesc>
+          </TeamCell>
+        </Col>
+        <Col span={8}>
+          <TeamThumb width="100%" preview={false} src={thumb} />
+        </Col>
+      </Row>
+      <Row style={{ display: "flex", alignItems: "center" }}>
+        <Col span={12}>
+          <TeamInfo>
+            <Space size={6}>
+              <Avatar size={14} src={avatar} />
+              <TeamInfoItem>{name}</TeamInfoItem>
+            </Space>
+          </TeamInfo>
+        </Col>
+        <Col span={12}></Col>
+      </Row>
+    </TeamRoot>
+  );
+};
+
+const ExtensionGrid = ({ records, children }) => {
+  return (
+    <Row
+      gutter={[
+        { xs: 8, sm: 12 },
+        { xs: 8, sm: 12 },
+      ]}
+    >
+      {records.map((item) => (
+        <Col xs={24} sm={12} lg={6}>
+          {children && children(item)}
+        </Col>
+      ))}
+    </Row>
+  );
+};
+
 const SectionHeader = ({ icon, title }) => {
   return (
     <SectionHeaderRoot>
@@ -102,14 +186,47 @@ const CategoryBar = styled(NavBar)`
 
 const Extension = styled.div`
   width: 100%;
-  height: 280px;
+`;
+
+const ExtensionTabs = styled(Tabs)`
+  &.ant-tabs-left .ant-tabs-tabpane {
+    padding-left: 0 !important;
+  }
+`;
+
+const ExtensionCard = styled.div`
   background-color: #fff;
+  height: 304px;
+  border-radius: 8px;
+  overflow: hidden;
+`;
+
+const ExtensionContent = styled.div`
+  box-sizing: border-box;
+  padding: 16px;
+  height: 304px;
+  overflow-y: auto;
+`;
+
+const ExtensionLabel = styled.span`
+  font-size: 12px;
+  color: #5f5f5f;
 `;
 
 const Component = () => {
   const [navTabKey, setNavTabKey] = useState("internal");
 
   const [navCategoryKey, setNavCategoryKey] = useState("");
+
+  const { collects: upCollects } = useMarketCollect("up");
+
+  const { collects: newCollects } = useMarketCollect("new");
+
+  const { teams } = useUserMarketTeam();
+
+  const { teams: upTeams } = useMarketTeam("up");
+
+  const { teams: newTeams } = useMarketTeam("new");
 
   const navTabs = navData.map(({ children, ...rest }) => ({ ...rest }));
 
@@ -123,7 +240,7 @@ const Component = () => {
   }, [navCategorys]);
 
   return (
-    <PageContainer title={false}>
+    <Container title={false} gutter={[16, 24]}>
       <SearchPanel>
         <SearchPrefix>
           <Image
@@ -158,7 +275,166 @@ const Component = () => {
         />
       </SearchPanel>
 
-      <Extension></Extension>
+      <Extension>
+        <Row gutter={16}>
+          <Col xs={24} md={18} lg={20}>
+            <ExtensionCard>
+              <ExtensionTabs
+                tabBarGutter={0}
+                tabPosition="left"
+                renderTabBar={(props, DefaultTabbar) => (
+                  <div style={{ paddingBlock: "16px" }}>
+                    <DefaultTabbar {...props} />
+                  </div>
+                )}
+                items={[
+                  {
+                    label: (
+                      <>
+                        <Image
+                          src="./imgs/nav/1.png"
+                          width={30}
+                          height={30}
+                          preview={false}
+                        />
+                        <br />
+                        <ExtensionLabel>最新云夹</ExtensionLabel>
+                      </>
+                    ),
+                    key: "1",
+                    children: (
+                      <ExtensionContent>
+                        <ExtensionGrid records={newCollects}>
+                          {(item) => (
+                            <Team
+                              title={item.title}
+                              desc={item.description}
+                              thumb={item.iconUri}
+                              name={item.userName}
+                              avatar={item.photoUrl}
+                            />
+                          )}
+                        </ExtensionGrid>
+                      </ExtensionContent>
+                    ),
+                  },
+                  {
+                    label: (
+                      <>
+                        <Image
+                          src="./imgs/nav/2.png"
+                          width={30}
+                          height={30}
+                          preview={false}
+                        />
+                        <br />
+                        <ExtensionLabel>最新团队</ExtensionLabel>
+                      </>
+                    ),
+                    key: "2",
+                    children: (
+                      <ExtensionContent>
+                        <ExtensionGrid records={newTeams}>
+                          {(item) => (
+                            <Team
+                              title={item.title}
+                              desc={item.description}
+                              thumb={item.iconUri}
+                              name={item.userName}
+                              avatar={item.photoUrl}
+                            />
+                          )}
+                        </ExtensionGrid>
+                      </ExtensionContent>
+                    ),
+                  },
+                  {
+                    label: (
+                      <>
+                        <Image
+                          src="./imgs/nav/3.png"
+                          width={30}
+                          height={30}
+                          preview={false}
+                        />
+                        <br />
+                        <ExtensionLabel>热门云夹</ExtensionLabel>
+                      </>
+                    ),
+                    key: "3",
+                    children: (
+                      <ExtensionContent>
+                        <ExtensionGrid records={upCollects}>
+                          {(item) => (
+                            <Team
+                              title={item.title}
+                              desc={item.description}
+                              thumb={item.iconUri}
+                              name={item.userName}
+                              avatar={item.photoUrl}
+                            />
+                          )}
+                        </ExtensionGrid>
+                      </ExtensionContent>
+                    ),
+                  },
+                  {
+                    label: (
+                      <>
+                        <Image
+                          src="./imgs/nav/4.png"
+                          width={30}
+                          height={30}
+                          preview={false}
+                        />
+                        <br />
+                        <ExtensionLabel>热门团队</ExtensionLabel>
+                      </>
+                    ),
+                    key: "4",
+                    children: (
+                      <ExtensionContent>
+                        <ExtensionGrid records={upTeams}>
+                          {(item) => (
+                            <Team
+                              title={item.title}
+                              desc={item.description}
+                              thumb={item.iconUri}
+                              name={item.userName}
+                              avatar={item.photoUrl}
+                            />
+                          )}
+                        </ExtensionGrid>
+                      </ExtensionContent>
+                    ),
+                  },
+                ]}
+              />
+            </ExtensionCard>
+          </Col>
+          <Col xs={0} md={6} lg={4}>
+            <ExtensionCard>
+              <ExtensionContent>
+                <Space wrap>
+                  {teams.map((item) => (
+                    <Tag
+                      style={{ cursor: "pointer" }}
+                      bordered={false}
+                      color="processing"
+                      icon={<Avatar src={item.photoUrl} size={16} />}
+                      onClick={() => {
+                        alert();
+                      }}
+                    >
+                      &nbsp;{item.userName}
+                    </Tag>
+                  ))}
+                </Space>
+              </ExtensionContent>
+            </ExtensionCard>
+          </Col>
+        </Row>
+      </Extension>
 
       {navigations.map((item) => (
         <>
@@ -182,7 +458,7 @@ const Component = () => {
           </Row>
         </>
       ))}
-    </PageContainer>
+    </Container>
   );
 };
 

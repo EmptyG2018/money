@@ -1,39 +1,66 @@
-import {
-  ProForm,
-  ProFormUploadButton,
-  ProFormText,
-  ProFormTextArea,
-  ProFormSelect,
-  ProCard,
-} from "@ant-design/pro-components";
+import { useRef } from "react";
+import { Button, message } from "antd";
+import { ProForm, ProFormText } from "@ant-design/pro-components";
+import { useEditPwd } from "../hooks/user";
 
 const Component = () => {
+  const editpwdForm = useRef();
+  const [messageApi, contextHolder] = message.useMessage();
+  const { edit } = useEditPwd();
+
+  const submit = async (values) => {
+    try {
+      await edit(values);
+      messageApi.success("修改成功！");
+      editpwdForm.current.resetFields();
+    } catch (err) {
+      messageApi.error(err.message);
+    }
+  };
+
   return (
-    <ProCard title="修改密码">
+    <>
+      {contextHolder}
       <ProForm
+        formRef={editpwdForm}
         layout="vertical"
-        onFinish={(values) => {
-          console.log(values);
-        }}
-        initialValues={{
-          name: "蚂蚁设计有限公司",
-          useMode: "chapter",
+        onFinish={submit}
+        submitter={{
+          render: (props, dom) => {
+            return (
+              <Button type="primary" htmlType="submit">
+                保存
+              </Button>
+            );
+          },
         }}
       >
         <ProFormText.Password
           width="md"
-          name="name"
+          name="oldpwd"
           label="旧密码"
-          placeholder="昵称"
+          placeholder="旧密码"
+          rules={[
+            {
+              required: true,
+              message: "请输入旧密码",
+            },
+          ]}
         />
         <ProFormText.Password
           width="md"
-          name="name"
+          name="newpwd"
           label="新密码"
-          placeholder="邮箱"
+          placeholder="新密码（不少于8字符）"
+          rules={[
+            {
+              required: true,
+              message: "请输入新密码",
+            },
+          ]}
         />
       </ProForm>
-    </ProCard>
+    </>
   );
 };
 

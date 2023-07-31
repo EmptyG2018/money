@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Button, Col, Row, Space, message } from "antd";
 import {
-  PageContainer,
   ProCard,
   ProForm,
   ProFormText,
@@ -9,6 +8,7 @@ import {
   ProFormMoney,
 } from "@ant-design/pro-components";
 import { useSelector } from "react-redux";
+import Container from "../components/Container";
 import { useBuyUserGroup, useBuyUserKey } from "../hooks/cardKey";
 
 const Component = () => {
@@ -45,8 +45,8 @@ const Component = () => {
   return (
     <>
       {contextHolder}
-      <PageContainer title={false}>
-        <ProCard gutter={[24, 24]} wrap style={{ background: "none" }}>
+      <Container title={false} gutter={[0, 12]}>
+        <ProCard gutter={[24, 24]} wrap ghost>
           <ProCard title="购买VIP用户组" colSpan={{ xs: 24, lg: 16 }}>
             <ProForm
               formRef={buykeyForm}
@@ -157,7 +157,7 @@ const Component = () => {
             </ProForm>
           </ProCard>
         </ProCard>
-      </PageContainer>
+      </Container>
     </>
   );
 };
