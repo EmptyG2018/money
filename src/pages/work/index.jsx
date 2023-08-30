@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Layout,
   Button,
@@ -11,6 +12,7 @@ import {
   Divider,
   Checkbox,
   Typography,
+  Popover,
 } from "antd";
 import Path, { PathItem } from "../../components/Path";
 import { styled } from "styled-components";
@@ -24,6 +26,7 @@ import {
   PlusOutlined,
   StarFilled,
   HistoryOutlined,
+  CaretDownOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { useContextMenu } from "react-contexify";
@@ -31,31 +34,29 @@ import { useContextMenu } from "react-contexify";
 import BookmarkCard from "../../components/BookmarkCard";
 import BookmarkCell from "../../components/BookmarkCell";
 
-const ComponentRoot = styled(Layout)`
-  height: 100vh;
+import { useGroup, useCreateGroup } from "../../hooks/group";
+import { useAuth, useSyncInfo } from "../../hooks/user";
+
+const CollectCountTag = styled.span`
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.54);
 `;
 
-const ProfilePanel = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-`;
-
-const Profile = styled.div`
-  display: flex;
-  align-items: center;
-  flex: 1 0 0;
-  width: 0;
-`;
-
-const CollectHeaderRoot = styled.div`
+/**
+ * @title 折叠单行
+ * @param {string} [name] 名称
+ * @param {boolean} [collapsed] 折叠
+ * @param {React.ReactNode} [extend] 拓展
+ * @param {React.ReactNode} [children] 子级组件
+ */
+const CollapseItemRoot = styled.div`
   display: flex;
   align-items: center;
   padding: 4px 16px;
+  cursor: pointer;
 `;
 
-const CollectHeaderTitle = styled.h2`
+const CollapseItemTitle = styled.h2`
   margin: 0;
   padding: 0;
   color: grey;
@@ -65,9 +66,168 @@ const CollectHeaderTitle = styled.h2`
   font-weight: 400;
 `;
 
-const CollectCountTag = styled.span`
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.54);
+const CollapseItem = ({ name, collapsed, extend, children, onClick }) => {
+  return (
+    <>
+      <CollapseItemRoot
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick && onClick(e);
+        }}
+      >
+        <CollapseItemTitle>{name}</CollapseItemTitle>
+        {extend}
+      </CollapseItemRoot>
+      {!collapsed && children}
+    </>
+  );
+};
+
+/**
+ * @title 用户控板
+ * @param {string} [name] 名称
+ * @param {string} [avatar] 头像
+ * @param {React.ReactNode} [extend] 拓展
+ * @param {function} [onLogout] 退出登录
+ */
+const ProfilePanelRoot = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 8px;
+`;
+
+const ProfileCell = styled.div`
+  display: flex;
+  align-items: center;
+  flex: 1 0 0;
+  width: 0;
+`;
+
+const ProfileUser = styled.div`
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  &:hover {
+    background-color: rgb(0, 0, 0, 0.08);
+  }
+`;
+
+const ProfilePanel = ({ name, avatar, extend, onLogout }) => {
+  return (
+    <ProfilePanelRoot>
+      <ProfileCell>
+        <Dropdown
+          trigger="click"
+          arrow
+          menu={{
+            items: [
+              {
+                key: "logout",
+                label: "退出登录",
+              },
+            ],
+            onClick: ({ key }) => {
+              key === "logout" && onLogout();
+            },
+          }}
+        >
+          <ProfileUser>
+            <Space>
+              <Avatar size={20} src={avatar} />
+              <span>{name}</span>
+              <CaretDownOutlined style={{ fontSize: "12px" }} />
+            </Space>
+          </ProfileUser>
+        </Dropdown>
+      </ProfileCell>
+      {extend}
+    </ProfilePanelRoot>
+  );
+};
+
+/**
+ * @title 分类控板
+ * @param {array} [items] 分类集合
+ * @param {string|number} [selectedKey] 选中高亮
+ * @param {function} [onClick] 点击事件
+ */
+const CategoryPanelRoot = styled.div`
+  padding-bottom: 8px;
+`;
+
+const CategoryPanel = ({ items, onClick }) => {
+  return (
+    <CategoryPanelRoot>
+      {items.map((item) => (
+        <PathItem
+          key={item.id}
+          level={2}
+          indentWidth={10}
+          icon={item.icon}
+          name={
+            <>
+              {item.name} <CollectCountTag>(0)</CollectCountTag>
+            </>
+          }
+          onClick={() => onClick && onClick(item.id, item)}
+        />
+      ))}
+    </CategoryPanelRoot>
+  );
+};
+
+/**
+ * @title 收藏集控板
+ * @param {array} [items] 分类集合
+ * @param {string|number} [selectedKey] 选中高亮
+ * @param {function} [onClick] 点击事件
+ */
+const CollectPanelRoot = styled.div`
+  padding-bottom: 8px;
+`;
+
+const CollectPanel = ({ items }) => {
+  return (
+    <CollectPanelRoot>
+      {items.map((item) => (
+        <>
+          <CollapseItem
+            name={item.title}
+            collapsed={item.collapsed}
+            extend={
+              <Button size="small" type="text" icon={<EllipsisOutlined />} />
+            }
+          >
+            {item.children && item.children.length && (
+              <Path
+                items={item.children}
+                selectedKey={[]}
+                openKeys={[]}
+                titleRender={(item, dom) => (
+                  <>
+                    {dom} <CollectCountTag>(99)</CollectCountTag>
+                  </>
+                )}
+                extendRender={(item) => (
+                  <Button
+                    size="small"
+                    type="text"
+                    icon={<EllipsisOutlined />}
+                  />
+                )}
+              />
+            )}
+          </CollapseItem>
+        </>
+      ))}
+    </CollectPanelRoot>
+  );
+};
+
+const TeamPanel = () => {};
+
+const ComponentRoot = styled(Layout)`
+  height: 100vh;
 `;
 
 const Content = styled.div`
@@ -114,19 +274,20 @@ const BookmarkCardGrid = styled.div`
   padding-bottom: 0;
 `;
 
-const CollectHeader = ({ name, extend }) => {
-  return (
-    <CollectHeaderRoot>
-      <CollectHeaderTitle>{name}</CollectHeaderTitle>
-      {extend}
-    </CollectHeaderRoot>
-  );
-};
-
 const Component = () => {
   const { show } = useContextMenu({ id: "win" });
 
+  const { groups } = useGroup();
+
+  const { create } = useCreateGroup();
+
+  const syncInfo = useSyncInfo();
+
+  const authed = useAuth();
+
   const { info } = useSelector(({ user }) => user);
+
+  const navigate = useNavigate();
 
   const [categorys] = useState([
     {
@@ -146,49 +307,6 @@ const Component = () => {
     },
   ]);
 
-  const [collects] = useState([
-    {
-      id: "1",
-      name: "收藏集",
-      collapsed: false,
-      children: [
-        {
-          id: "2",
-          name: "私有的",
-          children: [
-            {
-              id: "3",
-              name: "语文课",
-            },
-            {
-              id: "4",
-              name: "英语课",
-            },
-          ],
-        },
-        {
-          id: "3",
-          name: "公开的",
-        },
-      ],
-    },
-    {
-      id: "_1",
-      name: "典藏",
-      collapsed: true,
-      children: [
-        {
-          id: "_2",
-          name: "人生的意义",
-          children: [
-            { id: "_3", name: "死亡" },
-            { id: "_4", name: "成长" },
-          ],
-        },
-      ],
-    },
-  ]);
-
   const selectedResource = null;
 
   const opendResources = ["1", "2", "_1", "_2"];
@@ -197,67 +315,46 @@ const Component = () => {
 
   return (
     <ComponentRoot hasSider style={{ backgroundColor: "#fff" }}>
-      <Layout.Sider
-        collapsed
-        collapsedWidth={290}
-        style={{ backgroundColor: "#f6f5f4" }}
-      >
-        <ProfilePanel>
-          <Profile>
-            <Space>
-              <Avatar
-                size={20}
-                src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-              />
-              <span>qwer12345</span>
-            </Space>
-          </Profile>
-          <Button type="text" icon={<PlusOutlined />} />
-        </ProfilePanel>
-
-        {categorys.map((item) => (
-          <PathItem
-            key={item.id}
-            level={2}
-            indentWidth={10}
-            icon={item.icon}
-            name={
-              <>
-                {item.name} <CollectCountTag>(0)</CollectCountTag>
-              </>
-            }
-          />
-        ))}
-
-        {collects.map((collect) => (
-          <>
-            <CollectHeader
-              name={collect.name}
-              extend={
-                <Button size="small" type="text" icon={<EllipsisOutlined />} />
+      <Layout.Sider width={290} style={{ backgroundColor: "#f6f5f4" }}>
+        <ProfilePanel
+          avatar={info?.photoUrl}
+          name={info?.username}
+          extend={
+            <Popover
+              title="新增收藏集"
+              content={
+                <Space direction="vertical">
+                  <Input placeholder="收藏集名称" />
+                  <div align="right">
+                    <Space>
+                      <Button type="text" size="small">
+                        取消
+                      </Button>
+                      <Button
+                        type="primary"
+                        size="small"
+                        onClick={() => {
+                          create({ title: "demo" });
+                        }}
+                      >
+                        确认
+                      </Button>
+                    </Space>
+                  </div>
+                </Space>
               }
-            />
-            {!collect.collapsed && (
-              <Path
-                items={collect.children}
-                selectedKey={selectedResource}
-                openKeys={opendResources}
-                titleRender={(item, dom) => (
-                  <>
-                    {dom} <CollectCountTag>(99)</CollectCountTag>
-                  </>
-                )}
-                extendRender={(item) => (
-                  <Button
-                    size="small"
-                    type="text"
-                    icon={<EllipsisOutlined />}
-                  />
-                )}
-              />
-            )}
-          </>
-        ))}
+            >
+              <Button type="text" icon={<PlusOutlined />} />
+            </Popover>
+          }
+          onLogout={() => {
+            syncInfo.clear();
+            navigate("/login", { replace: true });
+          }}
+        />
+        <CategoryPanel items={categorys} />
+
+        <CollectPanel items={groups} />
       </Layout.Sider>
       <Layout.Content>
         <Content>

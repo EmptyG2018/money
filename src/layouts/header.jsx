@@ -90,7 +90,7 @@ export default () => {
       key: "settings",
       icon: <DatabaseOutlined />,
       label: "后台管理",
-      trigger: () => navigate("/admin/index"),
+      trigger: () => navigate("/admin"),
     },
     logout: {
       key: "logout",
@@ -151,6 +151,7 @@ export default () => {
               },
             }}
             avatarProps={avatarProps}
+            onMenuHeaderClick={() => navigate('/')}
             menuItemRender={(item, dom) => (
               <Navigate to={item.path}>{dom}</Navigate>
             )}

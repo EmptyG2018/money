@@ -1,10 +1,15 @@
 import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
-import fetch from "../utils/fetch";
+import request from "../services/_request";
 
 export const useHallCagegory = () => {
   const { data } = useSWR("/myCollection/getmarketClassCollection", (url) =>
-    fetch({ url, method: "POST" })
+    request(
+      { url, method: "POST" },
+      {
+        responseDataType: "json",
+        carry: ["site"],
+      }
+    )
   );
 
   return { categorys: data?.result || [] };
@@ -12,7 +17,13 @@ export const useHallCagegory = () => {
 
 export const useMarkTeam = (params) => {
   const { data } = useSWR(["/myTeam/getMarkeTeam", params], ([url, params]) =>
-    fetch({ url, method: "POST", data: params })
+    request(
+      { url, method: "POST", data: params },
+      {
+        responseDataType: "json",
+        carry: ["site"],
+      }
+    )
   );
 
   return { teams: data?.result };
@@ -21,7 +32,14 @@ export const useMarkTeam = (params) => {
 export const useMarketCollection = (params) => {
   const { data } = useSWR(
     ["/myCollection/getMarketCollection", params],
-    ([url, data]) => fetch({ url, method: "POST", data: params })
+    ([url, data]) =>
+      request(
+        { url, method: "POST", data: params },
+        {
+          responseDataType: "json",
+          carry: ["site"],
+        }
+      )
   );
 
   return { collects: data?.result };

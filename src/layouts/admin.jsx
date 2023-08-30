@@ -1,123 +1,119 @@
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  GithubFilled,
-  InfoCircleFilled,
-  PlusCircleFilled,
-  QuestionCircleFilled,
-  SearchOutlined,
-  ChromeFilled,
-  CrownFilled,
-  SmileFilled,
-  TabletFilled,
+  DesktopOutlined,
+  FileDoneOutlined,
+  InboxOutlined,
+  BarChartOutlined,
+  SketchOutlined,
+  ApartmentOutlined,
+  CompassOutlined,
+  CreditCardOutlined,
+  ShopOutlined,
+  AccountBookOutlined,
+  TransactionOutlined,
+  RobotOutlined,
 } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
-import { Input } from "antd";
-import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { useSite } from "../hooks/setting";
+
+const defaultLayout = {
+  fixSiderbar: true,
+  layout: "mix",
+  splitMenus: true,
+};
 
 const defaultProps = {
   route: {
-    path: "/",
+    path: "/admin",
     routes: [
       {
-        path: "/admin",
-        name: "云夹",
-        icon: <CrownFilled />,
-        access: "canAdmin",
-        component: "./Admin",
+        path: "/admin/base",
+        name: "基础",
+        icon: <DesktopOutlined />,
         routes: [
           {
-            path: "/admin/sub-page1",
+            path: "/admin/base/_statistics",
+            name: "数据统计",
+            icon: <BarChartOutlined />,
+          },
+          {
+            path: "/admin/base/_vip",
             name: "会员管理",
-            icon: "https://gw.alipayobjects.com/zos/antfincdn/upvrAjAPQX/Logo_Tech%252520UI.svg",
-            component: "./Welcome",
+            icon: <SketchOutlined />,
           },
           {
-            path: "/admin/sub-page2",
+            path: "/admin/base/_site",
             name: "分站管理",
-            icon: <CrownFilled />,
-            component: "./Welcome",
+            icon: <ApartmentOutlined />,
           },
           {
-            path: "/admin/sub-page3",
+            path: "/admin/base/_domain",
             name: "域名管理",
-            icon: <CrownFilled />,
-            component: "./Welcome",
+            icon: <CompassOutlined />,
+          },
+          {
+            path: "/admin/base/_vipkey",
+            name: "会员卡管理",
+            icon: <CreditCardOutlined />,
+          },
+          {
+            path: "/admin/base/_joinkey",
+            name: "加盟卡管理",
+            icon: <CreditCardOutlined />,
+          },
+          {
+            path: "/admin/base/_recharge",
+            name: "余额充值",
+            icon: <ShopOutlined />,
+          },
+          {
+            path: "/admin/base/_flowrecord",
+            name: "流水账单",
+            icon: <AccountBookOutlined />,
+          },
+          {
+            path: "/admin/base/_income",
+            name: "佣金收入",
+            icon: <TransactionOutlined />,
+          },
+          {
+            path: "/admin/base/_help",
+            name: "配置客服",
+            icon: <RobotOutlined />,
           },
         ],
       },
       {
-        path: "/exam",
+        path: "/admin/exam",
         name: "考试",
-        icon: <CrownFilled />,
-        access: "canAdmin",
-        component: "./Admin",
+        icon: <FileDoneOutlined />,
         routes: [
           {
-            path: "/admin/sub-page1",
-            name: "会员配置",
-            icon: "https://gw.alipayobjects.com/zos/antfincdn/upvrAjAPQX/Logo_Tech%252520UI.svg",
-            component: "./Welcome",
-          },
-          {
-            path: "/admin/sub-page2",
-            name: "分站管理",
-            icon: <CrownFilled />,
-            component: "./Welcome",
-          },
-          {
-            path: "/admin/sub-page3",
-            name: "三级页面",
-            icon: <CrownFilled />,
-            component: "./Welcome",
+            path: "/admin/exam/_index",
+            name: "测试页面",
           },
         ],
       },
       {
-        path: "/bookmark",
+        path: "/admin/bookmark",
         name: "书签",
-        icon: <CrownFilled />,
-        access: "canAdmin",
-        component: "./Admin",
+        icon: <InboxOutlined />,
         routes: [
           {
-            path: "/admin/sub-page1",
-            name: "一级页面",
-            icon: "https://gw.alipayobjects.com/zos/antfincdn/upvrAjAPQX/Logo_Tech%252520UI.svg",
-            component: "./Welcome",
-          },
-          {
-            path: "/admin/sub-page2",
-            name: "二级页面",
-            icon: <CrownFilled />,
-            component: "./Welcome",
-          },
-          {
-            path: "/admin/sub-page3",
-            name: "三级页面",
-            icon: <CrownFilled />,
-            component: "./Welcome",
+            path: "/admin/bookmark/_index",
+            name: "测试页面",
           },
         ],
       },
     ],
   },
-  location: {
-    pathname: "/admin",
-  },
 };
 
 export default () => {
-  const settings = {
-    fixSiderbar: true,
-    layout: "mix",
-    splitMenus: true,
-  };
-
-  const [pathname, setPathname] = useState("/list/sub-page/sub-sub-page1");
-
+  const navigate = useNavigate();
+  const location = useLocation();
   return (
     <div
-      id="test-pro-layout"
       style={{
         height: "100vh",
       }}
@@ -125,109 +121,18 @@ export default () => {
       <ProLayout
         logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
         title="Github"
-        bgLayoutImgList={[
-          {
-            src: "https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png",
-            left: 85,
-            bottom: 100,
-            height: "303px",
-          },
-          {
-            src: "https://img.alicdn.com/imgextra/i2/O1CN01O4etvp1DvpFLKfuWq_!!6000000000279-2-tps-609-606.png",
-            bottom: -68,
-            right: -45,
-            height: "303px",
-          },
-          {
-            src: "https://img.alicdn.com/imgextra/i3/O1CN018NxReL1shX85Yz6Cx_!!6000000005798-2-tps-884-496.png",
-            bottom: 0,
-            left: 0,
-            width: "331px",
-          },
-        ]}
+        {...defaultLayout}
         {...defaultProps}
         location={{
-          pathname,
-        }}
-        menu={{
-          type: "group",
+          pathname: location.pathname,
         }}
         avatarProps={{
           src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
           size: "small",
           title: "七妮妮",
         }}
-        actionsRender={(props) => {
-          if (props.isMobile) return [];
-          return [
-            props.layout !== "side" && document.body.clientWidth > 1400 ? (
-              <div
-                key="SearchOutlined"
-                aria-hidden
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginInlineEnd: 24,
-                }}
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                }}
-              >
-                <Input
-                  style={{
-                    borderRadius: 4,
-                    marginInlineEnd: 12,
-                    backgroundColor: "rgba(0,0,0,0.03)",
-                  }}
-                  prefix={
-                    <SearchOutlined
-                      style={{
-                        color: "rgba(0, 0, 0, 0.15)",
-                      }}
-                    />
-                  }
-                  placeholder="搜索方案"
-                  bordered={false}
-                />
-                <PlusCircleFilled
-                  style={{
-                    color: "var(--ant-primary-color)",
-                    fontSize: 24,
-                  }}
-                />
-              </div>
-            ) : undefined,
-            <InfoCircleFilled key="InfoCircleFilled" />,
-            <QuestionCircleFilled key="QuestionCircleFilled" />,
-            <GithubFilled key="GithubFilled" />,
-          ];
-        }}
-        menuFooterRender={(props) => {
-          if (props?.collapsed) return undefined;
-          return (
-            <div
-              style={{
-                textAlign: "center",
-                paddingBlockStart: 12,
-              }}
-            >
-              <div>© 2021 Made with love</div>
-              <div>by Ant Design</div>
-            </div>
-          );
-        }}
-        onMenuHeaderClick={(e) => console.log(e)}
-        menuItemRender={(item, dom) => (
-          <div
-            onClick={() => {
-              setPathname(item.path || "/welcome");
-            }}
-          >
-            {dom}
-          </div>
-        )}
-        {...settings}
+        onMenuHeaderClick={() => navigate("/admin")}
+        menuItemRender={(item, dom) => <Link to={item.path}>{dom}</Link>}
       >
         <Outlet />
       </ProLayout>

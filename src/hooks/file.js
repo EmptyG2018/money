@@ -1,18 +1,24 @@
 import useSWRMutation from "swr/mutation";
-import fetch from "../utils/fetch";
+import request from "../services/_request";
 
 export const useUploadFile = () => {
   const { data, trigger } = useSWRMutation(
     "/upload/uploadFile",
     (url, { arg }) =>
-      fetch({
-        url,
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
+      request(
+        {
+          url,
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          data: arg,
         },
-        data: arg,
-      }, true)
+        {
+          responseDataType: "json",
+          carry: ["auth", "site"],
+        }
+      )
   );
 
   return { upload: trigger };
