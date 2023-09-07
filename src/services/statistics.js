@@ -30,3 +30,31 @@ export const GetFlowRecord = (params) =>
       carry: ["auth", "site"],
     }
   );
+
+// 代理商佣金记录
+export const GetAgentKickbackRecord = (params) =>
+  request(
+    {
+      url: "/yunDlAgentCommission/getDlAgentCommissionList",
+      method: "POST",
+      data: params,
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
+// 代理商提款记录
+export const GetAgentDrawMoneyRecord = (params) =>
+  request(
+    {
+      url: "/yunDlAgentCashout/getDlAgentCashoutList",
+      method: "POST",
+      data: params,
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );

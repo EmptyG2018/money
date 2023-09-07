@@ -8,8 +8,9 @@ import {
   ProFormText,
   ProFormTextArea,
 } from "@ant-design/pro-components";
-import { useUpdateSiteCardKey } from "../../hooks/cardKey";
-import { useSite, useUpdateSite } from "../../hooks/site";
+import { useRequest } from "ahooks";
+import { BindSiteCardKey } from "../../services/vip";
+import { GetAdminSites, UpdateAdminSite } from "../../services/agent";
 
 const Component = () => {
   const columns = [
@@ -55,13 +56,16 @@ const Component = () => {
 
   const formRef = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const { data: site, mutate } = useSite();
-  const { update: updateSiteCardKey } = useUpdateSiteCardKey();
-  const { update: updateSite } = useUpdateSite();
-  const { domainList: sites = [] } = site?.result || {};
+  const { refresh: refreshAdminSite, data: site } = useRequest(GetAdminSites);
+  const { runAsync: updateAdminSite } = useRequest(UpdateAdminSite, {
+    manual: true,
+  });
+  const { runAsync: bindSiteCardKey } = useRequest(BindSiteCardKey, {
+    manual: true,
+  });
 
   useEffect(() => {
-    const { urlLink, remark } = site?.result?.domainInfo || {};
+    const { urlLink, remark } = site?.domainInfo || {};
     formRef.current.setFieldsValue({
       urlLink,
       remark,
@@ -70,7 +74,8 @@ const Component = () => {
 
   const submit = async (values) => {
     try {
-      await updateSiteCardKey({ ...values });
+      await bindSiteCardKey(values);
+      messageApi.success("绑定成功！");
     } catch (err) {
       messageApi.error(err.message);
     }
@@ -97,17 +102,17 @@ const Component = () => {
             actionRender: (row, config, dom) => [dom.save, dom.cancel],
             onSave: async (rowKey, data) => {
               try {
-                await updateSite({
+                await updateAdminSite({
                   id: rowKey,
                   sellPrice: data.defaultSellPrice,
                 });
-                mutate();
+                refreshAdminSite();
               } catch (err) {
                 messageApi.error(err.message);
               }
             },
           }}
-          dataSource={sites}
+          dataSource={site?.domainList || []}
         />
         <br />
         <ProCard headerBordered>

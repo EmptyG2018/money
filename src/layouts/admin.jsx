@@ -1,4 +1,5 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+import { Dropdown } from "antd";
 import {
   DesktopOutlined,
   FileDoneOutlined,
@@ -12,9 +13,11 @@ import {
   AccountBookOutlined,
   TransactionOutlined,
   RobotOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
-import { useSite } from "../hooks/setting";
+import { useAgentSetting } from "../plugins/agent";
+import { useUser } from "../hooks/user";
 
 const defaultLayout = {
   fixSiderbar: true,
@@ -112,6 +115,9 @@ const defaultProps = {
 export default () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { agentSetting } = useAgentSetting();
+  const { user, logout } = useUser();
+
   return (
     <div
       style={{
@@ -119,17 +125,38 @@ export default () => {
       }}
     >
       <ProLayout
-        logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
-        title="Github"
+        logo={agentSetting?.weblogoUrl || undefined}
+        title={agentSetting?.webname}
         {...defaultLayout}
         {...defaultProps}
         location={{
           pathname: location.pathname,
         }}
         avatarProps={{
-          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
           size: "small",
-          title: "七妮妮",
+          src: user?.photoUrl,
+          title: user?.username,
+          render: (props, dom) => (
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    key: "logout",
+                    icon: <LogoutOutlined />,
+                    label: "退出登录",
+                  },
+                ],
+                onClick: (item) => {
+                  if (item.key === "logout") {
+                    logout();
+                    navigate("/login", { replace: true });
+                  }
+                },
+              }}
+            >
+              {dom}
+            </Dropdown>
+          ),
         }}
         onMenuHeaderClick={() => navigate("/admin")}
         menuItemRender={(item, dom) => <Link to={item.path}>{dom}</Link>}

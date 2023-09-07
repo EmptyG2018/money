@@ -8,6 +8,7 @@ import {
   ProFormDigit,
   ProFormSelect,
 } from "@ant-design/pro-components";
+import { useRequest } from "ahooks";
 import {
   GetCodeTypes,
   GetJoinKeyGroups,
@@ -17,38 +18,6 @@ import {
   DelJoinkey,
 } from "../../services/key";
 import useDownload from "../../hooks/download";
-
-const useUserGroupOption = () => {
-  const [options, setOptions] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const res = await GetJoinKeyGroups();
-      setOptions(
-        (res?.result || []).map((item) => ({
-          label: item.name,
-          value: item.id,
-        }))
-      );
-    })();
-  }, []);
-  return { options };
-};
-
-const useStateOption = () => {
-  const [options, setOptions] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const res = await GetCodeTypes();
-      setOptions(
-        (res?.result || []).map((item) => ({
-          label: item.name,
-          value: item.id,
-        }))
-      );
-    })();
-  }, []);
-  return { options };
-};
 
 const VipKeyFormRender = ({ groupOptions, onFinish }) => {
   return (
@@ -93,8 +62,26 @@ const Component = () => {
   const actionRef = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
   const { download } = useDownload();
-  const { options: stateOptions } = useStateOption();
-  const { options: groupOptions } = useUserGroupOption();
+  const { data: codeTypes } = useRequest(GetCodeTypes);
+  const { data: joinKeyGroups } = useRequest(GetJoinKeyGroups);
+  const { runAsync: getJoinKeys } = useRequest(GetJoinKeys, { manual: true });
+  const { runAsync: generateRandJoinKey } = useRequest(GenerateRandJoinKey, {
+    manual: true,
+  });
+  const { runAsync: exportJoinKey } = useRequest(ExportJoinKey, {
+    manual: true,
+  });
+  const { runAsync: delJoinKey } = useRequest(DelJoinkey, { manual: true });
+
+  const stateOptions = (codeTypes || []).map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  const groupOptions = (joinKeyGroups || []).map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
 
   const columns = [
     {
@@ -151,6 +138,7 @@ const Component = () => {
       valueType: "option",
       render: (text, record, _, action) => [
         <Popconfirm
+          key="delete"
           title="删除记录"
           description="您确定要删除此记录吗？"
           onConfirm={() => deleteRecord(record)}
@@ -163,7 +151,7 @@ const Component = () => {
 
   const vipKeySubmit = async (values) => {
     try {
-      await GenerateRandJoinKey(values);
+      await generateRandJoinKey(values);
       actionRef?.current?.reload();
       messageApi.success("生成成功!");
     } catch (err) {
@@ -173,7 +161,7 @@ const Component = () => {
 
   const exportSubmit = async (values) => {
     try {
-      const result = await ExportJoinKey(values);
+      const result = await exportJoinKey(values);
       messageApi.success("导出成功!");
 
       download(result, "会员卡_" + new Date().getTime() + ".xls");
@@ -182,9 +170,9 @@ const Component = () => {
     }
   };
 
-  const deleteRecord = async (record) => {
+  const deleteRecord = async ({ id }) => {
     try {
-      await DelJoinkey({ ids: record.id });
+      await delJoinKey({ ids: id });
       actionRef?.current?.reload();
     } catch (err) {
       messageApi.error(err.message);
@@ -207,12 +195,12 @@ const Component = () => {
           rowKey="id"
           headerTitle="加盟卡列表"
           request={async ({ current, pageSize, ...params }) => {
-            const res = await GetJoinKeys({
+            const res = await getJoinKeys({
               ...params,
               pageNum: current,
               pageSize,
             });
-            const { rows = [], total = 0 } = res?.result || {};
+            const { rows = [], total = 0 } = res || {};
             return {
               data: rows,
               success: true,

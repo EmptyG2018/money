@@ -1,12 +1,13 @@
 import { Tabs, Card, Avatar, Space, Image, Row, Col, Tag } from "antd";
 import { useState } from "react";
 import { styled } from "styled-components";
-import Container from "../components/Container";
+import { useRequest } from "ahooks";
 import {
-  useHallCagegory,
-  useMarkTeam,
-  useMarketCollection,
-} from "../hooks/hall";
+  GetBookmarkMarketCategorys,
+  GetBookmarkMarketCollects,
+  GetBookmarkMarketTeams,
+} from "../services/bookmark";
+import Container from "../components/Container";
 
 const TeamRoot = styled(Card)``;
 
@@ -94,11 +95,16 @@ const Team = ({ title, desc, thumb, tags, name, avatar, date }) => {
 };
 
 const TeamView = ({ classId }) => {
-  const { teams } = useMarkTeam({
-    classId,
-    pageNum: 1,
-    pageSize: 12,
-    searchKey: "",
+  const { data: bookmarkTeam } = useRequest(GetBookmarkMarketTeams, {
+    defaultParams: [
+      {
+        classId,
+        pageNum: 1,
+        pageSize: 12,
+        searchKey: "",
+      },
+    ],
+    refreshDeps: [classId],
   });
 
   return (
@@ -109,8 +115,8 @@ const TeamView = ({ classId }) => {
           { xs: 4, sm: 8, md: 12, lg: 16 },
         ]}
       >
-        {(teams?.rows || []).map((item) => (
-          <Col xs={12} sm={8} lg={6}>
+        {(bookmarkTeam?.rows || []).map((item) => (
+          <Col xs={12} sm={8} lg={6} key={item.id}>
             <Team
               title={item.title}
               desc={item.description}
@@ -128,11 +134,16 @@ const TeamView = ({ classId }) => {
 };
 
 const CollectView = ({ classId }) => {
-  const { collects } = useMarketCollection({
-    classId,
-    pageNum: 1,
-    pageSize: 12,
-    searchKey: "",
+  const { data: bookmarkCollect } = useRequest(GetBookmarkMarketCollects, {
+    defaultParams: [
+      {
+        classId,
+        pageNum: 1,
+        pageSize: 12,
+        searchKey: "",
+      },
+    ],
+    refreshDeps: [classId],
   });
 
   return (
@@ -143,8 +154,8 @@ const CollectView = ({ classId }) => {
           { xs: 4, sm: 8, md: 12, lg: 16 },
         ]}
       >
-        {(collects?.rows || []).map((item) => (
-          <Col xs={12} sm={8} lg={6}>
+        {(bookmarkCollect?.rows || []).map((item) => (
+          <Col xs={12} sm={8} lg={6} key={item.id}>
             <Team
               title={item.title}
               desc={item.description}
@@ -190,24 +201,12 @@ const CategoryBar = styled(NavBar)`
 `;
 
 const Component = () => {
-  const { categorys } = useHallCagegory();
+  const { data: bookmarkCategorys } = useRequest(GetBookmarkMarketCategorys);
 
   const navTabs = [
     { key: "team", label: "优秀团队" },
     { key: "collect", label: "收藏夹" },
   ];
-
-  const records = new Array(10).fill({
-    title: "百度大数据",
-    desc: "百度大数据",
-    thumb:
-      "https://pptwd.oss-cn-shenzhen.aliyuncs.com/yj/static/img/2023/04/17/1682985472956.png",
-    tags: ["你好"],
-    name: "jon",
-    avatar:
-      "https://himg.bdimg.com/sys/portraitn/item/public.1.5c0e99fc.N38xm64QGsEOc2YffDzNsA",
-    date: "2023-04-17",
-  });
 
   const [navTabKey, setNavTabKey] = useState("team");
 
@@ -237,7 +236,7 @@ const Component = () => {
               label: "全部",
               key: "",
             },
-            ...categorys.map((item) => ({
+            ...(bookmarkCategorys || []).map((item) => ({
               label: item.title,
               key: item.id,
             })),

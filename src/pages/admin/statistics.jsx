@@ -9,18 +9,12 @@ import {
   FileDoneOutlined,
 } from "@ant-design/icons";
 import { PageContainer, StatisticCard } from "@ant-design/pro-components";
+import { useRequest } from "ahooks";
 import { GetStatistics } from "../../services/statistics";
 
 const Component = () => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [stats, setStats] = useState({});
-
-  useEffect(() => {
-    (async () => {
-      const res = await GetStatistics();
-      setStats(res?.result || {});
-    })();
-  }, []);
+  const { data: stats } = useRequest(GetStatistics);
 
   const statsRender = useMemo(() => {
     const items = [
@@ -82,7 +76,7 @@ const Component = () => {
       },
     ];
 
-    return items.map((item) => {
+    return items.map((item, index) => {
       return (
         <StatisticCard
           colSpan={{ xs: 24, sm: 12, md: 8, xl: 6 }}
@@ -96,6 +90,7 @@ const Component = () => {
               }),
             color: undefined,
           }}
+          key={index}
         />
       );
     });

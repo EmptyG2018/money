@@ -4,7 +4,9 @@ import { Button, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { LoginForm, ProFormText } from "@ant-design/pro-components";
 import { styled } from "styled-components";
-import { useRegister } from "../hooks/user";
+import { useAgentSetting } from "../plugins/agent";
+import { useRequest } from "ahooks";
+import { RegisterAccount } from "../services/user";
 
 const ComponentRoot = styled.div`
   padding-block: 40px;
@@ -23,16 +25,16 @@ const FormExtra = styled.div`
 const Component = () => {
   const registerForm = useRef();
   const navigate = useNavigate();
+  const { agentSetting } = useAgentSetting();
   const [messageApi, contextHolder] = message.useMessage();
-  const { register } = useRegister();
+  const { runAsync: registerAccount } = useRequest(RegisterAccount, {
+    manual: true,
+  });
 
   const submit = async () => {
-    const formData = await registerForm.current.validateFieldsReturnFormatValue();
+    const values = await registerForm.current.validateFieldsReturnFormatValue();
     try {
-      await register({
-        dlId: 0,
-        ...formData,
-      });
+      await registerAccount(values);
       messageApi.success("注册成功！");
       setTimeout(() => {
         navigate("/login", { replace: true });
@@ -48,9 +50,9 @@ const Component = () => {
       <ComponentRoot>
         <RegisterForm
           formRef={registerForm}
-          logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
-          title="Github"
-          subTitle="全球最大的代码托管平台"
+          logo={agentSetting?.weblogoUrl || undefined}
+          title={agentSetting?.webname}
+          subTitle={agentSetting?.description}
           actions={
             <Button block type="primary" size="large" onClick={submit}>
               注册

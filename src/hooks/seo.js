@@ -1,25 +1,3 @@
-import useSWR from "swr";
-import request from "../services/_request";
-
-export const useSite = (domain) => {
-  const { data, ...arg } = useSWR(
-    ["/dlInfo/getDlInfo", domain],
-    ([url, domain]) =>
-      request(
-        { url, method: "POST", data: { domain } },
-        {
-          responseDataType: "json",
-          carry: [],
-        }
-      ),
-    {
-      revalidateOnFocus: false,
-    }
-  );
-
-  return { site: data?.result || {}, ...arg };
-};
-
 export const useSEO = (option) => {
   const seo = (option) => {
     const { title, icon, keywords, description } = option || {};

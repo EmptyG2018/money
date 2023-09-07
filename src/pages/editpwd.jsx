@@ -1,16 +1,19 @@
 import { useRef } from "react";
 import { Button, message } from "antd";
 import { ProForm, ProFormText } from "@ant-design/pro-components";
-import { useEditPwd } from "../hooks/user";
+import { useRequest } from "ahooks";
+import { UpdateUserPwd } from "../services/user";
 
 const Component = () => {
   const editpwdForm = useRef();
   const [messageApi, contextHolder] = message.useMessage();
-  const { edit } = useEditPwd();
+  const { runAsync: updateUserPwd } = useRequest(UpdateUserPwd, {
+    manual: true,
+  });
 
   const submit = async (values) => {
     try {
-      await edit(values);
+      await updateUserPwd(values);
       messageApi.success("修改成功！");
       editpwdForm.current.resetFields();
     } catch (err) {

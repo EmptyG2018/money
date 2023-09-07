@@ -4,7 +4,10 @@ import { Button, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { LoginForm, ProFormText } from "@ant-design/pro-components";
 import { styled } from "styled-components";
-import { useProfile, useSyncInfo } from "../hooks/user";
+import { useAgentSetting } from "../plugins/agent";
+import { useRequest } from "ahooks";
+import { LoginAccount } from "../services/user";
+import { useUser } from "../hooks/user";
 
 const ComponentRoot = styled.div`
   padding-block: 40px;
@@ -13,17 +16,15 @@ const ComponentRoot = styled.div`
 const Component = () => {
   const loginForm = useRef();
   const navigate = useNavigate();
-  const { login } = useProfile();
-  const { sync: syncInfo } = useSyncInfo();
+  const { agentSetting } = useAgentSetting();
+  const { runAsync: loginAccount } = useRequest(LoginAccount, { manual: true });
+  const { login } = useUser();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const submit = async () => {
-    const { account, password } = loginForm.current.getFieldsFormatValue();
+  const submit = async (values) => {
     try {
-      const {
-        result: { token, userInfo },
-      } = await login({ account, password });
-      syncInfo(token, userInfo);
+      const { token, userInfo } = await loginAccount(values);
+      login(token, userInfo);
     } catch (err) {
       messageApi.error(err.message);
     }
@@ -35,9 +36,9 @@ const Component = () => {
       <ComponentRoot>
         <LoginForm
           formRef={loginForm}
-          logo="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
-          title="Github"
-          subTitle="全球最大的代码托管平台"
+          logo={agentSetting?.weblogoUrl || undefined}
+          title={agentSetting?.webname}
+          subTitle={agentSetting?.description}
           actions={
             <Button block size="large" onClick={() => navigate("/register")}>
               注册

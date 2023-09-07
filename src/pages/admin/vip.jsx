@@ -8,8 +8,12 @@ import {
   ProFormText,
   ProFormTextArea,
 } from "@ant-design/pro-components";
-import { useUpdateCardKey } from "../../hooks/cardKey";
-import { useVipGroup, useUpdateVipGroup } from "../../hooks/group";
+import { useRequest } from "ahooks";
+import {
+  GetAdminVipUserGroups,
+  UpdateAdminVipUserGroup,
+  BindVipUserGroupCardKey,
+} from "../../services/vip";
 
 const Component = () => {
   const columns = [
@@ -60,13 +64,22 @@ const Component = () => {
 
   const formRef = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const { data: vipGroup, mutate } = useVipGroup();
-  const { update: updateCardKey } = useUpdateCardKey();
-  const { update: updateVipGroup } = useUpdateVipGroup();
-  const { groupList: groups = [] } = vipGroup?.result || {};
+  const { refresh: refreshVipGroup, data: vipGroup } = useRequest(
+    GetAdminVipUserGroups
+  );
+  const { runAsync: updateAdminVipUserGroup } = useRequest(
+    UpdateAdminVipUserGroup,
+    { manual: true }
+  );
+  const { runAsync: bindVipUserGroupCardKey } = useRequest(
+    BindVipUserGroupCardKey,
+    {
+      manual: true,
+    }
+  );
 
   useEffect(() => {
-    const { urlLink, remark } = vipGroup?.result?.groupInfo || {};
+    const { urlLink, remark } = vipGroup?.groupInfo || {};
     formRef.current.setFieldsValue({
       urlLink,
       remark,
@@ -75,7 +88,8 @@ const Component = () => {
 
   const submit = async (values) => {
     try {
-      await updateCardKey({ dlAgentId: 1, ...values });
+      await bindVipUserGroupCardKey(values);
+      messageApi.success("绑定成功！");
     } catch (err) {
       messageApi.error(err.message);
     }
@@ -102,17 +116,17 @@ const Component = () => {
             actionRender: (row, config, dom) => [dom.save, dom.cancel],
             onSave: async (rowKey, data) => {
               try {
-                await updateVipGroup({
+                await updateAdminVipUserGroup({
                   groupId: rowKey,
                   sellPrice: data.defaultSellPrice,
                 });
-                mutate();
+                refreshVipGroup();
               } catch (err) {
                 messageApi.error(err.message);
               }
             },
           }}
-          dataSource={groups}
+          dataSource={vipGroup?.groupList || []}
         />
         <br />
         <ProCard headerBordered>

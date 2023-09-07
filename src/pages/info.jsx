@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Button, message } from "antd";
 import {
   ProForm,
@@ -7,35 +7,41 @@ import {
   ProFormTextArea,
   ProFormSelect,
 } from "@ant-design/pro-components";
-import { useGetEditUser, usePublicGoUrl, useEditUser } from "../hooks/user";
-import { useUploadFile } from "../hooks/file";
-import { useEffect } from "react";
+import { useRequest } from "ahooks";
+import { UploadFile } from "../services/upload";
+import {
+  GetProfileSetting,
+  UpdateProfileSetting,
+  GetPublicToUrl,
+} from "../services/user";
 
 const Component = () => {
   const infoRef = useRef();
   const [messageApi, contextHolder] = message.useMessage();
-  const { upload } = useUploadFile();
-  const { user } = useGetEditUser();
-  const { urls } = usePublicGoUrl();
-  const { edit } = useEditUser();
+  const { data: profile } = useRequest(GetProfileSetting);
+  const { data: urls } = useRequest(GetPublicToUrl);
+  const { runAsync: updateProfile } = useRequest(UpdateProfileSetting, {
+    manual: true,
+  });
+  const { runAsync: uploadAvatar } = useRequest(UploadFile, { manual: true });
 
   useEffect(() => {
-    user &&
+    profile &&
       infoRef.current.setFieldsValue({
-        photoUrl: [{ uid: "-1", url: user.photoUrl, status: "done" }],
-        username: user.username,
-        email: user.email,
-        introduce: user.introduce,
-        goType: user.goType,
+        photoUrl: [{ uid: "-1", url: profile.photoUrl, status: "done" }],
+        username: profile.username,
+        email: profile.email,
+        introduce: profile.introduce,
+        goType: profile.goType,
       });
-  }, [user]);
+  }, [profile]);
 
   const uploadFile = async (e) => {
     const formData = new FormData();
     formData.append("imgType", 0);
     formData.append("myFile", e.file);
     try {
-      const result = await upload(formData);
+      const result = await uploadAvatar(formData);
       infoRef.current.setFieldsValue({
         photoUrl: [{ uid: "-1", status: "done", url: result?.result?.fullUrl }],
       });
@@ -48,7 +54,7 @@ const Component = () => {
 
   const submit = async ({ photoUrl, ...formData }) => {
     try {
-      await edit({ photoUrl: photoUrl[0].url, ...formData });
+      await updateProfile({ photoUrl: photoUrl[0].url, ...formData });
       messageApi.success("修改成功！");
     } catch (err) {
       messageApi.error(err.message);

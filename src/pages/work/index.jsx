@@ -34,9 +34,6 @@ import { useContextMenu } from "react-contexify";
 import BookmarkCard from "../../components/BookmarkCard";
 import BookmarkCell from "../../components/BookmarkCell";
 
-import { useGroup, useCreateGroup } from "../../hooks/group";
-import { useAuth, useSyncInfo } from "../../hooks/user";
-
 const CollectCountTag = styled.span`
   font-size: 12px;
   color: rgba(0, 0, 0, 0.54);
@@ -277,16 +274,6 @@ const BookmarkCardGrid = styled.div`
 const Component = () => {
   const { show } = useContextMenu({ id: "win" });
 
-  const { groups } = useGroup();
-
-  const { create } = useCreateGroup();
-
-  const syncInfo = useSyncInfo();
-
-  const authed = useAuth();
-
-  const { info } = useSelector(({ user }) => user);
-
   const navigate = useNavigate();
 
   const [categorys] = useState([
@@ -348,7 +335,7 @@ const Component = () => {
             </Popover>
           }
           onLogout={() => {
-            syncInfo.clear();
+            logout();
             navigate("/login", { replace: true });
           }}
         />

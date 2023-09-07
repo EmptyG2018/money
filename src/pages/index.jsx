@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Input, Tabs, Row, Col, Card, Image, Tag, Space, Avatar } from "antd";
 import { AppstoreOutlined } from "@ant-design/icons";
 import { styled } from "styled-components";
 import Container from "../components/Container";
 import navigations from "../constant/navigation";
 import { navData, navMap } from "../constant/search";
+import { useAgentSetting } from "../plugins/agent";
+import { useRequest } from "ahooks";
 import {
-  useMarketCollect,
-  useMarketTeam,
-  useUserMarketTeam,
-} from "../hooks/index";
+  GetBookmarkPromotionMarketCollects,
+  GetBookmarkPromotionMarketTeams,
+  GetBookmarkPromotionMarketCollectParticipants,
+} from "../services/bookmark";
 
 const ApplicationRoot = styled(Card)`
   &:hover {
@@ -140,8 +142,8 @@ const ExtensionGrid = ({ records, children }) => {
         { xs: 8, sm: 12 },
       ]}
     >
-      {records.map((item) => (
-        <Col xs={24} sm={12} lg={6}>
+      {records.map((item, index) => (
+        <Col xs={24} sm={12} lg={6} key={index}>
           {children && children(item)}
         </Col>
       ))}
@@ -215,18 +217,44 @@ const ExtensionLabel = styled.span`
 
 const Component = () => {
   const [navTabKey, setNavTabKey] = useState("internal");
-
   const [navCategoryKey, setNavCategoryKey] = useState("");
+  const { agentSetting } = useAgentSetting();
 
-  const { collects: upCollects } = useMarketCollect("up");
+  const { data: upCollects } = useRequest(GetBookmarkPromotionMarketCollects, {
+    defaultParams: [
+      {
+        orderSort: "up",
+      },
+    ],
+  });
 
-  const { collects: newCollects } = useMarketCollect("new");
+  const { data: newCollects } = useRequest(GetBookmarkPromotionMarketCollects, {
+    defaultParams: [
+      {
+        orderSort: "new",
+      },
+    ],
+  });
 
-  const { teams } = useUserMarketTeam();
+  const { data: teams } = useRequest(
+    GetBookmarkPromotionMarketCollectParticipants
+  );
 
-  const { teams: upTeams } = useMarketTeam("up");
+  const { data: upTeams } = useRequest(GetBookmarkPromotionMarketTeams, {
+    defaultParams: [
+      {
+        orderSort: "up",
+      },
+    ],
+  });
 
-  const { teams: newTeams } = useMarketTeam("new");
+  const { data: newTeams } = useRequest(GetBookmarkPromotionMarketTeams, {
+    defaultParams: [
+      {
+        orderSort: "new",
+      },
+    ],
+  });
 
   const navTabs = navData.map(({ children, ...rest }) => ({ ...rest }));
 
@@ -244,7 +272,8 @@ const Component = () => {
       <SearchPanel>
         <SearchPrefix>
           <Image
-            src="https://github.githubassets.com/images/modules/logos_page/Octocat.png"
+            src={agentSetting?.weblogoUrl}
+            width={72}
             height={72}
             preview={false}
           />
@@ -304,7 +333,7 @@ const Component = () => {
                     key: "1",
                     children: (
                       <ExtensionContent>
-                        <ExtensionGrid records={newCollects}>
+                        <ExtensionGrid records={newCollects?.rows || []}>
                           {(item) => (
                             <Team
                               title={item.title}
@@ -334,7 +363,7 @@ const Component = () => {
                     key: "2",
                     children: (
                       <ExtensionContent>
-                        <ExtensionGrid records={newTeams}>
+                        <ExtensionGrid records={newTeams?.rows || []}>
                           {(item) => (
                             <Team
                               title={item.title}
@@ -364,7 +393,7 @@ const Component = () => {
                     key: "3",
                     children: (
                       <ExtensionContent>
-                        <ExtensionGrid records={upCollects}>
+                        <ExtensionGrid records={upCollects?.rows || []}>
                           {(item) => (
                             <Team
                               title={item.title}
@@ -394,7 +423,7 @@ const Component = () => {
                     key: "4",
                     children: (
                       <ExtensionContent>
-                        <ExtensionGrid records={upTeams}>
+                        <ExtensionGrid records={upTeams?.rows || []}>
                           {(item) => (
                             <Team
                               title={item.title}
@@ -416,12 +445,13 @@ const Component = () => {
             <ExtensionCard>
               <ExtensionContent>
                 <Space wrap>
-                  {teams.map((item) => (
+                  {(teams?.rows || []).map((item) => (
                     <Tag
                       style={{ cursor: "pointer" }}
                       bordered={false}
                       color="processing"
                       icon={<Avatar src={item.photoUrl} size={16} />}
+                      key={item.id}
                       onClick={() => {
                         alert();
                       }}
@@ -436,8 +466,8 @@ const Component = () => {
         </Row>
       </Extension>
 
-      {navigations.map((item) => (
-        <>
+      {navigations.map((item, index) => (
+        <Fragment key={index}>
           <SectionHeader icon={<AppstoreOutlined />} title={item.name} />
           <Row
             gutter={[
@@ -445,8 +475,8 @@ const Component = () => {
               { xs: 4, sm: 8, md: 12, lg: 16 },
             ]}
           >
-            {item.siteList.map((site) => (
-              <Col xs={12} sm={8} md={6} lg={4}>
+            {item.siteList.map((site, index) => (
+              <Col xs={12} sm={8} md={6} lg={4} key={index}>
                 <Application
                   thumb={"./imgs/site/" + site.icon}
                   title={site.name}
@@ -456,7 +486,7 @@ const Component = () => {
               </Col>
             ))}
           </Row>
-        </>
+        </Fragment>
       ))}
     </Container>
   );

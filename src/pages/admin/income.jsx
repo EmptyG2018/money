@@ -1,19 +1,32 @@
-import { useState, useRef } from "react";
-import { Button, Row, Col, Space, Drawer, Typography, message } from "antd";
+import { useState, useEffect, useRef } from "react";
+import { Button, Space, Drawer, Typography, message } from "antd";
 import {
   PayCircleOutlined,
   AccountBookOutlined,
   CloseOutlined,
+  AlipayCircleOutlined,
 } from "@ant-design/icons";
 import {
   ProCard,
   ProForm,
   ProFormText,
+  ProFormMoney,
   ProTable,
   PageContainer,
   StatisticCard,
+  CheckCard,
 } from "@ant-design/pro-components";
 import { styled } from "styled-components";
+import { useRequest } from "ahooks";
+import {
+  GetAgentProperty,
+  DrawAgentAliMoney,
+  BindAgentAliAccount,
+} from "../../services/property";
+import {
+  GetAgentKickbackRecord,
+  GetAgentDrawMoneyRecord,
+} from "../../services/statistics";
 
 const Alert = styled.p`
   margin: 0;
@@ -31,6 +44,13 @@ const DetailRecordDrawer = styled(Drawer)`
 `;
 
 const IncomeRender = () => {
+  const { runAsync: getAgentKickbackRecord } = useRequest(
+    GetAgentKickbackRecord,
+    {
+      manual: true,
+    }
+  );
+
   const columns = [
     {
       title: "ID",
@@ -38,16 +58,25 @@ const IncomeRender = () => {
       width: 48,
     },
     {
-      title: "卡密",
-      dataIndex: "code",
+      title: "订单",
+      dataIndex: "orderId",
+      copyable: true,
     },
     {
-      title: "使用人",
-      dataIndex: "useUserName",
+      title: "分佣金额",
+      dataIndex: "money",
     },
     {
-      title: "使用时间",
-      dataIndex: "useTime",
+      title: "修改前金额",
+      dataIndex: "changeMoney",
+    },
+    {
+      title: "总金额",
+      dataIndex: "totalMoney",
+    },
+    {
+      title: "佣金说明",
+      dataIndex: "remark",
     },
   ];
 
@@ -57,19 +86,30 @@ const IncomeRender = () => {
       options={false}
       ghost
       columns={columns}
-      dataSource={[
-        {
-          id: "123",
-          code: "gke80ejekq2kiei",
-          useUserName: "胡超",
-          useTime: "2021-09-11 12:00:00",
-        },
-      ]}
+      request={async ({ pageSize, current }) => {
+        const res = await getAgentKickbackRecord({
+          pageNum: current,
+          pageSize,
+        });
+        const { rows = [], total = 0 } = res || {};
+        return {
+          data: rows,
+          success: true,
+          total,
+        };
+      }}
     />
   );
 };
 
 const DrawMoneyRender = () => {
+  const { runAsync: getAgentDrawMoneyRecord } = useRequest(
+    GetAgentDrawMoneyRecord,
+    {
+      manual: true,
+    }
+  );
+
   const columns = [
     {
       title: "ID",
@@ -77,16 +117,48 @@ const DrawMoneyRender = () => {
       width: 48,
     },
     {
-      title: "卡密",
-      dataIndex: "code",
+      title: "订单",
+      dataIndex: "orderId",
+      copyable: true,
     },
     {
-      title: "使用人",
-      dataIndex: "useUserName",
+      title: "提款金额",
+      dataIndex: "money",
     },
     {
-      title: "使用时间",
-      dataIndex: "useTime",
+      title: "修改前金额",
+      dataIndex: "changeMoney",
+    },
+    {
+      title: "总金额",
+      dataIndex: "totalMoney",
+    },
+    {
+      title: "审核类型",
+      dataIndex: "processType",
+      valueType: "select",
+      valueEnum: {
+        0: {
+          text: "待审核",
+          status: "Processing",
+        },
+        1: {
+          text: "已审核",
+          status: "Success",
+        },
+        2: {
+          text: "驳回",
+          status: "Error",
+        },
+      },
+    },
+    {
+      title: "审核原因",
+      dataIndex: "processRemark",
+    },
+    {
+      title: "提款说明",
+      dataIndex: "remark",
     },
   ];
 
@@ -96,25 +168,50 @@ const DrawMoneyRender = () => {
       options={false}
       ghost
       columns={columns}
-      dataSource={[
-        {
-          id: "123",
-          code: "gke80ejekq2kiei",
-          useUserName: "胡超",
-          useTime: "2021-09-11 12:00:00",
-        },
-      ]}
+      request={async ({ pageSize, current }) => {
+        const res = await getAgentDrawMoneyRecord({
+          pageNum: current,
+          pageSize,
+        });
+        const { rows = [], total = 0 } = res || {};
+        return {
+          data: rows,
+          success: true,
+          total,
+        };
+      }}
     />
   );
 };
 
 const Component = () => {
-  const formRef = useRef(null);
+  const bindFormRef = useRef(null);
+  const drawFormRef = useRef(null);
   const [tabKey, setTabKey] = useState("income");
+  const [bindPage, setBindPage] = useState(true);
   const [showDrawer, setShowDrawer] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const submit = () => {};
+  const { refresh: refreshAgentProperty, data: property } =
+    useRequest(GetAgentProperty);
+  const { runAsync: bindAgentAliAccount } = useRequest(BindAgentAliAccount, {
+    manual: true,
+  });
+  const { runAsync: drawAgentAliMoney } = useRequest(DrawAgentAliMoney, {
+    manual: true,
+  });
+
+  useEffect(() => {
+    setBindPage(!(!!property?.alipayAccount && !!property?.alipayName));
+  }, [property]);
+
+  useEffect(() => {
+    bindPage &&
+      bindFormRef.current.setFieldsValue({
+        alipayAccount: property?.alipayAccount,
+        alipayName: property?.alipayName,
+      });
+  }, [property, bindPage]);
 
   return (
     <>
@@ -144,7 +241,7 @@ const Component = () => {
                     </Space>
                   </>
                 ),
-                value: 0,
+                value: property?.totleCommissionMoney,
                 prefix: "¥",
                 icon: (
                   <AccountBookOutlined
@@ -171,7 +268,7 @@ const Component = () => {
                     </Space>
                   </>
                 ),
-                value: 0,
+                value: property?.totleWithdrawalMoney,
                 prefix: "¥",
                 icon: (
                   <PayCircleOutlined
@@ -185,54 +282,127 @@ const Component = () => {
       >
         <ProCard
           title="支付宝提款"
-          subTitle="注: 需要实名的支付宝信息，个人/企业 支付宝都支持"
+          subTitle={
+            <>
+              <span>注: 实名制的个人/企业 支付宝都支持。</span>
+              {!bindPage && (
+                <Typography.Link onClick={() => setBindPage(true)}>
+                  修改提款账号
+                </Typography.Link>
+              )}
+            </>
+          }
         >
-          <ProForm
-            formRef={formRef}
-            layout="horizontal"
-            labelCol={{ xs: 8 }}
-            onFinish={submit}
-            submitter={{
-              render: (props, dom) => {
-                return (
-                  <Row>
-                    <Col offset={8}>
-                      <Space>
-                        <Button type="primary" htmlType="submit">
-                          立即提款
-                        </Button>
-                      </Space>
-                    </Col>
-                  </Row>
-                );
-              },
-            }}
-          >
-            <ProFormText
-              width="md"
-              name="code"
-              label="支付宝账号"
-              placeholder="请输入支付宝账号（邮箱/手机号）"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入支付宝账号",
+          {bindPage ? (
+            <ProForm
+              formRef={bindFormRef}
+              onFinish={async (values) => {
+                try {
+                  await bindAgentAliAccount(values);
+                  messageApi.success("账号绑定成功！");
+
+                  refreshAgentProperty();
+                } catch (err) {
+                  messageApi.error(err.message);
+                }
+              }}
+              submitter={{
+                render: (props, dom) => {
+                  return (
+                    <Button type="primary" htmlType="submit">
+                      绑定账户
+                    </Button>
+                  );
                 },
-              ]}
-            />
-            <ProFormText
-              width="md"
-              name="code"
-              label="支付宝账号姓名"
-              placeholder="请输入支付宝账号姓名"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入支付宝账号姓名",
-                },
-              ]}
-            />
-          </ProForm>
+              }}
+            >
+              <ProForm.Group>
+                <ProFormText
+                  width="md"
+                  name="alipayAccount"
+                  label="支付宝账号"
+                  placeholder="请输入支付宝账号（邮箱/手机号）"
+                  rules={[
+                    {
+                      required: true,
+                      message: "请输入支付宝账号",
+                    },
+                  ]}
+                />
+              </ProForm.Group>
+              <ProForm.Group>
+                <ProFormText
+                  width="md"
+                  name="alipayName"
+                  label="支付宝账号姓名"
+                  placeholder="请输入支付宝账号姓名"
+                  rules={[
+                    {
+                      required: true,
+                      message: "请输入支付宝账号姓名",
+                    },
+                  ]}
+                />
+              </ProForm.Group>
+            </ProForm>
+          ) : (
+            <>
+              <div style={{ color: "rgba(0, 0, 0, 0.88)", padding: "0 0 8px" }}>
+                提款账号
+              </div>
+              <CheckCard
+                avatar={
+                  <AlipayCircleOutlined
+                    style={{ fontSize: "28px", color: "#1477ff" }}
+                  />
+                }
+                title={`${property?.alipayName} (${property?.alipayAccount})`}
+                description="支付宝是全球领先的独立第三方支付平台"
+                checked
+              />
+              <ProForm
+                formRef={drawFormRef}
+                layout="vertical"
+                onFinish={async (values) => {
+                  try {
+                    await drawAgentAliMoney(values);
+                    messageApi.success("提款成功");
+
+                    refreshAgentProperty();
+                  } catch (err) {
+                    messageApi.error(err.message);
+                  }
+                }}
+                submitter={{
+                  render: (props, dom) => {
+                    return (
+                      <Button type="primary" htmlType="submit">
+                        提款
+                      </Button>
+                    );
+                  },
+                }}
+              >
+                <ProForm.Item noStyle>
+                  <ProFormMoney
+                    width="sm"
+                    name="money"
+                    label="提款金额"
+                    placeholder="提款金额"
+                    fieldProps={{
+                      min: 0,
+                    }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "请输入提款金额",
+                      },
+                    ]}
+                  />
+                </ProForm.Item>
+              </ProForm>
+            </>
+          )}
           <br />
           <Alert>
             1.收入:用户在您网站下单购买，或您网站的注册用户在圣才官网或圣才电子书APP下单购买，所得收益都会计入您的收入。
@@ -246,14 +416,16 @@ const Component = () => {
 
       <DetailRecordDrawer
         bodyStyle={{ padding: 0 }}
-        width={720}
+        width={860}
         placement="right"
         open={showDrawer}
+        destroyOnClose
         onClose={() => setShowDrawer(false)}
       >
         <ProCard
           tabs={{
             activeKey: tabKey,
+            destroyInactiveTabPane: true,
             items: [
               {
                 key: "income",

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Input,
@@ -12,9 +13,12 @@ import {
   Pagination,
 } from "antd";
 import { styled } from "styled-components";
+import { useRequest } from "ahooks";
+import {
+  GetBookmarkMarketTeams,
+  GetBookmarkMarketCollects,
+} from "../services/bookmark";
 import Container from "../components/Container";
-import { useMarkTeam, useMarketCollection } from "../hooks/hall";
-import { useState } from "react";
 
 const TeamRoot = styled(Card)``;
 
@@ -106,12 +110,7 @@ const TeamView = ({ searchKey }) => {
 
   const pageSize = 2;
 
-  const { teams } = useMarkTeam({
-    classId: "",
-    pageNum: pageIndex,
-    pageSize,
-    searchKey,
-  });
+  const { data: teams } = useRequest(GetBookmarkMarketTeams);
 
   return (
     <Container title={false} gutter={[12, 24]}>
@@ -151,12 +150,7 @@ const CollectView = ({ searchKey }) => {
 
   const pageSize = 2;
 
-  const { collects } = useMarketCollection({
-    classId: "",
-    pageNum: pageIndex,
-    pageSize,
-    searchKey,
-  });
+  const { data: collects } = useRequest(GetBookmarkMarketCollects);
 
   return (
     <Container title={false} gutter={[12, 24]}>

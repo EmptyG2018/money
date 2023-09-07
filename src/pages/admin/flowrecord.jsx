@@ -1,9 +1,11 @@
-import { useEffect } from "react";
 import { message } from "antd";
 import { ProCard, PageContainer, ProTable } from "@ant-design/pro-components";
+import { useRequest } from "ahooks";
 import { GetConsumeRecord, GetFlowRecord } from "../../services/statistics";
 
 const ConsumeRecord = () => {
+  const { runAsync: getConsumeRecord } = useRequest(GetConsumeRecord);
+
   const columns = [
     {
       title: "ID",
@@ -51,11 +53,11 @@ const ConsumeRecord = () => {
       options={false}
       search={false}
       request={async ({ current, pageSize }) => {
-        const res = await GetConsumeRecord({
+        const res = await getConsumeRecord({
           pageNum: current,
           pageSize,
         });
-        const { rows = [], total = 0 } = res?.result || {};
+        const { rows = [], total = 0 } = res || {};
         return { data: rows, success: true, total };
       }}
     />
@@ -63,6 +65,7 @@ const ConsumeRecord = () => {
 };
 
 const FlowRecord = () => {
+  const { runAsync: getFlowRecord } = useRequest(GetFlowRecord);
   const columns = [
     {
       title: "ID",
@@ -110,11 +113,11 @@ const FlowRecord = () => {
       options={false}
       search={false}
       request={async ({ current, pageSize }) => {
-        const res = await GetFlowRecord({
+        const res = await getFlowRecord({
           pageNum: current,
           pageSize,
         });
-        const { rows = [], total = 0 } = res?.result || {};
+        const { rows = [], total = 0 } = res || {};
         return { data: rows, success: true, total };
       }}
     />

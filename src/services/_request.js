@@ -6,7 +6,7 @@ const resMap = {
     response.use(
       async (response) => {
         if (response.status === 200 && response.data?.code === 200)
-          return response.data;
+          return response.data.result;
         return Promise.reject(response?.data);
       },
       (error) => {
@@ -48,16 +48,18 @@ const request = (axiosOption, option = {}) => {
 
   const instance = axios.create({
     baseURL: "/proxy/yj",
+    params: {
+      dlId: 1,
+    },
+    data: {
+      dlId: 1,
+    },
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    },
   });
 
   instance.interceptors.request.use((config) => {
-    config.headers = {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    };
-
-    // 代理Id后续不走请求体，会移除
-    config.data['dlId'] = storage.get("site")?.id;
-
     carry.forEach((item) => carryMap[item] && carryMap[item](config));
     return config;
   });

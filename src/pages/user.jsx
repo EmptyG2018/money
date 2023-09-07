@@ -6,15 +6,16 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import { ProCard } from "@ant-design/pro-components";
-import { useSelector } from "react-redux";
 import { styled } from "styled-components";
-import Container from "../components/Container";
+import { useUser } from "../hooks/user";
+import { useRequest } from "ahooks";
+import { GetProfile } from "../services/user";
 import {
-  useUser,
-  useUsermarketList,
-  useUserJoinMarkeTeam,
-  useUserMarkeTeam,
-} from "../hooks/user";
+  GetBookmarkUserCollect,
+  GetBookmarkUserOpenTeam,
+  GetBookmarkUserJoinTeam,
+} from "../services/bookmark";
+import Container from "../components/Container";
 
 const TeamRoot = styled(Card)``;
 
@@ -162,7 +163,15 @@ const CollectFolder = ({
 };
 
 const CollectView = ({ userId }) => {
-  const { collects } = useUsermarketList({ userId, pageNum: 1, pageSize: 10 });
+  const { data: collects } = useRequest(GetBookmarkUserCollect, {
+    defaultParams: [
+      {
+        userId,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    ],
+  });
 
   return (
     <Row
@@ -171,7 +180,7 @@ const CollectView = ({ userId }) => {
         { xs: 4, sm: 8, md: 12, lg: 16 },
       ]}
     >
-      {collects.map((item) => (
+      {(collects?.rows || []).map((item) => (
         <Col xs={24} sm={12} lg={8}>
           <CollectFolder
             title={item.title}
@@ -188,7 +197,15 @@ const CollectView = ({ userId }) => {
 };
 
 const TeamView = ({ userId }) => {
-  const { teams } = useUserMarkeTeam({ userId, pageNum: 1, pageSize: 10 });
+  const { data: teams } = useRequest(GetBookmarkUserOpenTeam, {
+    defaultParams: [
+      {
+        userId,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    ],
+  });
 
   return (
     <Row
@@ -197,7 +214,7 @@ const TeamView = ({ userId }) => {
         { xs: 4, sm: 8, md: 12, lg: 16 },
       ]}
     >
-      {teams.map((item) => (
+      {(teams?.rows || []).map((item) => (
         <Col xs={12} lg={8}>
           <Team
             title={item.title}
@@ -215,7 +232,15 @@ const TeamView = ({ userId }) => {
 };
 
 const JoinTeamView = ({ userId }) => {
-  const { teams } = useUserJoinMarkeTeam({ userId, pageNum: 1, pageSize: 10 });
+  const { data: teams } = useRequest(GetBookmarkUserJoinTeam, {
+    defaultParams: [
+      {
+        userId,
+        pageNum: 1,
+        pageSize: 10,
+      },
+    ],
+  });
 
   return (
     <Row
@@ -224,7 +249,7 @@ const JoinTeamView = ({ userId }) => {
         { xs: 4, sm: 8, md: 12, lg: 16 },
       ]}
     >
-      {teams.map((item) => (
+      {(teams?.rows || []).map((item) => (
         <Col xs={12} lg={8}>
           <Team
             title={item.title}
@@ -280,19 +305,9 @@ const InfoDesc = styled.p`
 
 const Component = () => {
   const navigate = useNavigate();
-  const { info } = useSelector(({ user }) => user);
-  const { user } = useUser(info?.id);
-
-  const records = new Array(10).fill({
-    title: "百度大数据",
-    desc: "百度大数据",
-    thumb:
-      "https://pptwd.oss-cn-shenzhen.aliyuncs.com/yj/static/img/2023/04/17/1682985472956.png",
-    tags: ["你好"],
-    name: "jon",
-    avatar:
-      "https://himg.bdimg.com/sys/portraitn/item/public.1.5c0e99fc.N38xm64QGsEOc2YffDzNsA",
-    date: "2023-04-17",
+  const { user } = useUser();
+  const { data: profile } = useRequest(GetProfile, {
+    defaultParams: [{ buserId: user?.id }],
   });
 
   return (
@@ -300,16 +315,16 @@ const Component = () => {
       <ProCard gutter={[24, 24]} wrap ghost>
         <ProCard colSpan={{ sm: 24, md: 8, lg: 6 }}>
           <UserInfo>
-            <Avatar size={64} src={info.photoUrl} />
-            <NickName>{info.username}</NickName>
+            <Avatar size={64} src={user.photoUrl} />
+            <NickName>{user.username}</NickName>
             <InfoCell>
               <InfoCellItem>
-                {user?.befollow}
+                {profile?.befollow}
                 <br />
                 关注者
               </InfoCellItem>
               <InfoCellItem>
-                {user?.follow}
+                {profile?.follow}
                 <br />
                 关注了
               </InfoCellItem>
@@ -324,14 +339,14 @@ const Component = () => {
           </UserInfo>
           <InfoHeader>简介</InfoHeader>
           <InfoDesc>
-            创作{user?.clCount}篇公开收藏集
+            创作{profile?.clCount}篇公开收藏集
             <br />
-            获得{user?.cllikeNumber}个赞
+            获得{profile?.cllikeNumber}个赞
           </InfoDesc>
           <InfoDesc>
-            创作{user?.teamCount}篇公开团队
+            创作{profile?.teamCount}篇公开团队
             <br />
-            获得{user?.teamlikeNumber}个赞
+            获得{profile?.teamlikeNumber}个赞
           </InfoDesc>
         </ProCard>
         <ProCard
@@ -341,17 +356,17 @@ const Component = () => {
               {
                 label: `收藏集`,
                 key: "tab1",
-                children: <CollectView userId={info.id} />,
+                children: <CollectView userId={user.id} />,
               },
               {
                 label: `公开团队`,
                 key: "tab2",
-                children: <TeamView userId={info.id} />,
+                children: <TeamView userId={user.id} />,
               },
               {
                 label: `加入团队`,
                 key: "tab3",
-                children: <JoinTeamView userId={info.id} />,
+                children: <JoinTeamView userId={user.id} />,
               },
             ],
           }}

@@ -9,6 +9,7 @@ import {
   ProFormMoney,
 } from "@ant-design/pro-components";
 import { styled } from "styled-components";
+import { useRequest } from "ahooks";
 import { GetProperty, RechargeCard } from "../../services/user";
 
 const Alert = styled.p`
@@ -23,19 +24,20 @@ const Alert = styled.p`
 const Component = () => {
   const formRef = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const { data: property } = useRequest(GetProperty);
+  const { runAsync: rechargeCard } = useRequest(RechargeCard, {
+    manual: true,
+  });
 
   useEffect(() => {
-    (async () => {
-      const property = await GetProperty();
-      formRef.current?.setFieldsValue({
-        money: property?.result?.money || 0,
-      });
-    })();
-  }, []);
+    formRef.current?.setFieldsValue({
+      money: property?.money || 0,
+    });
+  }, [property]);
 
   const submit = async ({ code }) => {
     try {
-      await RechargeCard({ code });
+      await rechargeCard({ code });
       messageApi.success("充值成功!");
       formRef.current?.resetFields();
     } catch (err) {

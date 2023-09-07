@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Button, message, Popconfirm, Popover } from "antd";
 import { HourglassOutlined, ExportOutlined } from "@ant-design/icons";
 import {
@@ -8,6 +8,7 @@ import {
   ProFormDigit,
   ProFormSelect,
 } from "@ant-design/pro-components";
+import { useRequest } from "ahooks";
 import {
   GetCodeTypes,
   GetVipKeyGroups,
@@ -17,38 +18,6 @@ import {
   DelVipkey,
 } from "../../services/key";
 import useDownload from "../../hooks/download";
-
-const useUserGroupOption = () => {
-  const [options, setOptions] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const res = await GetVipKeyGroups();
-      setOptions(
-        (res?.result || []).map((item) => ({
-          label: item.groupTitle,
-          value: item.id,
-        }))
-      );
-    })();
-  }, []);
-  return { options };
-};
-
-const useStateOption = () => {
-  const [options, setOptions] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const res = await GetCodeTypes();
-      setOptions(
-        (res?.result || []).map((item) => ({
-          label: item.name,
-          value: item.id,
-        }))
-      );
-    })();
-  }, []);
-  return { options };
-};
 
 const VipKeyFormRender = ({ groupOptions, onFinish }) => {
   return (
@@ -93,8 +62,24 @@ const Component = () => {
   const actionRef = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
   const { download } = useDownload();
-  const { options: stateOptions } = useStateOption();
-  const { options: groupOptions } = useUserGroupOption();
+  const { data: codeTypes } = useRequest(GetCodeTypes);
+  const { data: vipKeyGroups } = useRequest(GetVipKeyGroups);
+  const { runAsync: getVipKeys } = useRequest(GetVipKeys, { manual: true });
+  const { runAsync: generateRandVipKey } = useRequest(GenerateRandVipKey, {
+    manual: true,
+  });
+  const { runAsync: exportVipKey } = useRequest(ExportVipKey, { manual: true });
+  const { runAsync: delVipkey } = useRequest(DelVipkey, { manual: true });
+
+  const stateOptions = (codeTypes || []).map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+
+  const groupOptions = (vipKeyGroups || []).map((item) => ({
+    label: item.groupTitle,
+    value: item.id,
+  }));
 
   const columns = [
     {
@@ -151,6 +136,7 @@ const Component = () => {
       valueType: "option",
       render: (text, record, _, action) => [
         <Popconfirm
+          key="delete"
           title="删除记录"
           description="您确定要删除此记录吗？"
           onConfirm={() => deleteRecord(record)}
@@ -163,7 +149,7 @@ const Component = () => {
 
   const vipKeySubmit = async (values) => {
     try {
-      await GenerateRandVipKey(values);
+      await generateRandVipKey(values);
       actionRef?.current?.reload();
       messageApi.success("生成成功!");
     } catch (err) {
@@ -173,7 +159,7 @@ const Component = () => {
 
   const exportSubmit = async (values) => {
     try {
-      const result = await ExportVipKey(values);
+      const result = await exportVipKey(values);
       messageApi.success("导出成功!");
 
       download(result, "会员卡_" + new Date().getTime() + ".xls");
@@ -182,9 +168,9 @@ const Component = () => {
     }
   };
 
-  const deleteRecord = async (record) => {
+  const deleteRecord = async ({ id }) => {
     try {
-      await DelVipkey({ ids: record.id });
+      await delVipkey({ ids: id });
       actionRef?.current?.reload();
     } catch (err) {
       messageApi.error(err.message);
@@ -207,12 +193,12 @@ const Component = () => {
           rowKey="id"
           headerTitle="会员卡列表"
           request={async ({ current, pageSize, ...params }) => {
-            const res = await GetVipKeys({
+            const res = await getVipKeys({
               ...params,
               pageNum: current,
               pageSize,
             });
-            const { rows = [], total = 0 } = res?.result || {};
+            const { rows = [], total = 0 } = res || {};
             return {
               data: rows,
               success: true,

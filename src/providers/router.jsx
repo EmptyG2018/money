@@ -1,21 +1,16 @@
-import { useEffect } from "react";
 import {
-  useLocation,
-  Navigate,
   createBrowserRouter,
   RouterProvider as BrowserRouterProvider,
   redirect,
   Outlet,
 } from "react-router-dom";
-import storage from "store";
 
-import { useAuth } from "../hooks/user";
-import { useSite, useSEO } from "../hooks/setting";
+import { Agent } from "../plugins/agent";
+import { LoginedPage, AdminPage } from "../plugins/access";
 
 import Header from "../layouts/header";
 import Settings from "../layouts/settings";
 import Admin from "../layouts/admin";
-import Work from "../layouts/work";
 
 import Index from "../pages/index";
 import Search from "../pages/search";
@@ -46,71 +41,12 @@ import _ExamIndex from "../pages/admin/exam/index";
 import _BookmarkIndex from "../pages/admin/bookmark/index";
 
 import NoFound from "../pages/_404";
-import NoAuth from "../pages/_403";
 import Demo from "../pages/demo";
-
-import FullLoading from "../components/FullLoading";
-
-// 入口路径
-const ENTRYPAGE = "/";
-
-// 权鉴白名单
-const WHITELIST = ["/login", "/register"];
-
-/**
- * @title 权鉴
- * @param {React.ReactNode} [element] 授权页面
- * @param {React.ReactNode} [fallback] 授权拦截提示页面
- */
-const Auth = ({ element, fallback = <NoAuth /> }) => {
-  const location = useLocation();
-  const authed = useAuth();
-  if (WHITELIST.includes(location.pathname)) {
-    return authed ? <Navigate to={ENTRYPAGE} replace /> : element;
-  }
-  return authed ? element : fallback;
-};
-
-/**
- * @title 代理
- * @param {string} [host] 代理IP
- * @param {React.ReactNode} [element] 路由页面
- * @param {React.ReactNode} [loading] 加载提示页面
- */
-const Proxy = ({ host, element }) => {
-  const { seo } = useSEO();
-  const { site, error, isLoading } = useSite(host);
-
-  useEffect(() => {
-    const { webname, keywords, description } = site;
-    seo({
-      title: webname,
-      keywords,
-      description,
-    });
-    storage.set("site", site);
-  }, [site]);
-
-  if (error) return <p>error.</p>;
-  if (isLoading) return <FullLoading />;
-  return element;
-};
-
-/**
- * @title 站点
- * @param {React.ReactNode} [element] 路由页面
- */
-const Site = ({ element }) => {
-  const site = storage.get("site");
-  const host = location.hostname;
-  if (site && site?.domain === host) return element;
-  return <Proxy host={host} element={element} />;
-};
 
 const routes = createBrowserRouter([
   {
     path: "/",
-    element: <Site element={<Outlet />} />,
+    element: <Agent element={<Outlet />} />,
     children: [
       {
         path: "/",
@@ -142,11 +78,11 @@ const routes = createBrowserRouter([
           },
           {
             path: "user",
-            element: <Auth element={<User />} />,
+            element: <LoginedPage element={<User />} />,
           },
           {
             path: "settings",
-            element: <Auth element={<Settings />} />,
+            element: <LoginedPage element={<Settings />} />,
             children: [
               {
                 path: "info",
@@ -160,11 +96,11 @@ const routes = createBrowserRouter([
           },
           {
             path: "login",
-            element: <Auth element={<Login />} />,
+            element: <LoginedPage element={<Login />} />,
           },
           {
             path: "register",
-            element: <Auth element={<Register />} />,
+            element: <LoginedPage element={<Register />} />,
           },
           {
             path: "applyjoin",
@@ -178,7 +114,7 @@ const routes = createBrowserRouter([
       },
       {
         path: "/admin",
-        element: <Auth element={<Admin />} />,
+        element: <LoginedPage element={<AdminPage element={<Admin />} />} />,
         children: [
           {
             index: true,

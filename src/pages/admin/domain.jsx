@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Button, Alert, message, Popconfirm } from "antd";
 import {
   ProCard,
@@ -6,10 +6,9 @@ import {
   ProTable,
   ProForm,
   ProFormText,
-  ProFormTextArea,
 } from "@ant-design/pro-components";
-import { useUpdateSiteCardKey } from "../../hooks/cardKey";
-import { useYuMing, useAddYuMing, useDelYuMing } from "../../hooks/yuming";
+import { useRequest } from "ahooks";
+import { GetDomains, DelDomain, CreateDomain } from "../../services/agent";
 
 const Component = () => {
   const columns = [
@@ -38,6 +37,7 @@ const Component = () => {
       valueType: "option",
       render: (text, record, _, action) => [
         <Popconfirm
+          key="delete"
           title="删除记录"
           description="您确定要删除此记录吗？"
           onConfirm={() => deleteRecord(record)}
@@ -50,25 +50,25 @@ const Component = () => {
 
   const formRef = useRef(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const { data: yuming, mutate } = useYuMing();
-  const { create: createDomain } = useAddYuMing();
-  const { delete: deleteDomain } = useDelYuMing();
-  const domains = yuming?.result || [];
+  const { refresh: refreshDomains, data: domains } = useRequest(GetDomains);
+  const { runAsync: createDomain } = useRequest(CreateDomain, { manual: true });
+  const { runAsync: deleteDomain } = useRequest(DelDomain, { manual: true });
 
   const submit = async (values) => {
+    console.log("values", values);
     try {
-      await createDomain({ ...values });
-      mutate();
+      await createDomain(values);
+      refreshDomains();
       formRef.current?.resetFields();
     } catch (err) {
       messageApi.error(err.message);
     }
   };
 
-  const deleteRecord = async (record) => {
+  const deleteRecord = async ({ id }) => {
     try {
-      await deleteDomain({ id: record.id });
-      mutate();
+      await deleteDomain({ id });
+      refreshDomains();
     } catch (err) {
       messageApi.error(err.message);
     }

@@ -6,7 +6,7 @@ const initialState = {
   info: storage.get("info"),
 };
 
-const userSlice = createSlice({
+const slice = createSlice({
   name: "user",
   initialState,
   reducers: {
@@ -19,5 +19,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setToken, setInfo } = userSlice.actions;
-export default userSlice.reducer;
+export const { setToken, setInfo } = slice.actions;
+export default slice.reducer;

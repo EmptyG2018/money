@@ -7,36 +7,42 @@ import {
   ProFormRadio,
   ProFormMoney,
 } from "@ant-design/pro-components";
-import { useSelector } from "react-redux";
+import { useRequest } from "ahooks";
+import { useUser } from "../hooks/user";
+import { GetVipUserGroups, BuyVipUserGroupCardKey } from "../services/vip";
 import Container from "../components/Container";
-import { useBuyUserGroup, useBuyUserKey } from "../hooks/cardKey";
 
 const Component = () => {
   const buykeyForm = useRef();
   const sideForm = useRef();
   const [messageApi, contextHolder] = message.useMessage();
-  const { info } = useSelector(({ user }) => user);
-  const { userGroup } = useBuyUserGroup(1);
-  const { buy } = useBuyUserKey();
+  const { user } = useUser();
+  const { data: vipUserGroups } = useRequest(GetVipUserGroups);
+  const { runAsync: buyVipUserGroupCardKey } = useRequest(
+    BuyVipUserGroupCardKey,
+    {
+      manual: true,
+    }
+  );
 
   useEffect(() => {
     buykeyForm.current?.setFieldsValue({
-      account: info?.account,
+      account: user?.account,
     });
   }, []);
 
   useEffect(() => {
     sideForm.current?.setFieldsValue({
-      username: info?.username,
-      groupTitle: info?.groupTitle,
+      username: user?.username,
+      groupTitle: user?.groupTitle,
     });
-  });
+  }, []);
 
   const submit = async () => {
     const formData = buykeyForm.current.getFieldsFormatValue();
     const { groupId, code } = formData;
     try {
-      await buy({ dlId: 1, groupId, code });
+      await buyVipUserGroupCardKey({ groupId, code });
     } catch (err) {
       messageApi.error(err.message);
     }
@@ -81,7 +87,7 @@ const Component = () => {
                 name="groupId"
                 label="购买时长"
                 radioType="button"
-                options={(userGroup?.groupList || []).map((item) => ({
+                options={(vipUserGroups?.groupList || []).map((item) => ({
                   label: item.groupTitle,
                   value: item.id,
                 }))}
@@ -92,7 +98,7 @@ const Component = () => {
                   },
                 ]}
                 onChange={(e) => {
-                  const item = (userGroup?.groupList || []).find(
+                  const item = (vipUserGroups?.groupList || []).find(
                     (item) => item.id === e.target.value
                   );
                   buykeyForm.current.setFieldsValue({

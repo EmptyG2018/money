@@ -8,28 +8,35 @@ import {
   ProFormCheckbox,
   ProCard,
 } from "@ant-design/pro-components";
+import { useRequest } from "ahooks";
 import {
-  useSiteVersoin,
-  useSiteDomain,
-  useRandDomain,
-  useCreateDomain,
-} from "../hooks/applyjoin";
+  GetSiteVersion,
+  GetSiteDomainSuffix,
+  GetRandSiteDomainPrefix,
+  CreateAgentSite,
+} from "../services/agent";
 import Container from "../components/Container";
 
 const Component = () => {
   const applyjoinForm = useRef();
   const [messageApi, contextHolder] = message.useMessage();
-  const { versions } = useSiteVersoin(1);
-  const { domains } = useSiteDomain();
-  const { rand } = useRandDomain();
-  const { create } = useCreateDomain();
+  const { data: versions } = useRequest(GetSiteVersion);
+  const { data: domains } = useRequest(GetSiteDomainSuffix);
+  const { runAsync: randSiteDomainPrefix } = useRequest(
+    GetRandSiteDomainPrefix,
+    { manual: true }
+  );
+  const { runAsync: createAgentSite } = useRequest(CreateAgentSite, {
+    manual: true,
+  });
 
   const submit = async () => {
-    const fields = await applyjoinForm.current.validateFieldsReturnFormatValue();
-    const { pass, ...formData } = fields;
+    const fields =
+      await applyjoinForm.current.validateFieldsReturnFormatValue();
+    const { pass, ...values } = fields;
     if (!pass) return messageApi.warning("需要先同意《会员服务条款》协议");
     try {
-      await create(formData);
+      await createAgentSite(values);
       messageApi.success("创建成功！");
     } catch (err) {
       messageApi.error(err.message);
@@ -50,7 +57,7 @@ const Component = () => {
               name="id"
               label="分站版本"
               radioType="button"
-              options={versions.map((item) => ({
+              options={(versions?.editionInfo || []).map((item) => ({
                 label: item.name,
                 value: item.id,
               }))}
@@ -82,9 +89,9 @@ const Component = () => {
                   suffix: (
                     <SyncOutlined
                       onClick={async () => {
-                        const domain = await rand();
+                        const domain = await randSiteDomainPrefix();
                         applyjoinForm.current.setFieldsValue({
-                          domain: domain?.result,
+                          domain,
                         });
                       }}
                     />
@@ -101,7 +108,7 @@ const Component = () => {
                 name="domainId"
                 label="站点后缀"
                 radioType="button"
-                options={domains.map((item) => ({
+                options={(domains || []).map((item) => ({
                   label: item.domain,
                   value: item.id,
                 }))}
