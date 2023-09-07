@@ -54,7 +54,6 @@ export const GetAgentHelpIconShow = () =>
     {
       url: "/yunDlCustomerC/getDlIdcustomerOpen",
       method: "POST",
-      data: setting,
     },
     {
       responseDataType: "json",
@@ -63,15 +62,14 @@ export const GetAgentHelpIconShow = () =>
   );
 
 // 获取代理商客服图标显示状态
-// export const GetAgentHelpIconShow = () =>
-//   request(
-//     {
-//       url: "/yunDlCustomerC/getDlIdcustomerOpen",
-//       method: "POST",
-//       data: setting,
-//     },
-//     {
-//       responseDataType: "json",
-//       carry: ["auth", "site"],
-//     }
-//   );
+export const GetAgentHelpMethods = () =>
+  request(
+    {
+      url: "/yunDlCustomerC/getDlIdcustomerList",
+      method: "POST",
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );

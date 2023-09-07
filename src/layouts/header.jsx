@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, Link, Outlet } from "react-router-dom";
-import { ConfigProvider, Dropdown, FloatButton } from "antd";
+import { ConfigProvider, Dropdown, FloatButton, Image } from "antd";
 import {
   UserOutlined,
   DatabaseOutlined,
@@ -10,12 +10,17 @@ import {
   FileDoneOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
-import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
+import {
+  ProConfigProvider,
+  ProLayout,
+  RouteContext,
+} from "@ant-design/pro-components";
 import { styled } from "styled-components";
 import { WHITELIST, useAdmin } from "../plugins/access";
 import { useAgentSetting } from "../plugins/agent";
 import { useUser } from "../hooks/user";
 import { useRequest } from "ahooks";
+import { GetAgentHelpIconShow } from "../services/setting";
 
 const ComponentRoot = styled.div`
   height: 100vh;
@@ -75,14 +80,61 @@ const defaultProps = {
   },
 };
 
-const FixedHelpBtn = () => {
+const useHelpLocation = (locationCode) => {
+  const locationCodeMap = {
+    8: { top: "72px", left: "24px", right: "initial", bottom: "initial" },
+    9: { top: "72px", left: "initial", right: "24px", bottom: "initial" },
+    10: {
+      top: 0,
+      left: "24px",
+      right: "initial",
+      bottom: 0,
+      marginBlock: "auto",
+    },
+    11: {
+      top: 0,
+      left: "initial",
+      right: "24px",
+      bottom: 0,
+      marginBlock: "auto",
+    },
+    12: { top: "initial", left: "24px", right: "initial", bottom: "72px" },
+    13: { top: "initial", left: "initial", right: "24px", bottom: "72px" },
+  };
+  return locationCodeMap[locationCode];
+};
+
+const FloatButtonRoot = styled(FloatButton)`
+  .ant-float-btn-body {
+    .ant-float-btn-content {
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      .ant-float-btn-icon {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+`;
+
+const FixedHelpBtn = ({ show, icon, ...props }) => {
   return (
-    <FloatButton
-      shape="circle"
-      type="primary"
-      style={{ right: 60 }}
-      icon={<LogoutOutlined />}
-    />
+    show && (
+      <Navigate to="/help">
+        <FloatButtonRoot
+          shape="circle"
+          icon={
+            <Image
+              style={{ width: "100%", height: "100%" }}
+              src={icon}
+              preview={false}
+            />
+          }
+          {...props}
+        />
+      </Navigate>
+    )
   );
 };
 
@@ -92,6 +144,8 @@ export default () => {
   const admin = useAdmin();
   const { agentSetting } = useAgentSetting();
   const { user, logout } = useUser();
+  const { data: helpSetting } = useRequest(GetAgentHelpIconShow);
+  const helpPosition = useHelpLocation(helpSetting?.styleType);
 
   const menus = {
     info: {
@@ -179,7 +233,11 @@ export default () => {
           </ConfigProvider>
         </ProConfigProvider>
       </ComponentRoot>
-      <FixedHelpBtn />
+      <FixedHelpBtn
+        show={helpSetting?.state === 1}
+        icon={helpSetting?.iconValue}
+        style={helpPosition}
+      />
     </>
   );
 };

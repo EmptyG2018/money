@@ -24,6 +24,7 @@ import Info from "../pages/info";
 import EditPwd from "../pages/editpwd";
 import Login from "../pages/login";
 import Register from "../pages/register";
+import Help from "../pages/help";
 
 import WorkIndex from "../pages/work/index";
 
@@ -199,6 +200,10 @@ const routes = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        path: "/help",
+        element: <Help />,
       },
       {
         path: "/demo",
