@@ -5,6 +5,7 @@ import {
   FileDoneOutlined,
   InboxOutlined,
   BarChartOutlined,
+  LaptopOutlined,
   SketchOutlined,
   ApartmentOutlined,
   CompassOutlined,
@@ -18,6 +19,7 @@ import {
 import { ProLayout } from "@ant-design/pro-components";
 import { useAgentSetting } from "../plugins/agent";
 import { useUser } from "../hooks/user";
+import Copyright from "./_copyright";
 
 const defaultLayout = {
   fixSiderbar: true,
@@ -38,6 +40,11 @@ const defaultProps = {
             path: "/admin/base/_statistics",
             name: "数据统计",
             icon: <BarChartOutlined />,
+          },
+          {
+            path: "/admin/base/_website",
+            name: "网站管理",
+            icon: <LaptopOutlined />,
           },
           {
             path: "/admin/base/_vip",
@@ -160,6 +167,7 @@ export default () => {
         }}
         onMenuHeaderClick={() => navigate("/admin")}
         menuItemRender={(item, dom) => <Link to={item.path}>{dom}</Link>}
+        footerRender={() => <Copyright />}
       >
         <Outlet />
       </ProLayout>

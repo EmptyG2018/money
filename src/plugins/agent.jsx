@@ -9,7 +9,7 @@ import { CloseCircleOutlined } from "@ant-design/icons";
 import FullLoading from "../components/FullLoading";
 
 import { GetAgentGlobalSetting } from "../services/setting";
-import { useSEO } from "../hooks/seo";
+import useSEO from "../hooks/seo";
 
 /**
  * @title 代理商失败提示
@@ -55,41 +55,37 @@ export const AgentError = () => {
  * @param {React.ReactNode} [element] 路由页面
  */
 export const Agent = ({ element }) => {
-  const initial = useRef(true);
   const [own, setOwn] = useState(false);
   const { agentSetting, setAgentSetting } = useAgentSetting();
-  const { seo } = useSEO();
 
   const {
     run: getAgentSetting,
-    loading,
+    data,
     error,
   } = useRequest(GetAgentGlobalSetting, {
     manual: true,
     onSuccess(res) {
-      const { webname, keywords, description } = res;
-      seo({
-        title: webname,
-        keywords,
-        description,
-      });
       setAgentSetting(res);
-
-      initial.current = false;
     },
   });
 
+  useSEO({
+    ico: agentSetting?.webicoUrl,
+    title: agentSetting?.webname,
+    keywords: agentSetting?.keywords,
+    description: agentSetting?.description,
+  });
+
   useEffect(() => {
-    if (initial.current) {
+    if (!data) {
       const isOwn = agentSetting && agentSetting?.domain === location.hostname;
       isOwn ? setOwn(isOwn) : getAgentSetting(location.hostname);
     }
-  }, [agentSetting]);
+  }, [data, agentSetting]);
 
-  if (own) return element;
+  if (own || data) return element;
   if (error) return <AgentError />;
-  if (loading) return <FullLoading />;
-  return element;
+  return <FullLoading />;
 };
 
 // 代理商配置 hook
@@ -102,5 +98,10 @@ export const useAgentSetting = () => {
     dispatch(setAgent(setting));
   };
 
-  return { agentSetting: agent, setAgentSetting };
+  const clearAgentSetting = () => {
+    storage.remove("agent");
+    dispatch(setAgent(null));
+  };
+
+  return { agentSetting: agent, setAgentSetting, clearAgentSetting };
 };

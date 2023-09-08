@@ -13,7 +13,7 @@ import {
 import {
   ProConfigProvider,
   ProLayout,
-  RouteContext,
+  DefaultFooter,
 } from "@ant-design/pro-components";
 import { styled } from "styled-components";
 import { WHITELIST, useAdmin } from "../plugins/access";
@@ -21,6 +21,7 @@ import { useAgentSetting } from "../plugins/agent";
 import { useUser } from "../hooks/user";
 import { useRequest } from "ahooks";
 import { GetAgentHelpIconShow } from "../services/setting";
+import Copyright from "./_copyright";
 
 const ComponentRoot = styled.div`
   height: 100vh;
@@ -227,6 +228,7 @@ export default () => {
                 <Navigate to={item.path}>{dom}</Navigate>
               )}
               contentStyle={{ padding: 0 }}
+              footerRender={Copyright}
             >
               <Outlet />
             </ProLayout>

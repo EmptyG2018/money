@@ -1,21 +1,24 @@
-export const useSEO = (option) => {
-  const seo = (option) => {
-    const { title, icon, keywords, description } = option || {};
+import { useEffect } from "react";
+
+const useSEO = (option) => {
+  useEffect(() => {
+    const { title, ico, keywords, description } = option || {};
 
     if (title) document.querySelector("title").innerHTML = title;
-    if (icon)
-      document.querySelector("link[rel='icon']").setAttribute("href", icon);
+
+    if (ico)
+      document.querySelector("link[rel='icon']").setAttribute("href", ico);
+
     if (keywords)
       document
         .querySelector("meta[name='keywords']")
         .setAttribute("content", keywords);
+
     if (description)
       document
         .querySelector("meta[name='description']")
         .setAttribute("content", description);
-  };
-
-  option && seo(option);
-
-  return { seo };
+  }, [option]);
 };
+
+export default useSEO;

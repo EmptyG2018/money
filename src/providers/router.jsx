@@ -29,6 +29,7 @@ import Help from "../pages/help";
 import WorkIndex from "../pages/work/index";
 
 import _Statistics from "../pages/admin/statistics";
+import _Website from "../pages/admin/website";
 import _Vip from "../pages/admin/vip";
 import _Site from "../pages/admin/site";
 import _Domain from "../pages/admin/domain";
@@ -132,6 +133,10 @@ const routes = createBrowserRouter([
               {
                 path: "_statistics",
                 element: <_Statistics />,
+              },
+              {
+                path: "_website",
+                element: <_Website />,
               },
               {
                 path: "_vip",

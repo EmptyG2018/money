@@ -10,6 +10,30 @@ export const GetAgentGlobalSetting = (domain) =>
     }
   );
 
+// 获取代理商全局配置
+export const GetAdminAgentGlobalSetting = () =>
+  request(
+    { url: "/yunAdminDlId/getDlIdInfoById", method: "POST", data: { dlId: 1 } },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
+// 修改代理商全局配置
+export const UpdateAdminAgentGlobalSetting = (setting) =>
+  request(
+    {
+      url: "/yunAdminDlId/updateDlIdInfoById",
+      method: "POST",
+      data: setting,
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
 // 获取代理商客服配置
 export const GetAgentHelpSetting = () =>
   request(
@@ -57,7 +81,7 @@ export const GetAgentHelpIconShow = () =>
     },
     {
       responseDataType: "json",
-      carry: ["auth", "site"],
+      carry: ["site"],
     }
   );
 
@@ -70,6 +94,6 @@ export const GetAgentHelpMethods = () =>
     },
     {
       responseDataType: "json",
-      carry: ["auth", "site"],
+      carry: ["site"],
     }
   );

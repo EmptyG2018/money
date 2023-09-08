@@ -38,7 +38,7 @@ const carryMap = {
     config.headers["Accesstoken"] = storage.get("token") || "";
   },
   site: (config) => {
-    config.headers["Proxytoken"] = storage.get("site")?.id;
+    config.headers["Proxytoken"] = storage.get("agent")?.id;
   },
 };
 
