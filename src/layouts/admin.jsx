@@ -30,6 +30,7 @@ const defaultLayout = {
 const defaultProps = {
   route: {
     path: "/admin",
+    exact: true,
     routes: [
       {
         path: "/admin/base",
@@ -37,6 +38,7 @@ const defaultProps = {
         icon: <DesktopOutlined />,
         routes: [
           {
+            exact: true,
             path: "/admin/base/_statistics",
             name: "数据统计",
             icon: <BarChartOutlined />,

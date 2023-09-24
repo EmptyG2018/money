@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, Link, Outlet } from "react-router-dom";
-import { ConfigProvider, Dropdown, FloatButton, Image } from "antd";
+import { ConfigProvider, Dropdown, FloatButton, Image, Input } from "antd";
 import {
   UserOutlined,
   DatabaseOutlined,
@@ -9,6 +9,8 @@ import {
   FlagOutlined,
   FileDoneOutlined,
   HighlightOutlined,
+  SearchOutlined,
+  PlusCircleFilled,
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
 import { styled } from "styled-components";
@@ -206,7 +208,7 @@ export default () => {
           >
             <ProLayout
               logo={agentSetting?.weblogoUrl || undefined}
-              title={agentSetting?.webname}
+              title="资料下载网"
               {...defaultLayout}
               {...defaultProps}
               location={{
@@ -223,6 +225,38 @@ export default () => {
               menuItemRender={(item, dom) => (
                 <Navigate to={item.path}>{dom}</Navigate>
               )}
+              actionsRender={() => [
+                <div
+                  key="SearchOutlined"
+                  aria-hidden
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginInlineEnd: 24,
+                  }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                  }}
+                >
+                  <Input
+                    style={{
+                      width: "256px",
+                      borderRadius: 4,
+                      backgroundColor: "rgba(0,0,0,0.03)",
+                    }}
+                    prefix={
+                      <SearchOutlined
+                        style={{
+                          color: "rgba(0, 0, 0, 0.15)",
+                        }}
+                      />
+                    }
+                    placeholder="搜索资源"
+                    bordered={false}
+                  />
+                </div>,
+              ]}
               contentStyle={{ padding: 0 }}
               footerRender={Copyright}
             >

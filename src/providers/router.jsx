@@ -8,9 +8,12 @@ import {
 import { Agent } from "../plugins/agent";
 import { LoginedPage, AdminPage } from "../plugins/access";
 
+import Mobile from "../layouts/mobile";
 import Header from "../layouts/header";
 import Settings from "../layouts/settings";
 import Admin from "../layouts/admin";
+import Tabbar from "../layouts/tabbar";
+import Header2 from "../layouts/Header2";
 
 import Index from "../pages/index";
 import Search from "../pages/search";
@@ -25,6 +28,15 @@ import EditPwd from "../pages/editpwd";
 import Login from "../pages/login";
 import Register from "../pages/register";
 import Help from "../pages/help";
+
+import CommunityIndex from "../pages/community/mini/index";
+import CommunityCategory from "../pages/community/mini/category";
+import CommunityList from "../pages/community/mini/list";
+import CommunityArticle from "../pages/community/mini/article";
+import CommunitySearch from "../pages/community/mini/search";
+
+import TCommunityIndex from "../pages/community/index";
+import TCommunityList from "../pages/community/list";
 
 import WorkIndex from "../pages/work/index";
 
@@ -107,6 +119,56 @@ const routes = createBrowserRouter([
           {
             path: "applyjoin",
             element: <ApplyJoin />,
+          },
+        ],
+      },
+      {
+        path: "/m",
+        element: <Mobile />,
+        children: [
+          {
+            path: "community",
+            element: <Tabbar />,
+            children: [
+              {
+                path: "index",
+                element: <CommunityIndex />,
+              },
+              {
+                path: "category",
+                element: <CommunityCategory />,
+              },
+              {
+                path: "list/:id",
+                element: <CommunityList />,
+              },
+            ],
+          },
+          {
+            path: "community/search",
+            element: <CommunitySearch />,
+          },
+          {
+            path: "community/article/:id",
+            element: <CommunityArticle />,
+          },
+        ],
+      },
+      {
+        path: "/community",
+        element: <Header2 />,
+        children: [
+          {
+            path: "index",
+            element: <TCommunityIndex />,
+          },
+          {
+            path: "list/:id",
+            element: <TCommunityList />,
+          },
+          {
+            path: "article",
+            element: <CommunityArticle />,
           },
         ],
       },
