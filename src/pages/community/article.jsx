@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
-import { NavBar, Image } from "antd-mobile";
 import { useRequest } from "ahooks";
-import { GetPostContent } from "../../../services/community/post";
+import { GetPostContent } from "../../services/community/post";
 import { styled } from "styled-components";
-import Page from "../../../components/community/mini/Page";
-import Byte from "../../../components/Byte";
-import BBcodeRender from "../../../components/BBCodeRender";
-import DownloadFile from "../../../components/community/mini/DownloadFile";
+import { Image } from "antd";
+import Byte from "../../components/Byte";
+import BBcodeRender from "../../components/BBCodeRender";
+import DownloadFile from "../../components/community/DownloadFile";
+import Container from "../../components/Container";
 
 const SINGLE_TAG = ["img", "br", "hr", "input", "link", "meta"];
 
@@ -78,6 +78,11 @@ const Article = styled.div`
   }
 `;
 
+const ArticleTitle = styled.h1`
+  font-size: 22px;
+  font-weight: 600;
+`;
+
 const Component = () => {
   const params = useParams();
   const { data: postContent, error } = useRequest(GetPostContent, {
@@ -101,7 +106,7 @@ const Component = () => {
         !!aid &&
         !!isimage && (
           <div style={{ marginBlock: "16px" }}>
-            <Image src={attachment} width="100%" height="auto" lazy />
+            <Image src={attachment} preview={false} />
           </div>
         )
       );
@@ -114,7 +119,7 @@ const Component = () => {
         !!aid && (
           <div style={{ marginBlock: "16px" }}>
             {isimage ? (
-              <Image src={attachment} width="100%" height="auto" lazy />
+              <Image src={attachment} preview={false} />
             ) : (
               <DownloadFile
                 name={filename}
@@ -132,24 +137,22 @@ const Component = () => {
   };
 
   return (
-    <>
-      <NavBar onBack={() => history.back()}>{postContent?.subject}</NavBar>
-      <Page yScroll gutter={[16]}>
-        {error && (
-          <div style={{ textAlign: "center", padding: "16px" }}>
-            {error?.message}
-          </div>
-        )}
-        {postContent && (
-          <Article>
-            <BBcodeRender
-              code={postContent?.message || ""}
-              parseOptions={{ replace }}
-            />
-          </Article>
-        )}
-      </Page>
-    </>
+    <Container title={false} gutter={[16, 24]}>
+      {error && (
+        <div style={{ textAlign: "center", padding: "16px" }}>
+          {error?.message}
+        </div>
+      )}
+      {postContent && (
+        <Article>
+          <ArticleTitle>{postContent?.subject}</ArticleTitle>
+          <BBcodeRender
+            code={postContent?.message || ""}
+            parseOptions={{ replace }}
+          />
+        </Article>
+      )}
+    </Container>
   );
 };
 

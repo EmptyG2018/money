@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   InfiniteScroll,
@@ -64,29 +64,37 @@ const PAGE_SIZE = 24;
 
 const PostListRender = () => {
   const navigate = useNavigate();
+  const pageNum = useRef(1);
   const params = useParams();
   const [record, setRecord] = useState([]);
-  const [pageNum, setPageNum] = useState(1);
   const [typeId, setTypeId] = useState("");
   const { data: postCategorys } = useRequest(() =>
     GetPostCategorys({ fid: params.id })
   );
-  const { data: posts } = useRequest(
-    () => GetPosts({ fid: params.id, typeId, pageNum, pageSize: PAGE_SIZE }),
+  const { refreshAsync: refreshPost, data: posts } = useRequest(
+    () =>
+      GetPosts({
+        fid: params.id,
+        typeId,
+        pageNum: pageNum.current,
+        pageSize: PAGE_SIZE,
+      }),
     {
-      refreshDeps: [pageNum, typeId],
       onSuccess(res) {
-        setRecord((record) => [...record, ...res.rows]);
+        setRecord((record) => [...record, ...(res?.rows || [])]);
+        pageNum.current += 1;
       },
+      manual: true,
     }
   );
 
   useEffect(() => {
+    pageNum.current = 1;
     setRecord([]);
-    setPageNum(1);
+    refreshPost();
   }, [typeId]);
 
-  const hasMore = posts?.total || 0 > PAGE_SIZE * pageNum;
+  const hasMore = posts?.total || 0 > PAGE_SIZE * pageNum.current;
 
   return (
     <>
@@ -109,10 +117,7 @@ const PostListRender = () => {
               key: "" + item.typeid,
             })),
           ]}
-          onChange={(key) => {
-            console.log("key", key);
-            setTypeId(key);
-          }}
+          onChange={setTypeId}
         />
       )}
       <List>
@@ -150,10 +155,7 @@ const PostListRender = () => {
           </List.Item>
         ))}
       </List>
-      <InfiniteScroll
-        hasMore={hasMore}
-        loadMore={() => setPageNum((pageNum) => pageNum + 1)}
-      />
+      <InfiniteScroll hasMore={hasMore} loadMore={refreshPost} />
     </>
   );
 };

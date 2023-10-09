@@ -47,7 +47,7 @@ const request = (axiosOption, option = {}) => {
   const { responseDataType = defaultResponseDataType, carry = [] } = option;
 
   const instance = axios.create({
-    baseURL: "/proxy/yj",
+    baseURL: import.meta.env.VITE_APP_URL,
     params: {
       dlId: 1,
     },

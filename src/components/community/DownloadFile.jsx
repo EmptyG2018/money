@@ -1,22 +1,21 @@
-import { Card, Button, Space } from "antd-mobile";
-import { FolderOutline } from "antd-mobile-icons";
+import { Button, Space } from "antd";
+import { FileOutlined } from "@ant-design/icons";
 import { styled } from "styled-components";
 
-const ComponentRoot = styled(Card)`
+const ComponentRoot = styled.div`
+  width: 420px;
   background-color: #ececec;
-  padding: 0 16px;
-  .adm-card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 16px 0;
-  }
+  gap: 24px;
+  padding: 16px;
+  border-radius: 6px;
 `;
 
 const DownloadFileCard = styled.div`
   display: flex;
+  align-items: flex-start;
   gap: 8px;
   color: #505050;
+  margin-bottom: 16px;
 `;
 
 const DownloadFileCell = styled.div`
@@ -44,7 +43,7 @@ const Component = ({ name, size, disabled, ...props }) => {
   return (
     <ComponentRoot>
       <DownloadFileCard>
-        <FolderOutline fontSize={24} />
+        <FileOutlined style={{ position: "relative", top: 4, fontSize: 20 }} />
         <DownloadFileCell>
           <DownloadFileName>{name}</DownloadFileName>
           <Space>
@@ -52,7 +51,7 @@ const Component = ({ name, size, disabled, ...props }) => {
           </Space>
         </DownloadFileCell>
       </DownloadFileCard>
-      <Button block color="primary" disabled={disabled} {...props} />
+      <Button type="primary" disabled={disabled} {...props} />
     </ComponentRoot>
   );
 };

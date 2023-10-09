@@ -5,12 +5,9 @@ import {
   DatabaseOutlined,
   LogoutOutlined,
   LoginOutlined,
-  CrownOutlined,
-  FlagOutlined,
-  FileDoneOutlined,
-  HighlightOutlined,
+  CompassOutlined,
+  UnorderedListOutlined,
   SearchOutlined,
-  PlusCircleFilled,
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
 import { styled } from "styled-components";
@@ -46,34 +43,14 @@ const defaultProps = {
     path: "/",
     routes: [
       {
-        path: "/buykey",
-        name: "购买卡密",
-        icon: <CrownOutlined />,
+        path: "/community/index",
+        name: "发现",
+        icon: <CompassOutlined />,
       },
       {
-        path: "/hall",
-        name: "广场",
-        icon: <FlagOutlined />,
-      },
-      {
-        path: "/applyjoin",
-        name: "加盟申请",
-        icon: <FileDoneOutlined />,
-      },
-      {
-        path: "/work",
-        name: "工作台",
-        icon: <HighlightOutlined />,
-      },
-      {
-        path: "/login",
-        name: "登录",
-        hideInMenu: true,
-      },
-      {
-        path: "/register",
-        name: "注册",
-        hideInMenu: true,
+        path: "/community/category",
+        name: "分类",
+        icon: <UnorderedListOutlined />,
       },
     ],
   },

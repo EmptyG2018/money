@@ -36,7 +36,9 @@ import CommunityArticle from "../pages/community/mini/article";
 import CommunitySearch from "../pages/community/mini/search";
 
 import TCommunityIndex from "../pages/community/index";
+import TCommunityCategory from "../pages/community/category";
 import TCommunityList from "../pages/community/list";
+import TCommunityArticle from "../pages/community/article";
 
 import WorkIndex from "../pages/work/index";
 
@@ -51,6 +53,7 @@ import _Recharge from "../pages/admin/recharge";
 import _FlowRecord from "../pages/admin/flowrecord";
 import _Income from "../pages/admin/income";
 import _Help from "../pages/admin/help";
+import _CommunityModule from "../pages/admin/community/module";
 import _ExamIndex from "../pages/admin/exam/index";
 import _BookmarkIndex from "../pages/admin/bookmark/index";
 
@@ -163,12 +166,16 @@ const routes = createBrowserRouter([
             element: <TCommunityIndex />,
           },
           {
+            path: "category",
+            element: <TCommunityCategory />,
+          },
+          {
             path: "list/:id",
             element: <TCommunityList />,
           },
           {
-            path: "article",
-            element: <CommunityArticle />,
+            path: "article/:id",
+            element: <TCommunityArticle />,
           },
         ],
       },
@@ -239,20 +246,6 @@ const routes = createBrowserRouter([
             ],
           },
           {
-            path: "exam",
-            element: <Outlet />,
-            children: [
-              {
-                index: true,
-                loader: () => redirect("/admin/exam/_index"),
-              },
-              {
-                path: "_index",
-                element: <_ExamIndex />,
-              },
-            ],
-          },
-          {
             path: "bookmark",
             element: <Outlet />,
             children: [
@@ -263,6 +256,34 @@ const routes = createBrowserRouter([
               {
                 path: "_index",
                 element: <_BookmarkIndex />,
+              },
+            ],
+          },
+          {
+            path: "community",
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                loader: () => redirect("/admin/community/_module"),
+              },
+              {
+                path: "_module",
+                element: <_CommunityModule />
+              }
+            ]
+          },
+          {
+            path: "exam",
+            element: <Outlet />,
+            children: [
+              {
+                index: true,
+                loader: () => redirect("/admin/exam/_index"),
+              },
+              {
+                path: "_index",
+                element: <_ExamIndex />,
               },
             ],
           },

@@ -14,7 +14,9 @@ import {
   AccountBookOutlined,
   TransactionOutlined,
   RobotOutlined,
+  CommentOutlined,
   LogoutOutlined,
+  BuildOutlined,
 } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
 import { useAgentSetting } from "../plugins/agent";
@@ -96,23 +98,35 @@ const defaultProps = {
         ],
       },
       {
-        path: "/admin/exam",
-        name: "考试",
-        icon: <FileDoneOutlined />,
-        routes: [
-          {
-            path: "/admin/exam/_index",
-            name: "测试页面",
-          },
-        ],
-      },
-      {
         path: "/admin/bookmark",
         name: "书签",
         icon: <InboxOutlined />,
         routes: [
           {
             path: "/admin/bookmark/_index",
+            name: "测试页面",
+          },
+        ],
+      },
+      {
+        path: "/admin/community",
+        name: "论坛",
+        icon: <CommentOutlined />,
+        routes: [
+          {
+            path: "/admin/community/_module",
+            name: "模块管理",
+            icon: <BuildOutlined />,
+          },
+        ],
+      },
+      {
+        path: "/admin/exam",
+        name: "考试",
+        icon: <FileDoneOutlined />,
+        routes: [
+          {
+            path: "/admin/exam/_index",
             name: "测试页面",
           },
         ],

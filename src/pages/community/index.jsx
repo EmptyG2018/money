@@ -1,77 +1,149 @@
-import { Card, Image, Space } from "antd";
+import { useRef } from "react";
+import { Image, Space, Avatar } from "antd";
 import { Link } from "react-router-dom";
-import { ProCard } from "@ant-design/pro-components";
+import {
+  FireFilled,
+  ThunderboltFilled,
+  EyeOutlined,
+  HistoryOutlined,
+} from "@ant-design/icons";
+import { ProCard, ProList } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { GetPostModules } from "../../services/community/post";
+import { GetPostBannars, GetIfPosts } from "../../services/community/post";
 import { styled } from "styled-components";
 import Container from "../../components/Container";
 
-const ApplicationCell = styled.div`
-  margin-left: 10px;
-  flex: 1 0 0;
-  width: 0;
-`;
+const CONSTAVATARIMG =
+  "http://6uzy.com/uc_server/avatar.php?uid=1&size=middle&ts=1";
 
-const ApplicationTitle = styled.h2`
-  font-size: 14px;
-  font-weight: 600;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-const ApplicationDesc = styled.p`
-  padding: 0;
-  margin: 0;
-  font-size: 12px;
-  color: #6c757d;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const Application = ({ thumb, title, desc, ...props }) => {
-  return (
-    <ProCard layout="center" bodyStyle={{ padding: 14 }} {...props}>
-      <Image src={thumb} width={42} height={42} preview={false} />
-      <ApplicationCell>
-        <ApplicationTitle title={title}>{title}</ApplicationTitle>
-        <ApplicationDesc>{desc}</ApplicationDesc>
-      </ApplicationCell>
-    </ProCard>
-  );
-};
+const PAGE_SIZE = 24;
 
 const Component = () => {
-  const { data: postModules } = useRequest(GetPostModules);
+  const listRef = useRef();
+
+  const { data: newPosts } = useRequest(GetIfPosts, {
+    defaultParams: [{ pageNum: 1, pageSize: 12, sort: "new" }],
+  });
+  const { data: hostPosts } = useRequest(GetIfPosts, {
+    defaultParams: [{ pageNum: 1, pageSize: 12, sort: "host" }],
+  });
 
   return (
     <Container title={false} gutter={[16, 24]}>
-      <Space direction="vertical" size={16}>
-        {(postModules || []).map((item) => (
-          <ProCard
-            wrap
-            gutter={[16, 16]}
-            title={item.name}
-            key={item.fid}
-            bordered
-          >
-            {(item.children || []).map((item) => (
-              <ProCard ghost colSpan={6}>
-                <Link to={"/community/list/" + item.fid}>
-                  <Application
-                    thumb={item.icon}
-                    title={item.name}
-                    desc={"贴数：" + item.posts}
-                    key={item.fid}
+      <ProCard ghost gutter={16}>
+        <ProCard
+          title={
+            <span style={{ color: "#ff5900" }}>
+              <FireFilled /> 热门帖子
+            </span>
+          }
+        >
+          <ProList
+            rowKey="tid"
+            actionRef={listRef}
+            dataSource={newPosts?.rows || []}
+            metas={{
+              avatar: {
+                dataIndex: "author",
+                render: (_, { author }) => (
+                  <Space direction="vertical" align="center" size={0}>
+                    <Avatar src={CONSTAVATARIMG} />
+                    <span
+                      style={{ fontSize: "12px", color: "rgba(0, 0, 0, 0.45)" }}
+                    >
+                      {author}
+                    </span>
+                  </Space>
+                ),
+              },
+              title: {
+                dataIndex: "subject",
+                render: (text, { tid }) => (
+                  <Link
+                    to={"/community/article/" + tid}
+                    style={{
+                      color: "initial",
+                      fontWeight: "initial",
+                      fontSize: "16px",
+                    }}
+                    dangerouslySetInnerHTML={{ __html: text }}
                   />
-                </Link>
-              </ProCard>
-            ))}
-          </ProCard>
-        ))}
-      </Space>
+                ),
+              },
+              description: {
+                render: (_, { views, dateline }) => {
+                  return (
+                    <Space>
+                      <span>
+                        <EyeOutlined /> {views}
+                      </span>
+                      <span>
+                        <HistoryOutlined /> {dateline}
+                      </span>
+                    </Space>
+                  );
+                },
+              },
+            }}
+          />
+        </ProCard>
+        <ProCard
+          title={
+            <span style={{ color: "#2f86ff" }}>
+              <ThunderboltFilled /> 最新帖子
+            </span>
+          }
+        >
+          <ProList
+            rowKey="tid"
+            actionRef={listRef}
+            dataSource={hostPosts?.rows || []}
+            metas={{
+              avatar: {
+                dataIndex: "author",
+                render: (_, { author }) => (
+                  <Space direction="vertical" align="center" size={0}>
+                    <Avatar src={CONSTAVATARIMG} />
+                    <span
+                      style={{ fontSize: "12px", color: "rgba(0, 0, 0, 0.45)" }}
+                    >
+                      {author}
+                    </span>
+                  </Space>
+                ),
+              },
+              title: {
+                dataIndex: "subject",
+                render: (text, { tid }) => (
+                  <Link
+                    to={"/community/article/" + tid}
+                    style={{
+                      color: "initial",
+                      fontWeight: "initial",
+                      fontSize: "16px",
+                    }}
+                    dangerouslySetInnerHTML={{ __html: text }}
+                  />
+                ),
+              },
+              description: {
+                render: (_, { views, dateline }) => {
+                  return (
+                    <Space>
+                      <span>
+                        <EyeOutlined /> {views}
+                      </span>
+                      <span>
+                        <HistoryOutlined /> {dateline}
+                      </span>
+                    </Space>
+                  );
+                },
+              },
+            }}
+          />
+        </ProCard>
+      </ProCard>
     </Container>
   );
 };
