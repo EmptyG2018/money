@@ -2,11 +2,12 @@ import { useParams } from "react-router-dom";
 import { useRequest } from "ahooks";
 import { GetPostContent } from "../../services/community/post";
 import { styled } from "styled-components";
-import { Image } from "antd";
+import { Avatar, Tag, Image, Space } from "antd";
 import Byte from "../../components/Byte";
 import BBcodeRender from "../../components/BBCodeRender";
 import DownloadFile from "../../components/community/DownloadFile";
 import Container from "../../components/Container";
+import { ProCard } from "@ant-design/pro-components";
 
 const SINGLE_TAG = ["img", "br", "hr", "input", "link", "meta"];
 
@@ -83,6 +84,12 @@ const ArticleTitle = styled.h1`
   font-weight: 600;
 `;
 
+const ArticleExtra = styled.div`
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f5f5f5;
+`;
+
 const Component = () => {
   const params = useParams();
   const { data: postContent, error } = useRequest(GetPostContent, {
@@ -138,20 +145,34 @@ const Component = () => {
 
   return (
     <Container title={false} gutter={[16, 24]}>
-      {error && (
-        <div style={{ textAlign: "center", padding: "16px" }}>
-          {error?.message}
-        </div>
-      )}
-      {postContent && (
-        <Article>
-          <ArticleTitle>{postContent?.subject}</ArticleTitle>
-          <BBcodeRender
-            code={postContent?.message || ""}
-            parseOptions={{ replace }}
-          />
-        </Article>
-      )}
+      <ProCard>
+        {error && (
+          <div style={{ textAlign: "center", padding: "16px" }}>
+            {error?.message}
+          </div>
+        )}
+        {postContent && (
+          <Article>
+            <ArticleTitle>{postContent?.subject}</ArticleTitle>
+            <ArticleExtra>
+              <Space>
+                <Tag bordered={false}>
+                  <Space size={4} align="center">
+                    <Avatar src={postContent?.photoUrl} size={16} />
+                    {postContent?.author}
+                  </Space>
+                </Tag>
+                <Tag bordered={false}>{postContent?.dateline}</Tag>
+              </Space>
+            </ArticleExtra>
+
+            <BBcodeRender
+              code={postContent?.message || ""}
+              parseOptions={{ replace }}
+            />
+          </Article>
+        )}
+      </ProCard>
     </Container>
   );
 };

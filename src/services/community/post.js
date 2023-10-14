@@ -88,6 +88,20 @@ export const GetPostBannars = ({ modeId }) =>
     }
   );
 
+// 获取帖子轮播
+export const GetPostCarsouels = ({ limit }) =>
+  request(
+    {
+      url: "/PreForumThread/getlastpostchart",
+      method: "POST",
+      data: { limit },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site"],
+    }
+  );
+
 // 获取查询条件帖子列表
 export const GetIfPosts = ({ pageNum, pageSize, sort }) =>
   request(
@@ -113,5 +127,19 @@ export const GetKeywordPosts = ({ pageSize, pageNum, title }) =>
     {
       responseDataType: "json",
       carry: ["site"],
+    }
+  );
+
+// 获取帖子隐藏内容
+export const GetPostHideContent = ({ tid }) =>
+  request(
+    {
+      url: "/PreForumPost/getForumPostHideById",
+      method: "POST",
+      data: { tid },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
     }
   );

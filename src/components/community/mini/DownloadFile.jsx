@@ -3,8 +3,9 @@ import { FolderOutline } from "antd-mobile-icons";
 import { styled } from "styled-components";
 
 const ComponentRoot = styled(Card)`
-  background-color: #ececec;
+  background-color: var(--color-bg);
   padding: 0 16px;
+  border: 1px solid var(--color-primary);
   .adm-card-body {
     display: flex;
     flex-direction: column;
@@ -28,23 +29,40 @@ const DownloadFileCell = styled.div`
 `;
 
 const DownloadFileName = styled.div`
+  color: #333;
   font-size: 16px;
   line-height: 24px;
+  font-weight: 600;
 `;
 
 const DownloadFileDesc = styled.span`
   font-size: 12px;
-  color: #666;
-  background-color: #d8d8d8;
+  color: #838383;
+  background-color: var(--color-tag);
   padding: 4px 8px;
   border-radius: 99px;
 `;
 
-const Component = ({ name, size, disabled, ...props }) => {
+const Component = ({ state = "primary", name, size, ...props }) => {
+  const stateMap = {
+    primary: {
+      "--color-primary": "#1677ff",
+      "--color-bg": "#f0f6ff",
+      "--color-tag": "#dfecff",
+    },
+    warning: {
+      "--color-primary": "#ff8f1f",
+      "--color-bg": "#fff5ec",
+      "--color-tag": "#ffe9d3",
+    },
+  };
+
+  const cssVar = stateMap[state] ? stateMap[state] : stateMap["primary"];
+
   return (
-    <ComponentRoot>
+    <ComponentRoot style={cssVar}>
       <DownloadFileCard>
-        <FolderOutline fontSize={24} />
+        <FolderOutline fontSize={24} color="#333" />
         <DownloadFileCell>
           <DownloadFileName>{name}</DownloadFileName>
           <Space>
@@ -52,7 +70,7 @@ const Component = ({ name, size, disabled, ...props }) => {
           </Space>
         </DownloadFileCell>
       </DownloadFileCard>
-      <Button block color="primary" disabled={disabled} {...props} />
+      <Button block color={state} {...props} />
     </ComponentRoot>
   );
 };

@@ -1,7 +1,13 @@
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { NavBar, Image } from "antd-mobile";
+import { NavBar, Image, Space, Tag, Avatar } from "antd-mobile";
+import { LinkOutline, DownCircleOutline, LockFill } from "antd-mobile-icons";
 import { useRequest } from "ahooks";
-import { GetPostContent } from "../../../services/community/post";
+import { useUser } from "../../../hooks/user";
+import {
+  GetPostContent,
+  GetPostHideContent,
+} from "../../../services/community/post";
 import { styled } from "styled-components";
 import Page from "../../../components/community/mini/Page";
 import Byte from "../../../components/Byte";
@@ -29,19 +35,6 @@ const deepNodeTree = (children) =>
       if (item.type === "text") return item.data;
     })
     .join("");
-
-const HideContent = ({ content }) => {
-  return (
-    <div style={{ padding: "12px 24px", border: "1px dashed #ff9500" }}>
-      <div
-        style={{ textAlign: "center", lineHeight: "24px", marginBottom: "8px" }}
-      >
-        本帖隐藏内容
-      </div>
-      <div dangerouslySetInnerHTML={{ __html: content }}></div>
-    </div>
-  );
-};
 
 const Article = styled.div`
   word-wrap: break-word;
@@ -78,25 +71,83 @@ const Article = styled.div`
   }
 `;
 
+const ArticleTitle = styled.h1`
+  font-size: 20px;
+`;
+
+const ArticleExtra = styled(Space)`
+  margin-bottom: 16px;
+`;
+
+const UnLockContent = styled.div`
+  padding: 12px 24px;
+  border: 1px dashed #1677ff;
+  background-color: #edf5ff;
+`;
+
+const UnLockContentHeader = styled.div`
+  text-align: center;
+  line-height: 24px;
+  margin-bottom: 8px;
+`;
+
+const LockTip = styled(UnLockContent)`
+  border-color: #ff8f1f;
+  color: #ff8f1f;
+  background-color: #fff9f4;
+  text-align: center;
+`;
+
 const Component = () => {
+  const { user } = useUser();
   const params = useParams();
-  const { data: postContent, error } = useRequest(GetPostContent, {
+  const { data: post, error: postError } = useRequest(GetPostContent, {
     defaultParams: [{ tid: params.id }],
   });
+  const {
+    run: getHidePost,
+    data: hidePost,
+    error: hidePostError,
+  } = useRequest(GetPostHideContent, {
+    manual: true,
+  });
+
+  useEffect(() => {
+    post?.readRole === 1 && getHidePost({ tid: params.id });
+  }, [post]);
+
+  const showPost = post?.readRole === 1 ? hidePost : post;
+
+  const showError = hidePostError || postError;
 
   const replace = (node) => {
     if (node.attribs?.["data-type"] === "hide") {
       const content = deepNodeTree(node?.children);
       return (
         <div style={{ marginBlock: 16 }}>
-          <HideContent content={content} />
+          {user ? (
+            showPost.readRole === 0 ? (
+              <LockTip>
+                <LockFill /> 此处内容已隐藏，开通会员可查看
+              </LockTip>
+            ) : (
+              <UnLockContent>
+                <UnLockContentHeader>本帖隐藏内容</UnLockContentHeader>
+                <div dangerouslySetInnerHTML={{ __html: content }}></div>
+              </UnLockContent>
+            )
+          ) : (
+            <LockTip>
+              <LockFill /> 此处内容已隐藏，请登录后查看权益
+            </LockTip>
+          )}
         </div>
       );
     }
     if (node.attribs?.["data-type"] === "attachimg") {
       const aId = node.attribs?.["data-value"];
       const { aid, isimage, attachment } =
-        postContent.list.find((item) => item.aid === +aId) || {};
+        showPost.list.find((item) => item.aid === +aId) || {};
       return (
         !!aid &&
         !!isimage && (
@@ -109,7 +160,7 @@ const Component = () => {
     if (node.attribs?.["data-type"] === "attach") {
       const aId = node.attribs?.["data-value"];
       const { aid, isimage, filename, attachment, filesize } =
-        postContent.list.find((item) => item.aid === +aId) || {};
+        showPost.list.find((item) => item.aid === +aId) || {};
       return (
         !!aid && (
           <div style={{ marginBlock: "16px" }}>
@@ -120,9 +171,23 @@ const Component = () => {
                 name={filename}
                 size={<Byte byte={filesize} />}
                 count={100203}
-                disabled={postContent.downRole === 0}
+                state={!user || showPost.downRole === 0 ? "warning" : "primary"}
               >
-                {postContent.downRole === 0 ? "权限不足，无法下载" : "立即下载"}
+                {user ? (
+                  showPost.downRole === 0 ? (
+                    <>
+                      <LinkOutline /> 购买会员可下载附件
+                    </>
+                  ) : (
+                    <>
+                      <DownCircleOutline /> 立即下载附件
+                    </>
+                  )
+                ) : (
+                  <>
+                    <LinkOutline /> 请登录后查看权益
+                  </>
+                )}
               </DownloadFile>
             )}
           </div>
@@ -133,17 +198,32 @@ const Component = () => {
 
   return (
     <>
-      <NavBar onBack={() => history.back()}>{postContent?.subject}</NavBar>
+      <NavBar onBack={() => history.back()}>{showPost?.subject}</NavBar>
       <Page yScroll gutter={[16]}>
-        {error && (
+        {showError && (
           <div style={{ textAlign: "center", padding: "16px" }}>
-            {error?.message}
+            {showError?.message}
           </div>
         )}
-        {postContent && (
+        {showPost && (
           <Article>
+            <ArticleTitle>{showPost.subject}</ArticleTitle>
+            <ArticleExtra block>
+              <Tag round color="#f0f0f0" style={{ "--text-color": "#707070" }}>
+                <Space style={{ "--gap": "2px" }} align="center">
+                  <Avatar
+                    src={showPost.photoUrl}
+                    style={{ "--size": "12px", "--border-radius": "6px" }}
+                  />
+                  {showPost.author}
+                </Space>
+              </Tag>
+              <Tag round color="#f0f0f0" style={{ "--text-color": "#707070" }}>
+                {showPost.dateline}
+              </Tag>
+            </ArticleExtra>
             <BBcodeRender
-              code={postContent?.message || ""}
+              code={showPost.message || ""}
               parseOptions={{ replace }}
             />
           </Article>
