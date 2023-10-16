@@ -1,7 +1,7 @@
 import { useLocation, Navigate } from "react-router-dom";
 import { useUser } from "../hooks/user";
 
-import NoAuth from "../pages/_403";
+import NoAuth from "../pages/403";
 
 // 落地页
 const ENTRYPAGE = "/";

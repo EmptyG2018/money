@@ -5,9 +5,7 @@ import {
   DatabaseOutlined,
   LogoutOutlined,
   LoginOutlined,
-  CrownOutlined,
   FlagOutlined,
-  FileDoneOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
@@ -41,37 +39,17 @@ const defaultLayout = {
 
 const defaultProps = {
   route: {
-    path: "/",
+    path: "/navigation",
     routes: [
       {
-        path: "/buykey",
-        name: "购买卡密",
-        icon: <CrownOutlined />,
-      },
-      {
-        path: "/hall",
+        path: "/navigation/hall",
         name: "广场",
         icon: <FlagOutlined />,
       },
       {
-        path: "/applyjoin",
-        name: "加盟申请",
-        icon: <FileDoneOutlined />,
-      },
-      {
-        path: "/work",
+        path: "/navigation/work",
         name: "工作台",
         icon: <HighlightOutlined />,
-      },
-      {
-        path: "/login",
-        name: "登录",
-        hideInMenu: true,
-      },
-      {
-        path: "/register",
-        name: "注册",
-        hideInMenu: true,
       },
     ],
   },
@@ -219,10 +197,26 @@ export default () => {
                 },
               }}
               avatarProps={avatarProps}
-              onMenuHeaderClick={() => navigate("/")}
+              onMenuHeaderClick={() => navigate("/navigation")}
               menuItemRender={(item, dom) => (
                 <Navigate to={item.path}>{dom}</Navigate>
               )}
+              actionsRender={() => [
+                <img
+                  src="./imgs/vip.png"
+                  width={36}
+                  height={36}
+                  title="开通会员"
+                  onClick={() => navigate("/buykey")}
+                />,
+                <img
+                  src="./imgs/cooperation.png"
+                  width={36}
+                  height={35}
+                  title="申请加盟"
+                  onClick={() => navigate("/applyjoin")}
+                />,
+              ]}
               contentStyle={{ padding: 0 }}
               footerRender={Copyright}
             >

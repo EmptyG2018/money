@@ -2,16 +2,16 @@ import { Fragment, useEffect, useState } from "react";
 import { Input, Tabs, Row, Col, Card, Image, Tag, Space, Avatar } from "antd";
 import { AppstoreOutlined } from "@ant-design/icons";
 import { styled } from "styled-components";
-import Container from "../components/Container";
-import navigations from "../constant/navigation";
-import { navData, navMap } from "../constant/search";
-import { useAgentSetting } from "../plugins/agent";
+import Container from "../../components/Container";
+import navigations from "../../constant/navigation";
+import { navData, navMap } from "../../constant/search";
+import { useAgentSetting } from "../../plugins/agent";
 import { useRequest } from "ahooks";
 import {
   GetBookmarkPromotionMarketCollects,
   GetBookmarkPromotionMarketTeams,
   GetBookmarkPromotionMarketCollectParticipants,
-} from "../services/bookmark";
+} from "../../services/bookmark";
 
 const ApplicationRoot = styled(Card)`
   &:hover {

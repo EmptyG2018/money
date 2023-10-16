@@ -70,7 +70,7 @@ export const GetPostContent = ({ tid }) =>
     },
     {
       responseDataType: "json",
-      carry: ["site"],
+      carry: ["site", "auth"],
     }
   );
 

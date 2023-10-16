@@ -1,21 +1,60 @@
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, message } from "antd";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { LoginForm, ProFormText } from "@ant-design/pro-components";
+import { Card, Form, Input, Button, message } from "antd";
+import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 import { styled } from "styled-components";
 import { useAgentSetting } from "../plugins/agent";
 import { useRequest } from "ahooks";
 import { RegisterAccount } from "../services/user";
 
 const ComponentRoot = styled.div`
-  padding-block: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #1677ff;
 `;
 
-const RegisterForm = styled(LoginForm)`
-  & > button:last-child {
-    display: none !important;
+const LoginCard = styled(Card)`
+  max-width: 340px;
+  @media (min-width: 601px) {
+    & {
+      max-width: 375px;
+    }
   }
+`;
+
+const CardTop = styled.div`
+  text-align: center;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  line-height: 44px;
+`;
+
+const Logo = styled.img`
+  width: 44px;
+  height: 44px;
+  margin-inline-end: 16px;
+  vertical-align: top;
+`;
+
+const Title = styled.span`
+  position: relative;
+  inset-block-start: 2px;
+  font-weight: 600;
+  font-size: 30px;
+`;
+
+const Description = styled.div`
+  margin-block-start: 12px;
+  margin-block-end: 40px;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
 `;
 
 const FormExtra = styled.div`
@@ -31,8 +70,7 @@ const Component = () => {
     manual: true,
   });
 
-  const submit = async () => {
-    const values = await registerForm.current.validateFieldsReturnFormatValue();
+  const submit = async (values) => {
     try {
       await registerAccount(values);
       messageApi.success("注册成功！");
@@ -48,82 +86,70 @@ const Component = () => {
     <>
       {contextHolder}
       <ComponentRoot>
-        <RegisterForm
-          formRef={registerForm}
-          logo={agentSetting?.weblogoUrl || undefined}
-          title={agentSetting?.webname}
-          subTitle={agentSetting?.description}
-          actions={
-            <Button block type="primary" size="large" onClick={submit}>
-              注册
-            </Button>
-          }
-        >
-          <ProFormText
-            name="account"
-            fieldProps={{
-              size: "large",
-              prefix: <UserOutlined className={"prefixIcon"} />,
-            }}
-            placeholder={"账号"}
-            rules={[
-              {
-                required: true,
-                message: "请输入账号!",
-              },
-            ]}
-          />
-          <ProFormText.Password
-            name="password"
-            fieldProps={{
-              size: "large",
-              prefix: <LockOutlined className={"prefixIcon"} />,
-            }}
-            placeholder={"密码"}
-            rules={[
-              {
-                required: true,
-                message: "请输入密码！",
-              },
-            ]}
-          />
-          <ProFormText
-            name="userName"
-            fieldProps={{
-              size: "large",
-              prefix: <UserOutlined className={"prefixIcon"} />,
-            }}
-            placeholder={"用户名"}
-            rules={[
-              {
-                required: true,
-                message: "请输入用户名!",
-              },
-            ]}
-          />
-          <ProFormText
-            name="email"
-            fieldProps={{
-              size: "large",
-              prefix: <UserOutlined className={"prefixIcon"} />,
-            }}
-            placeholder={"邮箱"}
-            rules={[
-              {
-                required: true,
-                message: "请输入邮箱!",
-              },
-            ]}
-          />
-          <FormExtra
-            style={{
-              marginBlockEnd: 24,
-            }}
-          >
-            已经有账号？
-            <Link to="/login">登录</Link>
-          </FormExtra>
-        </RegisterForm>
+        <LoginCard>
+          <CardTop>
+            <Header>
+              <Logo src={agentSetting?.weblogoUrl || undefined} />
+              <Title>{agentSetting?.webname}</Title>
+            </Header>
+            <Description>{agentSetting?.description}</Description>
+          </CardTop>
+          <Form size="large" onFinish={submit}>
+            <Form.Item
+              name="account"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入账号！",
+                },
+              ]}
+            >
+              <Input prefix={<UserOutlined />} placeholder="账号" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入密码！",
+                },
+              ]}
+            >
+              <Input.Password prefix={<LockOutlined />} placeholder="密码" />
+            </Form.Item>
+            <Form.Item
+              name="userName"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入用户名！",
+                },
+              ]}
+            >
+              <Input prefix={<UserOutlined />} placeholder="用户名" />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入邮箱！",
+                },
+              ]}
+            >
+              <Input prefix={<MailOutlined />} placeholder="邮箱" />
+            </Form.Item>
+            <FormExtra>
+              已经有账号？
+              去<Link to="/login">登录</Link>吧
+            </FormExtra>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" block>
+                注 册
+              </Button>
+            </Form.Item>
+          </Form>
+        </LoginCard>
       </ComponentRoot>
     </>
   );

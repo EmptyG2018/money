@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { ProCard } from "@ant-design/pro-components";
 import { styled } from "styled-components";
-import Container from "../components/Container";
+import Container from "../../components/Container";
 
 const TeamTitle = styled.h1`
   font-size: 22px;

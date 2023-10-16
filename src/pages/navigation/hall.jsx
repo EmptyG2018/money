@@ -1,24 +1,13 @@
+import { Tabs, Card, Avatar, Space, Image, Row, Col, Tag } from "antd";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import {
-  Input,
-  Tabs,
-  Row,
-  Col,
-  Card,
-  Tag,
-  Space,
-  Avatar,
-  Image,
-  Pagination,
-} from "antd";
 import { styled } from "styled-components";
 import { useRequest } from "ahooks";
 import {
-  GetBookmarkMarketTeams,
+  GetBookmarkMarketCategorys,
   GetBookmarkMarketCollects,
-} from "../services/bookmark";
-import Container from "../components/Container";
+  GetBookmarkMarketTeams,
+} from "../../services/bookmark";
+import Container from "../../components/Container";
 
 const TeamRoot = styled(Card)``;
 
@@ -105,12 +94,18 @@ const Team = ({ title, desc, thumb, tags, name, avatar, date }) => {
   );
 };
 
-const TeamView = ({ searchKey }) => {
-  const [pageIndex, setPageIndex] = useState(1);
-
-  const pageSize = 2;
-
-  const { data: teams } = useRequest(GetBookmarkMarketTeams);
+const TeamView = ({ classId }) => {
+  const { data: bookmarkTeam } = useRequest(GetBookmarkMarketTeams, {
+    defaultParams: [
+      {
+        classId,
+        pageNum: 1,
+        pageSize: 12,
+        searchKey: "",
+      },
+    ],
+    refreshDeps: [classId],
+  });
 
   return (
     <Container title={false} gutter={[12, 24]}>
@@ -120,8 +115,8 @@ const TeamView = ({ searchKey }) => {
           { xs: 4, sm: 8, md: 12, lg: 16 },
         ]}
       >
-        {(teams?.rows || []).map((item) => (
-          <Col xs={12} sm={8} lg={6}>
+        {(bookmarkTeam?.rows || []).map((item) => (
+          <Col xs={12} sm={8} lg={6} key={item.id}>
             <Team
               title={item.title}
               desc={item.description}
@@ -134,23 +129,22 @@ const TeamView = ({ searchKey }) => {
           </Col>
         ))}
       </Row>
-
-      <Pagination
-        current={pageIndex}
-        pageSize={pageSize}
-        total={teams?.total}
-        onChange={setPageIndex}
-      />
     </Container>
   );
 };
 
-const CollectView = ({ searchKey }) => {
-  const [pageIndex, setPageIndex] = useState(1);
-
-  const pageSize = 2;
-
-  const { data: collects } = useRequest(GetBookmarkMarketCollects);
+const CollectView = ({ classId }) => {
+  const { data: bookmarkCollect } = useRequest(GetBookmarkMarketCollects, {
+    defaultParams: [
+      {
+        classId,
+        pageNum: 1,
+        pageSize: 12,
+        searchKey: "",
+      },
+    ],
+    refreshDeps: [classId],
+  });
 
   return (
     <Container title={false} gutter={[12, 24]}>
@@ -160,8 +154,8 @@ const CollectView = ({ searchKey }) => {
           { xs: 4, sm: 8, md: 12, lg: 16 },
         ]}
       >
-        {(collects?.rows || []).map((item) => (
-          <Col xs={12} sm={8} lg={6}>
+        {(bookmarkCollect?.rows || []).map((item) => (
+          <Col xs={12} sm={8} lg={6} key={item.id}>
             <Team
               title={item.title}
               desc={item.description}
@@ -174,28 +168,49 @@ const CollectView = ({ searchKey }) => {
           </Col>
         ))}
       </Row>
-
-      <Pagination
-        current={pageIndex}
-        pageSize={pageSize}
-        total={collects?.total}
-        onChange={setPageIndex}
-      />
     </Container>
   );
 };
 
-const SearchPanel = styled.div`
-  max-width: 640px;
-  margin: 0 auto;
-  margin-bottom: 32px;
+const BannerPanel = styled.div`
+  background-color: #1677ff;
+  color: #fff;
+`;
+
+const Title = styled.h1`
+  font-size: 24px;
+`;
+
+const Desc = styled.p`
+  font-size: 14px;
+`;
+
+const NavBar = styled(Tabs)`
+  .ant-tabs-nav::before {
+    border-bottom: none;
+  }
+`;
+
+const CategoryBar = styled(NavBar)`
+  .ant-tabs-tab-btn {
+    color: #5f5f5f;
+  }
+  .ant-tabs-ink-bar {
+    background: none;
+  }
 `;
 
 const Component = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { data: bookmarkCategorys } = useRequest(GetBookmarkMarketCategorys);
 
-  const type = searchParams.get("type");
-  const keyword = searchParams.get("keyword");
+  const navTabs = [
+    { key: "team", label: "优秀团队" },
+    { key: "collect", label: "收藏夹" },
+  ];
+
+  const [navTabKey, setNavTabKey] = useState("team");
+
+  const [navCategoryKey, setNavCategoryKey] = useState("");
 
   const viewMap = {
     team: TeamView,
@@ -204,37 +219,33 @@ const Component = () => {
 
   return (
     <>
-      <Container title={false} gutter={[16, 24]}>
-        <SearchPanel>
-          <Input.Search
-            defaultValue={keyword}
-            autoFocus
-            placeholder="搜索"
-            size="large"
-            onSearch={(keyword) => {
-              keyword.trim() &&
-                setSearchParams(`type=${type}&keyword=${keyword}`);
-            }}
-          />
-        </SearchPanel>
-
-        <Tabs
-          defaultActiveKey={type}
+      <BannerPanel>
+        <Container title={false} gutter={[12, 24]}>
+          <Title>发现你身边有趣好玩的事物</Title>
+          <Desc>发现·收藏·分享--记忆·兴趣·智慧</Desc>
+        </Container>
+      </BannerPanel>
+      <Container title={false} gutter={[12, 0]}>
+        <NavBar activeKey={navTabKey} items={navTabs} onChange={setNavTabKey} />
+        <CategoryBar
+          size="small"
+          animated={false}
+          activeKey={navCategoryKey}
           items={[
             {
-              key: "team",
-              label: `优秀团队`,
+              label: "全部",
+              key: "",
             },
-            {
-              key: "collect",
-              label: `收藏夹`,
-            },
+            ...(bookmarkCategorys || []).map((item) => ({
+              label: item.title,
+              key: item.id,
+            })),
           ]}
-          onChange={(key) => setSearchParams(`type=${key}&keyword=${keyword}`)}
+          onChange={setNavCategoryKey}
         />
       </Container>
 
-      {viewMap[type] && viewMap[type]({ searchKey: keyword })}
+      {viewMap[navTabKey] && viewMap[navTabKey]({ classId: navCategoryKey })}
     </>
   );
 };
