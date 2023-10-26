@@ -97,3 +97,22 @@ export const GetAgentHelpMethods = () =>
       carry: ["site"],
     }
   );
+
+// 获取配置样式模块列表
+export const GetConfigStyleModuleList = ({
+  pageId,
+  positionType,
+  projectId,
+  terminal,
+}) =>
+  request(
+    {
+      url: "/YunDlAgentPageConfig/getdlIdPageConfig",
+      method: "POST",
+      data: { pageId, positionType, projectId, terminal },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site"],
+    }
+  );

@@ -5,7 +5,6 @@ import {
   DatabaseOutlined,
   LogoutOutlined,
   LoginOutlined,
-  CompassOutlined,
   UnorderedListOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -40,13 +39,8 @@ const defaultLayout = {
 
 const defaultProps = {
   route: {
-    path: "/",
+    path: "/community",
     routes: [
-      {
-        path: "/community/index",
-        name: "发现",
-        icon: <CompassOutlined />,
-      },
       {
         path: "/community/category",
         name: "分类",
@@ -185,7 +179,7 @@ export default () => {
           >
             <ProLayout
               logo={agentSetting?.weblogoUrl || undefined}
-              title="资料下载网"
+              title={agentSetting?.webname}
               {...defaultLayout}
               {...defaultProps}
               location={{
@@ -198,7 +192,7 @@ export default () => {
                 },
               }}
               avatarProps={avatarProps}
-              onMenuHeaderClick={() => navigate("/")}
+              onMenuHeaderClick={() => navigate("/community")}
               menuItemRender={(item, dom) => (
                 <Navigate to={item.path}>{dom}</Navigate>
               )}
@@ -231,8 +225,25 @@ export default () => {
                     }
                     placeholder="搜索资源"
                     bordered={false}
+                    onPressEnter={(e) =>
+                      navigate("/community/search?keyword=" + e.target.value)
+                    }
                   />
                 </div>,
+                <img
+                  src="/imgs/vip.png"
+                  width={36}
+                  height={36}
+                  title="开通会员"
+                  onClick={() => navigate("/buykey")}
+                />,
+                <img
+                  src="/imgs/cooperation.png"
+                  width={36}
+                  height={35}
+                  title="申请加盟"
+                  onClick={() => navigate("/applyjoin")}
+                />,
               ]}
               contentStyle={{ padding: 0 }}
               footerRender={Copyright}

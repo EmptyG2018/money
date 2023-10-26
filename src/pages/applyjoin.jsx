@@ -14,6 +14,8 @@ import {
   GetRandSiteDomainPrefix,
   CreateAgentSite,
 } from "../services/agent";
+import { useUser } from "../hooks/user";
+import { useNavigatorPath } from "../hooks/recordPath";
 import styled from "styled-components";
 
 const ComponentRoot = styled.div`
@@ -59,10 +61,17 @@ const Title = styled.div`
   margin-bottom: 16px;
 `;
 
+const Tips = styled.div`
+  margin-top: -12px;
+  margin-bottom: 24px;
+`;
+
 const Component = () => {
   const applyjoinForm = useRef();
   const [messageApi, contextHolder] = message.useMessage();
-  const { data: versions } = useRequest(GetSiteVersion);
+  const { user } = useUser();
+  const navigationPath = useNavigatorPath("/login");
+  const { data: version } = useRequest(GetSiteVersion);
   const { data: domains } = useRequest(GetSiteDomainSuffix);
   const { runAsync: randSiteDomainPrefix } = useRequest(
     GetRandSiteDomainPrefix,
@@ -73,6 +82,7 @@ const Component = () => {
   });
 
   const submit = async () => {
+    if (!user) return navigationPath();
     const fields =
       await applyjoinForm.current.validateFieldsReturnFormatValue();
     const { pass, ...values } = fields;
@@ -84,6 +94,8 @@ const Component = () => {
       messageApi.error(err.message);
     }
   };
+
+  const [gourl, editionInfo = []] = [version?.goUrlInfo, version?.editionInfo];
 
   return (
     <>
@@ -105,7 +117,7 @@ const Component = () => {
                   name="id"
                   label="分站版本"
                   radioType="button"
-                  options={(versions?.editionInfo || []).map((item) => ({
+                  options={(editionInfo || []).map((item) => ({
                     label: item.name,
                     value: item.id,
                   }))}
@@ -209,6 +221,11 @@ const Component = () => {
                 <Button type="primary" onClick={submit}>
                   创建分站
                 </Button>
+                {gourl?.remark && (
+                  <Button type="link" target="_blank" href={gourl.urlLink}>
+                    {gourl.remark}
+                  </Button>
+                )}
               </ProForm>
             </FormCard>
           </Container>

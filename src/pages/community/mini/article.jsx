@@ -1,12 +1,15 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { NavBar, Image, Space, Tag, Avatar } from "antd-mobile";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button, NavBar, Image, Space, Tag, Avatar } from "antd-mobile";
 import { LinkOutline, DownCircleOutline, LockFill } from "antd-mobile-icons";
 import { useRequest } from "ahooks";
 import { useUser } from "../../../hooks/user";
+import { useNavigatorPath } from "../../../hooks/recordPath";
+import useDownload from "../../../hooks/download";
 import {
   GetPostContent,
   GetPostHideContent,
+  DownloadPostAttach,
 } from "../../../services/community/post";
 import { styled } from "styled-components";
 import Page from "../../../components/community/mini/Page";
@@ -79,6 +82,11 @@ const ArticleExtra = styled(Space)`
   margin-bottom: 16px;
 `;
 
+const TextDecoration = styled.span`
+  color: inherit;
+  text-decoration: underline;
+`;
+
 const UnLockContent = styled.div`
   padding: 12px 24px;
   border: 1px dashed #1677ff;
@@ -99,24 +107,33 @@ const LockTip = styled(UnLockContent)`
 `;
 
 const Component = () => {
+  const navigate = useNavigate();
   const { user } = useUser();
   const params = useParams();
+  const { download } = useDownload();
+  const navigationPath = useNavigatorPath("/login");
+
   const { data: post, error: postError } = useRequest(GetPostContent, {
     defaultParams: [{ tid: params.id }],
   });
+
+  const { runAsync: downloadPostAttach } = useRequest(DownloadPostAttach, {
+    manual: true,
+  });
+
   const {
-    run: getHidePost,
+    refresh: getHidePost,
     data: hidePost,
     error: hidePostError,
-  } = useRequest(GetPostHideContent, {
+  } = useRequest(() => GetPostHideContent({ tid: params.id }), {
     manual: true,
   });
 
   useEffect(() => {
-    post?.readRole === 1 && getHidePost({ tid: params.id });
+    post?.readRole === 2 && getHidePost();
   }, [post]);
 
-  const showPost = post?.readRole === 1 ? hidePost : post;
+  const showPost = hidePost || post;
 
   const showError = hidePostError || postError;
 
@@ -128,7 +145,18 @@ const Component = () => {
           {user ? (
             showPost.readRole === 0 ? (
               <LockTip>
-                <LockFill /> 此处内容已隐藏，开通会员可查看
+                <LockFill /> 此处内容已隐藏，
+                <TextDecoration onClick={() => navigate("/buykey")}>
+                  开通会员
+                </TextDecoration>
+                可查看
+              </LockTip>
+            ) : !hidePost ? (
+              <LockTip>
+                <LockFill /> 此处内容已隐藏，
+                <TextDecoration onClick={() => getHidePost()}>
+                  点击查看
+                </TextDecoration>
               </LockTip>
             ) : (
               <UnLockContent>
@@ -138,7 +166,11 @@ const Component = () => {
             )
           ) : (
             <LockTip>
-              <LockFill /> 此处内容已隐藏，请登录后查看权益
+              <LockFill /> 此处内容已隐藏，请
+              <TextDecoration onClick={() => navigationPath()}>
+                登录
+              </TextDecoration>
+              后查看权益
             </LockTip>
           )}
         </div>
@@ -175,18 +207,33 @@ const Component = () => {
               >
                 {user ? (
                   showPost.downRole === 0 ? (
-                    <>
+                    <Button
+                      block
+                      color="warning"
+                      onClick={() => navigate("/buykey")}
+                    >
                       <LinkOutline /> 购买会员可下载附件
-                    </>
+                    </Button>
                   ) : (
-                    <>
+                    <Button
+                      block
+                      color="primary"
+                      onClick={async () => {
+                        const bufferData = await downloadPostAttach({ aid });
+                        download(bufferData, filename);
+                      }}
+                    >
                       <DownCircleOutline /> 立即下载附件
-                    </>
+                    </Button>
                   )
                 ) : (
-                  <>
+                  <Button
+                    block
+                    color="warning"
+                    onClick={() => navigationPath()}
+                  >
                     <LinkOutline /> 请登录后查看权益
-                  </>
+                  </Button>
                 )}
               </DownloadFile>
             )}
@@ -199,6 +246,7 @@ const Component = () => {
   return (
     <>
       <NavBar onBack={() => history.back()}>{showPost?.subject}</NavBar>
+      <div style={{ height: "10px", backgroundColor: "#f5f5f5" }}></div>
       <Page yScroll gutter={[16]}>
         {showError && (
           <div style={{ textAlign: "center", padding: "16px" }}>

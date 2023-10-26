@@ -56,7 +56,7 @@ const Component = () => {
           <SubTitle>使用过程中遇到任何问题，请联系我们哦</SubTitle>
           <Space size={24} wrap>
             {(helpMethods || []).map((item) => (
-              <Contact>
+              <Contact key={item.id}>
                 {item.url ? (
                   <Image
                     src={item.url}

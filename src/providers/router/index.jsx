@@ -9,12 +9,16 @@ import { LoginedPage } from "../../plugins/access";
 
 import navigationRoutes from "./navigation";
 import { communityRoutes, communityMobileRoutes } from "./community";
+import { examRoutes } from "./exam";
 import adminRoutes from "./_admin";
 
+import User from "../../layouts/user";
 import BuyKey from "../../pages/buykey";
 import ApplyJoin from "../../pages/applyjoin";
 import Login from "../../pages/login";
 import Register from "../../pages/register";
+import Info from "../../pages/info";
+import EditPwd from "../../pages/editpwd";
 import Help from "../../pages/help";
 import NoFound from "../../pages/404";
 
@@ -42,6 +46,20 @@ const routes = createBrowserRouter([
         element: <LoginedPage element={<Register />} />,
       },
       {
+        path: "user",
+        element: <User />,
+        children: [
+          {
+            path: "info",
+            element: <LoginedPage element={<Info />} />,
+          },
+          {
+            path: "editpwd",
+            element: <LoginedPage element={<EditPwd />} />,
+          },
+        ],
+      },
+      {
         path: "/help",
         element: <Help />,
       },
@@ -50,6 +68,7 @@ const routes = createBrowserRouter([
   navigationRoutes,
   communityRoutes,
   communityMobileRoutes,
+  examRoutes,
   adminRoutes,
   {
     path: "/demo",

@@ -7,15 +7,15 @@ import {
 } from "@ant-design/icons";
 import { ProCard } from "@ant-design/pro-components";
 import { styled } from "styled-components";
-import { useUser } from "../hooks/user";
+import { useUser } from "../../hooks/user";
 import { useRequest } from "ahooks";
-import { GetProfile } from "../services/user";
+import { GetProfile } from "../../services/user";
 import {
   GetBookmarkUserCollect,
   GetBookmarkUserOpenTeam,
   GetBookmarkUserJoinTeam,
-} from "../services/bookmark";
-import Container from "../components/Container";
+} from "../../services/bookmark";
+import Container from "../../components/Container";
 
 const TeamRoot = styled(Card)``;
 
@@ -332,7 +332,7 @@ const Component = () => {
             <InfoEditBtn
               type="primary"
               block
-              onClick={() => navigate("/settings/info")}
+              onClick={() => navigate("/user/info")}
             >
               编辑资料
             </InfoEditBtn>

@@ -1,10 +1,11 @@
-import { Button, Space } from "antd";
+import { Space } from "antd";
 import { FileOutlined } from "@ant-design/icons";
-import { styled } from "styled-components";
+import styled, { css } from "styled-components";
 
 const ComponentRoot = styled.div`
-  width: 420px;
-  background-color: #ececec;
+  max-width: 420px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-primary);
   gap: 24px;
   padding: 16px;
   border-radius: 6px;
@@ -27,21 +28,37 @@ const DownloadFileCell = styled.div`
 `;
 
 const DownloadFileName = styled.div`
+  color: #333;
   font-size: 16px;
   line-height: 24px;
 `;
 
 const DownloadFileDesc = styled.span`
   font-size: 12px;
-  color: #666;
-  background-color: #d8d8d8;
+  color: #838383;
+  background-color: var(--color-tag);
   padding: 4px 8px;
   border-radius: 99px;
 `;
 
-const Component = ({ name, size, disabled, ...props }) => {
+const Component = ({ state = "primary", name, size, children }) => {
+  const stateMap = {
+    primary: {
+      "--color-primary": "#1677ff",
+      "--color-bg": "#f0f6ff",
+      "--color-tag": "#dfecff",
+    },
+    warning: {
+      "--color-primary": "#ff8f1f",
+      "--color-bg": "#fff5ec",
+      "--color-tag": "#ffe9d3",
+    },
+  };
+
+  const cssVar = stateMap[state] ? stateMap[state] : stateMap["primary"];
+
   return (
-    <ComponentRoot>
+    <ComponentRoot style={cssVar}>
       <DownloadFileCard>
         <FileOutlined style={{ position: "relative", top: 4, fontSize: 20 }} />
         <DownloadFileCell>
@@ -51,7 +68,7 @@ const Component = ({ name, size, disabled, ...props }) => {
           </Space>
         </DownloadFileCell>
       </DownloadFileCard>
-      <Button type="primary" disabled={disabled} {...props} />
+      {children}
     </ComponentRoot>
   );
 };

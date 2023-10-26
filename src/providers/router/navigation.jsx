@@ -8,6 +8,7 @@ import Search from "../../pages/navigation/search";
 import Hall from "../../pages/navigation/hall";
 import Team from "../../pages/navigation/team";
 import Collect from "../../pages/navigation/collect";
+import User from "../../pages/navigation/user";
 
 export default {
   path: "/",
@@ -40,6 +41,10 @@ export default {
         {
           path: "collect/:id",
           element: <Collect />,
+        },
+        {
+          path: "user",
+          element: <User />,
         },
       ],
     },

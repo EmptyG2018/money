@@ -8,11 +8,38 @@ import {
 } from "antd-mobile-icons";
 import { styled } from "styled-components";
 import { useRequest } from "ahooks";
-import { GetPostBannars, GetIfPosts } from "../../../services/community/post";
+import { GetPostCarsouels, GetIfPosts } from "../../../services/community/post";
 import Page from "../../../components/community/mini/Page";
 
 const CONSTAVATARIMG =
   "http://6uzy.com/uc_server/avatar.php?uid=1&size=middle&ts=1";
+
+const DotIndicator = styled.div`
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 8px;
+  color: #ffffff;
+  border-radius: 4px;
+  user-select: none;
+`;
+
+const SwiperDescription = styled.div`
+  box-sizing: border-box;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
 
 const ArticleList = styled(List)`
   margin-bottom: 10px;
@@ -62,8 +89,8 @@ const ArticleDesc = styled.div`
 
 const Component = () => {
   const navigate = useNavigate();
-  const { data: postBannars } = useRequest(GetPostBannars, {
-    defaultParams: [{ modeId: 31 }],
+  const { data: postBannars } = useRequest(GetPostCarsouels, {
+    defaultParams: [{ limit: 6 }],
   });
   const { data: newPosts } = useRequest(GetIfPosts, {
     defaultParams: [{ pageNum: 1, pageSize: 12, sort: "new" }],
@@ -88,17 +115,22 @@ const Component = () => {
         {postBannars?.length && (
           <Swiper
             autoplay
+            indicator={(total, current) => (
+              <DotIndicator>
+                {current + 1}/{total}
+              </DotIndicator>
+            )}
             style={{
               marginBottom: "10px",
             }}
           >
-            {postBannars.map((item) => (
-              <Swiper.Item key={item.id}>
-                <Image
-                  src={item.imgUrl}
-                  height={120}
-                  onClick={() => window.open(item.goUrl)}
-                />
+            {(postBannars || []).map((item) => (
+              <Swiper.Item
+                key={item.tid}
+                onClick={() => navigate("/m/community/article/" + item.tid)}
+              >
+                <Image src={item.threadimage} height={160} fit="cover" />
+                <SwiperDescription>{item.subject}</SwiperDescription>
               </Swiper.Item>
             ))}
           </Swiper>

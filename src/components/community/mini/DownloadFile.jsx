@@ -1,4 +1,4 @@
-import { Card, Button, Space } from "antd-mobile";
+import { Card, Space } from "antd-mobile";
 import { FolderOutline } from "antd-mobile-icons";
 import { styled } from "styled-components";
 
@@ -43,7 +43,7 @@ const DownloadFileDesc = styled.span`
   border-radius: 99px;
 `;
 
-const Component = ({ state = "primary", name, size, ...props }) => {
+const Component = ({ state = "primary", name, size, children }) => {
   const stateMap = {
     primary: {
       "--color-primary": "#1677ff",
@@ -70,7 +70,7 @@ const Component = ({ state = "primary", name, size, ...props }) => {
           </Space>
         </DownloadFileCell>
       </DownloadFileCard>
-      <Button block color={state} {...props} />
+      {children}
     </ComponentRoot>
   );
 };

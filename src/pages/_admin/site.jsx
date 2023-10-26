@@ -140,7 +140,17 @@ const Component = () => {
                 },
               ]}
             />
-            <ProFormTextArea label="提示信息" width="lg" name="remark" />
+            <ProFormTextArea
+              label="提示信息"
+              width="lg"
+              name="remark"
+              rules={[
+                {
+                  required: true,
+                  message: "请输入提示信息",
+                },
+              ]}
+            />
           </ProForm>
         </ProCard>
       </PageContainer>

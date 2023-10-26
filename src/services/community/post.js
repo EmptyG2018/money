@@ -143,3 +143,18 @@ export const GetPostHideContent = ({ tid }) =>
       carry: ["site", "auth"],
     }
   );
+
+export const DownloadPostAttach = ({ aid }) => {
+  return request(
+    {
+      url: "/PreForumPost/downloadAttachments",
+      method: "POST",
+      data: { aid },
+      responseType: "arraybuffer",
+    },
+    {
+      responseDataType: "download",
+      carry: ["auth", "site"],
+    }
+  );
+};

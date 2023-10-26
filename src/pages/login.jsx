@@ -6,6 +6,7 @@ import { useAgentSetting } from "../plugins/agent";
 import { useRequest } from "ahooks";
 import { LoginAccount } from "../services/user";
 import { useUser } from "../hooks/user";
+import { useRedirectPath } from "../hooks/recordPath";
 
 const ComponentRoot = styled.div`
   display: flex;
@@ -62,12 +63,14 @@ const Component = () => {
   const { agentSetting } = useAgentSetting();
   const { runAsync: loginAccount } = useRequest(LoginAccount, { manual: true });
   const { login } = useUser();
+  const redirectPath = useRedirectPath();
   const [messageApi, contextHolder] = message.useMessage();
 
   const submit = async (values) => {
     try {
       const { token, userInfo } = await loginAccount(values);
       login(token, userInfo);
+      setTimeout(redirectPath, 0);
     } catch (err) {
       messageApi.error(err.message);
     }

@@ -3,6 +3,7 @@ import { Input, Button, Card, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { useUser } from "../hooks/user";
+import { useNavigatorPath } from "../hooks/recordPath";
 import { GetVipUserGroups, BuyVipUserGroupCardKey } from "../services/vip";
 import styled, { css } from "styled-components";
 
@@ -113,12 +114,18 @@ const BuyMoney = styled.span`
   font-weight: 600;
 `;
 
+const Tips = styled.div`
+  margin-top: -12px;
+  margin-bottom: 24px;
+`;
+
 const Component = () => {
   const [key, setKey] = useState("");
   const [checkedBuy, setCheckedBuy] = useState();
   const [messageApi, contextHolder] = message.useMessage();
+  const navigationPath = useNavigatorPath("/login");
   const { user } = useUser();
-  const { data: vipUserGroups } = useRequest(GetVipUserGroups);
+  const { data: vipKey } = useRequest(GetVipUserGroups);
   const { runAsync: buyVipUserGroupCardKey } = useRequest(
     BuyVipUserGroupCardKey,
     {
@@ -127,6 +134,7 @@ const Component = () => {
   );
 
   const submit = async () => {
+    if (!user) return navigationPath();
     if (!checkedBuy) return messageApi.warning("请选择会员级别");
     if (!key) return messageApi.warning("请输入卡密");
     try {
@@ -135,6 +143,8 @@ const Component = () => {
       messageApi.error(err.message);
     }
   };
+
+  const [gourl, groupList = []] = [vipKey?.gourl, vipKey?.groupList];
 
   return (
     <>
@@ -162,7 +172,7 @@ const Component = () => {
                   )}
                 </CardTop>
                 <BuySelect>
-                  {(vipUserGroups?.groupList || []).map((item) => (
+                  {groupList.map((item) => (
                     <BuyOption
                       key={item.id}
                       checked={checkedBuy?.id === item.id}
@@ -182,6 +192,13 @@ const Component = () => {
                   style={{ marginBlockEnd: "24px" }}
                   onChange={(e) => setKey(e.target.value)}
                 />
+                {gourl?.remark && (
+                  <Tips>
+                    <a target="_blank" href={gourl.urlLink}>
+                      {gourl.remark}
+                    </a>
+                  </Tips>
+                )}
                 <Button type="primary" size="large" block onClick={submit}>
                   确认购买
                 </Button>

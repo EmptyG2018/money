@@ -1,8 +1,17 @@
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useRequest } from "ahooks";
-import { GetPostContent } from "../../services/community/post";
-import { styled } from "styled-components";
-import { Avatar, Tag, Image, Space } from "antd";
+import {
+  GetPostContent,
+  GetPostHideContent,
+  DownloadPostAttach,
+} from "../../services/community/post";
+import { styled, css } from "styled-components";
+import { Typography, Avatar, Tag, Image, Space, message } from "antd";
+import { LinkOutlined, DownloadOutlined, LockFilled } from "@ant-design/icons";
+import { useUser } from "../../hooks/user";
+import { useNavigatorPath } from "../../hooks/recordPath";
+import useDownload from "../../hooks/download";
 import Byte from "../../components/Byte";
 import BBcodeRender from "../../components/BBCodeRender";
 import DownloadFile from "../../components/community/DownloadFile";
@@ -30,19 +39,6 @@ const deepNodeTree = (children) =>
       if (item.type === "text") return item.data;
     })
     .join("");
-
-const HideContent = ({ content }) => {
-  return (
-    <div style={{ padding: "12px 24px", border: "1px dashed #ff9500" }}>
-      <div
-        style={{ textAlign: "center", lineHeight: "24px", marginBottom: "8px" }}
-      >
-        本帖隐藏内容
-      </div>
-      <div dangerouslySetInnerHTML={{ __html: content }}></div>
-    </div>
-  );
-};
 
 const Article = styled.div`
   word-wrap: break-word;
@@ -90,25 +86,150 @@ const ArticleExtra = styled.div`
   border-bottom: 1px solid #f5f5f5;
 `;
 
+const DownloadBtn = styled.button`
+  outline: none;
+  position: relative;
+  display: inline-block;
+  font-weight: 400;
+  white-space: nowrap;
+  text-align: center;
+  background-image: none;
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  line-height: 1.5714285714285714;
+  color: #fff;
+  font-size: 14px;
+  height: 32px;
+  padding: 4px 15px;
+  border-radius: 6px;
+
+  ${({ color }) =>
+    color === "primary" &&
+    css`
+      background-color: #1677ff;
+    `}
+  ${({ color }) =>
+    color === "warning" &&
+    css`
+      background-color: #ff8f1f;
+    `}
+`;
+
+const UnLockContent = styled.div`
+  padding: 12px 24px;
+  border: 1px dashed #1677ff;
+  background-color: #edf5ff;
+`;
+
+const UnLockContentHeader = styled.div`
+  text-align: center;
+  line-height: 24px;
+  margin-bottom: 8px;
+`;
+
+const LockTip = styled(UnLockContent)`
+  border-color: #ff8f1f;
+  color: #ff8f1f;
+  background-color: #fff9f4;
+  text-align: center;
+`;
+
 const Component = () => {
+  const navigate = useNavigate();
   const params = useParams();
-  const { data: postContent, error } = useRequest(GetPostContent, {
+  const { user } = useUser();
+  const { download } = useDownload();
+  const [messageApi, contextHolder] = message.useMessage();
+  const navigationPath = useNavigatorPath("/login");
+
+  const { data: post, error: postError } = useRequest(GetPostContent, {
     defaultParams: [{ tid: params.id }],
   });
+
+  const { runAsync: downloadPostAttach } = useRequest(DownloadPostAttach, {
+    manual: true,
+    onError(error) {
+      messageApi.error(error.message);
+    },
+  });
+
+  const {
+    refresh: getHidePost,
+    data: hidePost,
+    error: hidePostError,
+  } = useRequest(() => GetPostHideContent({ tid: params.id }), {
+    manual: true,
+  });
+
+  useEffect(() => {
+    post?.readRole === 2 && getHidePost();
+  }, [post]);
+
+  const showPost = hidePost || post;
+
+  const showError = hidePostError || postError;
 
   const replace = (node) => {
     if (node.attribs?.["data-type"] === "hide") {
       const content = deepNodeTree(node?.children);
       return (
         <div style={{ marginBlock: 16 }}>
-          <HideContent content={content} />
+          {user ? (
+            <>
+              {showPost.readRole === 0 ? (
+                <LockTip>
+                  <LockFilled /> 此处内容已隐藏，
+                  <Typography.Text
+                    underline
+                    style={{ color: "inherit" }}
+                    onClick={() => navigate("/buykey")}
+                  >
+                    开通会员
+                  </Typography.Text>
+                  可查看
+                </LockTip>
+              ) : !hidePost ? (
+                <LockTip>
+                  <LockFilled /> 此处内容已隐藏，
+                  <Typography.Text
+                    underline
+                    style={{ color: "inherit" }}
+                    onClick={() => getHidePost()}
+                  >
+                    点击查看
+                  </Typography.Text>
+                </LockTip>
+              ) : (
+                <UnLockContent>
+                  <UnLockContentHeader>本帖隐藏内容</UnLockContentHeader>
+                  <div dangerouslySetInnerHTML={{ __html: content }}></div>
+                </UnLockContent>
+              )}
+              {}
+            </>
+          ) : (
+            <LockTip>
+              <LockFilled /> 此处内容已隐藏，请
+              <Typography.Text
+                underline
+                style={{ color: "inherit" }}
+                onClick={() => navigationPath()}
+              >
+                登录
+              </Typography.Text>
+              后查看权益
+            </LockTip>
+          )}
         </div>
       );
     }
     if (node.attribs?.["data-type"] === "attachimg") {
       const aId = node.attribs?.["data-value"];
       const { aid, isimage, attachment } =
-        postContent.list.find((item) => item.aid === +aId) || {};
+        showPost.list.find((item) => item.aid === +aId) || {};
       return (
         !!aid &&
         !!isimage && (
@@ -121,7 +242,7 @@ const Component = () => {
     if (node.attribs?.["data-type"] === "attach") {
       const aId = node.attribs?.["data-value"];
       const { aid, isimage, filename, attachment, filesize } =
-        postContent.list.find((item) => item.aid === +aId) || {};
+        showPost.list.find((item) => item.aid === +aId) || {};
       return (
         !!aid && (
           <div style={{ marginBlock: "16px" }}>
@@ -132,9 +253,32 @@ const Component = () => {
                 name={filename}
                 size={<Byte byte={filesize} />}
                 count={100203}
-                disabled={postContent.downRole === 0}
+                state={!user || showPost.downRole === 0 ? "warning" : "primary"}
               >
-                {postContent.downRole === 0 ? "权限不足，无法下载" : "立即下载"}
+                {user ? (
+                  showPost.downRole === 0 ? (
+                    <DownloadBtn
+                      color="warning"
+                      onClick={() => navigate("/buykey")}
+                    >
+                      <LinkOutlined /> 购买会员可下载附件
+                    </DownloadBtn>
+                  ) : (
+                    <DownloadBtn
+                      color="primary"
+                      onClick={async () => {
+                        const bufferData = await downloadPostAttach({ aid });
+                        download(bufferData, filename);
+                      }}
+                    >
+                      <DownloadOutlined /> 立即下载附件
+                    </DownloadBtn>
+                  )
+                ) : (
+                  <DownloadBtn color="warning" onClick={() => navigationPath()}>
+                    <LinkOutlined /> 请登录后查看权益
+                  </DownloadBtn>
+                )}
               </DownloadFile>
             )}
           </div>
@@ -144,36 +288,39 @@ const Component = () => {
   };
 
   return (
-    <Container title={false} gutter={[16, 24]}>
-      <ProCard>
-        {error && (
-          <div style={{ textAlign: "center", padding: "16px" }}>
-            {error?.message}
-          </div>
-        )}
-        {postContent && (
-          <Article>
-            <ArticleTitle>{postContent?.subject}</ArticleTitle>
-            <ArticleExtra>
-              <Space>
-                <Tag bordered={false}>
-                  <Space size={4} align="center">
-                    <Avatar src={postContent?.photoUrl} size={16} />
-                    {postContent?.author}
-                  </Space>
-                </Tag>
-                <Tag bordered={false}>{postContent?.dateline}</Tag>
-              </Space>
-            </ArticleExtra>
+    <>
+      {contextHolder}
+      <Container title={false} gutter={[16, 24]}>
+        <ProCard>
+          {showError && (
+            <div style={{ textAlign: "center", padding: "16px" }}>
+              {showError?.message}
+            </div>
+          )}
+          {showPost && (
+            <Article>
+              <ArticleTitle>{showPost?.subject}</ArticleTitle>
+              <ArticleExtra>
+                <Space>
+                  <Tag bordered={false}>
+                    <Space size={4} align="center">
+                      <Avatar src={showPost?.photoUrl} size={16} />
+                      {showPost?.author}
+                    </Space>
+                  </Tag>
+                  <Tag bordered={false}>{showPost?.dateline}</Tag>
+                </Space>
+              </ArticleExtra>
 
-            <BBcodeRender
-              code={postContent?.message || ""}
-              parseOptions={{ replace }}
-            />
-          </Article>
-        )}
-      </ProCard>
-    </Container>
+              <BBcodeRender
+                code={showPost?.message || ""}
+                parseOptions={{ replace }}
+              />
+            </Article>
+          )}
+        </ProCard>
+      </Container>
+    </>
   );
 };
 

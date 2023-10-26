@@ -1,6 +1,10 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { TabBar } from "antd-mobile";
-import { CompassOutline, UnorderedListOutline, UserOutline } from "antd-mobile-icons";
+import {
+  CompassOutline,
+  UnorderedListOutline,
+  UserOutline,
+} from "antd-mobile-icons";
 import { styled } from "styled-components";
 
 const ComponentRoot = styled.div`
@@ -22,7 +26,7 @@ const Component = () => {
 
   const tabs = [
     {
-      key: "/m/community/index",
+      key: "/m/community",
       title: "发现",
       icon: <CompassOutline />,
     },
@@ -32,7 +36,7 @@ const Component = () => {
       icon: <UnorderedListOutline />,
     },
     {
-      key: "",
+      key: "/m/community/user",
       title: "我的",
       icon: <UserOutline />,
     },

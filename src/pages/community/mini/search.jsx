@@ -12,7 +12,7 @@ import { EyeOutline, ClockCircleOutline } from "antd-mobile-icons";
 import { styled } from "styled-components";
 import useSearchHistory, {
   saveSearchStore,
-} from "../../../hooks/community/mini/useSearchHistory";
+} from "../../../hooks/community/useSearchHistory";
 import { useRequest } from "ahooks";
 import { GetKeywordPosts } from "../../../services/community/post";
 import Page from "../../../components/community/mini/Page";
