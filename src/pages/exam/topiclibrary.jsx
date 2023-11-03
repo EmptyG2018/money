@@ -1,8 +1,9 @@
-import Container from "../../components/Container";
+import { Link } from "react-router-dom";
 import { Card, Row, Col } from "antd";
 import { useRequest } from "ahooks";
 import { GetCorrelationCategoryTrees } from "../../services/exam/category";
 import styled from "styled-components";
+import Container from "../../components/Container";
 
 const CategorySection = styled.div`
   background-color: #fff;
@@ -32,8 +33,11 @@ const CategoryTag = styled.div`
   white-space: nowrap;
   background-color: #eef3fa;
   cursor: pointer;
-  &:hover {
-    color: #1677ff;
+  & > a {
+    color: #333;
+    &:hover {
+      color: #1677ff;
+    }
   }
 `;
 
@@ -43,7 +47,7 @@ const Component = () => {
   );
 
   return (
-    <Container title={false} gutter={[16, 24]}>
+    <Container title={false} gutter={[0, 24]}>
       {(correlationCategoryTrees || []).map((item) => (
         <CategorySection key={item.parentId}>
           <CategoryCard
@@ -53,7 +57,9 @@ const Component = () => {
             <Row gutter={[10, 10]}>
               {item.children.map((item) => (
                 <Col span={4} key={item.id}>
-                  <CategoryTag>{item.name}</CategoryTag>
+                  <CategoryTag>
+                    <Link to={"./" + item.id}>{item.name}</Link>
+                  </CategoryTag>
                 </Col>
               ))}
             </Row>

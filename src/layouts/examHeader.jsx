@@ -45,7 +45,7 @@ const MiniBtn = styled.button`
   zoom: 0.74;
 
   ${({ type, actived }) =>
-    type === "exam" &&
+    type === "paper" &&
     !!actived &&
     css`
       color: #1677fe;
@@ -102,12 +102,12 @@ const SearchInput = styled(Input)`
 `;
 
 const options = [
-  { label: "试卷", key: "exam" },
+  { label: "试卷", key: "paper" },
   { label: "题目", key: "topic" },
 ];
 
 const GlobalSearch = ({ onPressEnter, ...props }) => {
-  const [searchType, setSearchType] = useState("exam");
+  const [searchType, setSearchType] = useState("paper");
   const checkedItem = options.find((item) => searchType === item.key);
   return (
     <GlobalSearchRoot key="SearchOutlined">
@@ -325,8 +325,10 @@ export default () => {
               )}
               actionsRender={() => [
                 <GlobalSearch
-                  onPressEnter={(type, e) =>
-                    navigate("/exam/search?keyword=" + e.target.value)
+                  onPressEnter={(mode, e) =>
+                    navigate(
+                      `/exam/search?mode=${mode}&keyword=${e.target.value}`
+                    )
                   }
                 />,
                 <img
@@ -339,7 +341,7 @@ export default () => {
                 <img
                   src="/imgs/cooperation.png"
                   width={36}
-                  height={35}
+                  height={36}
                   title="申请加盟"
                   onClick={() => navigate("/applyjoin")}
                 />,

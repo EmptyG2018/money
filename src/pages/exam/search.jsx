@@ -1,8 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Button, Card, List, Space } from "antd";
-import { FileTextTwoTone } from "@ant-design/icons";
+import { FileTextTwoTone, AlignLeftOutlined } from "@ant-design/icons";
 import { useRequest } from "ahooks";
+import { GetExamPaperByKeyword } from "../../services/exam/exampaper";
+import { GetTopicQuery } from "../../services/exam/topic";
 import Container from "../../components/Container";
 import styled, { css } from "styled-components";
 import { RightOutline } from "antd-mobile-icons";
@@ -53,10 +55,10 @@ const Filter = ({ activeKey, items, onChange, ...props }) => {
       {items.map((item) => (
         <FilterItem
           key={item.key}
-          actived={item.key === activeKey}
+          actived={item.key === activeKey ? 1 : 0}
           onClick={(e) => {
             e.stopPropagation();
-            onChange && onChange(item.key);
+            onChange && activeKey !== item.key && onChange(item.key);
           }}
         >
           <Space size={2}>
@@ -72,6 +74,7 @@ const Filter = ({ activeKey, items, onChange, ...props }) => {
 const Info = styled.div`
   margin-bottom: 24px;
   padding-inline: 12px;
+  font-size: 15px;
 `;
 
 const RecrodCard = styled(Card)`
@@ -83,83 +86,84 @@ const RecordTitle = styled(Link)`
   font-weight: 400;
 `;
 
+const RecordDesc = styled.div`
+  font-size: 12px;
+`;
+
 const Component = () => {
-  const listRef = useRef();
   const [searchParams] = useSearchParams();
   const word = searchParams.get("keyword");
+  const mode = searchParams.get("mode");
+  const [active, setActive] = useState(mode);
+  const [pagination, setPagination] = useState([1, 10]);
+  const { run: searchExamPaper, data: examPapers } = useRequest(
+    GetExamPaperByKeyword,
+    { manual: true }
+  );
+  const { run: searchTopic, data: topics } = useRequest(GetTopicQuery, {
+    manual: true,
+  });
+
   const keyword = decodeURIComponent(word || "");
 
   const filter = [
     {
       key: "paper",
       label: "试卷",
-      value: 99,
+      value: examPapers?.total || 0,
     },
     {
       key: "topic",
       label: "题目",
-      value: 32,
+      value: topics?.total || 0,
     },
   ];
 
-  const data = [
-    {
-      title: "2022年成人高等考试《语文》（高起本）模考试卷",
-    },
-    {
-      title: "小升初语文章节练习2021",
-    },
-    {
-      title: "2022年中考语文对联专项训练题（1）",
-    },
-    {
-      title: "2020年成人高等考试《语文》（高起专）真题",
-    },
-    {
-      title: "2022年成人高等考试《语文》（高起本）模考试卷",
-    },
-    {
-      title: "小升初语文章节练习2021",
-    },
-    {
-      title: "2022年中考语文对联专项训练题（1）",
-    },
-    {
-      title: "2020年成人高等考试《语文》（高起专）真题",
-    },
-    {
-      title: "2022年成人高等考试《语文》（高起本）模考试卷",
-    },
-    {
-      title: "小升初语文章节练习2021",
-    },
-    {
-      title: "2022年中考语文对联专项训练题（1）",
-    },
-    {
-      title: "2020年成人高等考试《语文》（高起专）真题",
-    },
-  ];
+  const record = useMemo(() => {
+    if (active === "paper") return examPapers;
+    if (active === "topic") return topics;
+  }, [active, examPapers, topics]);
+
+  useEffect(() => {
+    setActive(mode === "topic" ? "topic" : "paper");
+  }, [mode]);
+
+  useEffect(() => {
+    const paylod = {
+      title: keyword,
+      pageNum: pagination[0],
+      pageSize: pagination[1],
+    };
+    if (active === "paper") searchExamPaper(paylod);
+    if (active === "topic") searchTopic(paylod);
+  }, [pagination, active, keyword]);
 
   return (
-    <Container title={false} gutter={[16, 24]}>
-      <Info>以下关于 “{keyword}” 的搜索结果：</Info>
+    <Container title={false} gutter={[0, 24]}>
+      <Info>
+        以下关于 “<b>{keyword}</b>” 的搜索结果：
+      </Info>
       <RecrodCard>
         <Filter
           items={filter}
-          activeKey="topic"
+          activeKey={active}
           style={{ marginBottom: "16px" }}
+          onChange={(key) => {
+            setPagination([1, pagination[1]]);
+            setActive(key);
+          }}
         />
         <List
+          rowKey="id"
           itemLayout="horizontal"
-          dataSource={data}
+          dataSource={record?.rows || []}
           pagination={{
-            onChange: (page) => {
-              console.log(page);
-            },
-            pageSize: 10,
+            onChange: (page, size) => setPagination([page, size]),
+            current: pagination[0],
+            pageSize: pagination[1],
+            total: record?.total || 0,
           }}
-          renderItem={(item, index) => (
+          renderItem={(item) => (
             <List.Item
               actions={[
                 <Button type="link">
@@ -170,16 +174,30 @@ const Component = () => {
             >
               <List.Item.Meta
                 avatar={
-                  <FileTextTwoTone
-                    style={{ marginTop: 8, marginLeft: 8, fontSize: 28 }}
-                  />
+                  <>
+                    {active === "paper" && (
+                      <FileTextTwoTone
+                        style={{ marginTop: 8, marginLeft: 8, fontSize: 28 }}
+                      />
+                    )}
+                    {active === "topic" && (
+                      <AlignLeftOutlined
+                        style={{ marginTop: 8, marginLeft: 8, fontSize: 28 }}
+                      />
+                    )}
+                  </>
                 }
                 title={
                   <RecordTitle href="https://ant.design">
-                    {item.title}
+                    {active === "paper" && item.name}
+                    {active === "topic" && (
+                      <span
+                        dangerouslySetInnerHTML={{ __html: item.title }}
+                      ></span>
+                    )}
                   </RecordTitle>
                 }
-                description="Ant Design, a design language for background applications, is refined by Ant UED Team"
+                description={<RecordDesc>类型</RecordDesc>}
               />
             </List.Item>
           )}
