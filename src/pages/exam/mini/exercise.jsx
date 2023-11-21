@@ -1,12 +1,12 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useState, useEffect, useMemo, useRef, Fragment } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { Button, Card, Switch, Typography, Skeleton } from "antd";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { FloatingPanel, NavBar, Switch, Button } from "antd-mobile";
+import { LeftOutline, RightOutline } from "antd-mobile-icons";
 import { useRequest } from "ahooks";
-import { GetTopicByType } from "../../services/exam/topic";
-import Container from "../../components/Container";
+import { GetTopicByType } from "../../../services/exam/topic";
 import styled, { css } from "styled-components";
-import Topic from "../../components/exam/Topic";
+import Page from "../../../components/community/mini/Page";
+import Topic from "../../../components/exam/Topic";
 
 const SINGLE = 1;
 const MULTIPLE = 2;
@@ -38,55 +38,68 @@ const extractOptions = (fields) => {
   return options;
 };
 
-const NoStyledCard = styled(Card)`
-  border-radius: 0;
-  &:not(.ant-card-bordered) {
-    box-shadow: none;
-  }
+const anchors = [148, window.innerHeight * 0.8];
+
+const TopicView = styled.div`
+  background-color: #fff;
+  margin: 10px;
 `;
 
-const Content = styled.div`
-  display: flex;
-  gap: 24px;
+const FixedPanelPlaceholder = styled.div`
+  height: 148px;
 `;
 
-const Main = styled(NoStyledCard)`
-  flex: 1 0 0;
-  width: 0;
-`;
-
-const Aside = styled.div`
+const FixedPanel = styled.div`
+  z-index: 1000;
+  position: fixed;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  width: 280px;
+  width: 100%;
+  padding: 16px;
+  left: 0;
+  bottom: 0;
+  background-color: #fff;
+  border-top: 1px solid #eeeeee;
+  gap: 16px;
 `;
 
-const AnswerAction = styled.div`
+const SettingPanel = styled.div`
   display: flex;
+  width: 100%;
   gap: 24px;
-  padding-inline: 24px;
-  padding-block-end: 24px;
-  margin-top: 20px;
 `;
 
-const AnswerCardOuter = styled.div`
-  padding: 12px;
-  min-height: 80px;
-  max-height: 240px;
+const SettingItem = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+`;
+
+const PageBtnGroup = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 16px;
+`;
+
+const FloatingPanelWrap = styled.div`
+  box-sizing: border-box;
+  height: 100%;
   overflow-y: auto;
+  padding: 16px;
 `;
-const AnswerCardGroupTitle = styled.h3`
-  margin: 0;
-  font-weight: 400;
-  font-size: 14px;
-  margin-bottom: 12px;
+
+const AnswerTopicTitle = styled.div`
+  font-size: 15px;
+  margin-block-end: 8px;
 `;
-const AnswerCardGroupContent = styled.div`
+
+const AnswerTopicCard = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-block-end: 16px;
 `;
 
 const AnswerTopicBtn = styled.button`
@@ -97,10 +110,10 @@ const AnswerTopicBtn = styled.button`
   user-select: none;
   color: rgba(0, 0, 0, 0.88);
   font-size: 14px;
-  height: 32px;
+  height: 40px;
   border-radius: 6px;
   padding: 0;
-  width: 36px;
+  width: 46px;
   ${({ color }) =>
     color === "error" &&
     css`
@@ -124,14 +137,8 @@ const AnswerTopicBtn = styled.button`
     `}
 `;
 
-const SettingItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 36px;
-`;
-
 const Component = () => {
+  const floatingPanelRef = useRef();
   const params = useParams();
   const [searchParams] = useSearchParams();
   const [index, setIndex] = useState(-1);
@@ -180,14 +187,13 @@ const Component = () => {
     return { list, total };
   }, [answer]);
 
-  useEffect(() => {
-    console.log("data: ", data);
-  }, [data]);
-
   return (
-    <Container title={false} gutter={[0, 24]}>
-      <Content>
-        <Main bordered={false} bodyStyle={{ padding: 0 }}>
+    <>
+      <NavBar backArrow onBack={() => history.back()}>
+        练习
+      </NavBar>
+      <Page background="#f5f5f5" yScroll>
+        <TopicView>
           {currentTopic ? (
             <>
               {(currentTopic.typeId === SINGLE ||
@@ -334,91 +340,89 @@ const Component = () => {
                   }}
                 />
               )}
-              <AnswerAction>
-                <Button
-                  size="large"
-                  disabled={isDisabledJumpNext(-1)}
-                  onClick={() => setIndex(index - 1)}
-                >
-                  <LeftOutlined />
-                  上一题
-                </Button>
-                <Button
-                  size="large"
-                  disabled={isDisabledJumpNext(1)}
-                  onClick={() => setIndex(index + 1)}
-                >
-                  下一题
-                  <RightOutlined />
-                </Button>
-              </AnswerAction>
             </>
           ) : (
             <div style={{ padding: 24 }}>
-              <Skeleton />
+              <p>加载中...</p>
             </div>
           )}
-        </Main>
-        <Aside>
-          <NoStyledCard
-            title="答题卡"
-            extra={
-              <Typography.Link onClick={() => setAnswer({})}>
-                清空答题记录
-              </Typography.Link>
-            }
-            bordered={false}
-            headStyle={{ padding: 12 }}
-            bodyStyle={{ padding: "12px 0" }}
-          >
-            <AnswerCardOuter>
-              {(topicCategorys || []).map((item) => (
-                <Fragment key={item.typeId}>
-                  <AnswerCardGroupTitle>{item.typeName}题</AnswerCardGroupTitle>
-                  <AnswerCardGroupContent>
-                    {item.sub.map((item, order) => (
-                      <AnswerTopicBtn
-                        color={
-                          currentTopic?.id === item.id
-                            ? "active"
-                            : answer[item.id]?.confirmed
-                            ? answer[item.id]?.userScore === item.score
-                              ? "success"
-                              : "error"
-                            : ""
-                        }
-                        key={item.id}
-                        onClick={() => {
-                          setIndex(
-                            topics.findIndex((topic) => topic.id === item.id)
-                          );
-                        }}
-                      >
-                        {order + 1}
-                      </AnswerTopicBtn>
-                    ))}
-                  </AnswerCardGroupContent>
-                </Fragment>
-              ))}
-            </AnswerCardOuter>
-          </NoStyledCard>
-          <NoStyledCard
-            title="设置"
-            headStyle={{ padding: 12 }}
-            bodyStyle={{ padding: 12 }}
-          >
+        </TopicView>
+      </Page>
+      <FixedPanelPlaceholder>
+        <FixedPanel>
+          <SettingPanel>
             <SettingItem>
+              <Switch
+                checked={autoNext}
+                style={{ "--width": "32px", "--height": "20px" }}
+                onChange={setAutoNext}
+              />
               答对自动下一题
-              <Switch checked={autoNext} onChange={setAutoNext} />
             </SettingItem>
             <SettingItem>
+              <Switch
+                checked={god}
+                style={{ "--width": "32px", "--height": "20px" }}
+                onChange={setGod}
+              />
               背题模式
-              <Switch checked={god} onChange={setGod} />
             </SettingItem>
-          </NoStyledCard>
-        </Aside>
-      </Content>
-    </Container>
+          </SettingPanel>
+          <PageBtnGroup>
+            <Button
+              block
+              size="large"
+              disabled={isDisabledJumpNext(-1)}
+              onClick={() => setIndex(index - 1)}
+            >
+              <LeftOutline /> 上一题
+            </Button>
+            <Button
+              block
+              size="large"
+              disabled={isDisabledJumpNext(1)}
+              onClick={() => setIndex(index + 1)}
+            >
+              下一题 <RightOutline />
+            </Button>
+          </PageBtnGroup>
+        </FixedPanel>
+      </FixedPanelPlaceholder>
+
+      <FloatingPanel ref={floatingPanelRef} anchors={anchors}>
+        <FloatingPanelWrap>
+          {(topicCategorys || []).map((item) => (
+            <Fragment key={item.typeId}>
+              <AnswerTopicTitle>{item.typeName}题</AnswerTopicTitle>
+              <AnswerTopicCard>
+                {item.sub.map((item, order) => (
+                  <AnswerTopicBtn
+                    color={
+                      currentTopic?.id === item.id
+                        ? "active"
+                        : answer[item.id]?.confirmed
+                        ? answer[item.id]?.userScore === item.score
+                          ? "success"
+                          : "error"
+                        : ""
+                    }
+                    key={item.id}
+                    onClick={() => {
+                      setIndex(
+                        topics.findIndex((topic) => topic.id === item.id)
+                      );
+                      floatingPanelRef.current?.setHeight(148);
+                    }}
+                  >
+                    {order + 1}
+                  </AnswerTopicBtn>
+                ))}
+              </AnswerTopicCard>
+            </Fragment>
+          ))}
+        </FloatingPanelWrap>
+      </FloatingPanel>
+    </>
   );
 };
 

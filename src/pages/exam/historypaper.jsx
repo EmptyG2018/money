@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, List } from "antd";
 import { useRequest } from "ahooks";
-import { GetChapterBySubjectId } from "../../services/exam/category";
+import { GetPaperBySubjectId } from "../../services/exam/exampaper";
 import styled from "styled-components";
 import Container from "../../components/Container";
 
@@ -48,17 +48,20 @@ const Component = () => {
   const [pagination, setPagination] = useState([1, 10]);
   const { data: chapters } = useRequest(
     () =>
-      GetChapterBySubjectId({
+      GetPaperBySubjectId({
+        type: 4,
         subjectid: params.id,
         pageNum: pagination[0],
         pageSize: pagination[1],
       }),
-    { refreshDeps: [pagination, params] }
+    {
+      refreshDeps: [pagination, params],
+    }
   );
 
   return (
     <Container title={false} gutter={[0, 24]}>
-      <NoStyledCard title="章节练习">
+      <NoStyledCard title="历年真题">
         <List
           rowKey="id"
           dataSource={chapters?.rows || []}
@@ -70,7 +73,7 @@ const Component = () => {
           }}
           renderItem={(item) => (
             <List.Item key={item.id}>
-              <ChapterLink>
+              <ChapterLink to={"/exam/exercise/sjkm/" + item.id}>
                 <Chapter title={item.name} />
               </ChapterLink>
             </List.Item>

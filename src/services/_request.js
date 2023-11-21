@@ -48,12 +48,6 @@ const request = (axiosOption, option = {}) => {
 
   const instance = axios.create({
     baseURL: import.meta.env.VITE_APP_URL,
-    params: {
-      dlId: 1,
-    },
-    data: {
-      dlId: 1,
-    },
     headers: {
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },

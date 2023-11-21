@@ -28,6 +28,22 @@ export const GetTopicQuery = ({
     }
   );
 
+// 根据章节Id查询题目
+export const GetTopicByChapterId = ({ chapterId }) =>
+  request(
+    {
+      url: "/courseList/getSubjectQuestionList",
+      method: "POST",
+      data: {
+        subjectId: chapterId,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site"],
+    }
+  );
+
 // 根据试卷Id查询题目
 export const GetTopicByPaperId = ({ paperId }) =>
   request(
@@ -44,18 +60,37 @@ export const GetTopicByPaperId = ({ paperId }) =>
     }
   );
 
-// 根据章节Id查询题目
-export const GetTopicByChapterId = ({ chapterId }) =>
+// 根据分类查询题目
+export const GetTopicByType = ({ Id, classType, number, typeId }) =>
   request(
     {
-      url: "/courseList/getSubjectQuestionList",
+      url: "/question/getQuestionListBytype",
       method: "POST",
       data: {
-        subjectId: chapterId,
+        Id,
+        classType,
+        number,
+        typeId,
       },
     },
     {
       responseDataType: "json",
-      carry: ["site"],
+      carry: ["site", "auth"],
+    }
+  );
+
+// 根据分类查询题目
+export const GetTopicTypeBySubjectId = ({ subjectId }) =>
+  request(
+    {
+      url: "/question/getQuestionTypeBysubId",
+      method: "POST",
+      data: {
+        subjectId,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
     }
   );

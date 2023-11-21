@@ -1,20 +1,11 @@
-import { useState } from "react";
 import { useLocation, useNavigate, Link, Outlet } from "react-router-dom";
-import {
-  Divider,
-  ConfigProvider,
-  Dropdown,
-  FloatButton,
-  Image,
-  Input,
-} from "antd";
+import { ConfigProvider, Dropdown, FloatButton, Image } from "antd";
 import {
   UserOutlined,
   DatabaseOutlined,
   LogoutOutlined,
   LoginOutlined,
   FileTextOutlined,
-  AlignLeftOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
@@ -23,121 +14,8 @@ import { useAgentSetting } from "../plugins/agent";
 import { useUser } from "../hooks/user";
 import { useRequest } from "ahooks";
 import { GetAgentHelpIconShow } from "../services/setting";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import Copyright from "./_copyright";
-
-const MiniBtnGroupRoot = styled.span`
-  display: flex;
-  border-radius: 2px;
-  overflow: hidden;
-`;
-
-const MiniBtn = styled.button`
-  font-size: 12px;
-  line-height: 1;
-  outline: none;
-  border: none;
-  color: #616161;
-  background-color: rgba(0, 0, 0, 0.08);
-  width: 40px;
-  height: 28px;
-  padding: 0;
-  zoom: 0.74;
-
-  ${({ type, actived }) =>
-    type === "paper" &&
-    !!actived &&
-    css`
-      color: #1677fe;
-      background-color: rgba(22, 119, 254, 0.12);
-    `}
-
-  ${({ type, actived }) =>
-    type === "topic" &&
-    !!actived &&
-    css`
-      color: #ff4d4f;
-      background-color: rgba(255, 77, 79, 0.12);
-    `}
-`;
-
-const MiniBtnGroup = ({ activeKey, items, onChange }) => {
-  return (
-    <MiniBtnGroupRoot>
-      {items.map((item) => (
-        <MiniBtn
-          actived={item.key === activeKey ? 1 : 0}
-          key={item.key}
-          type={item.key}
-          onClick={(e) => {
-            e.stopPropagation();
-            onChange && onChange(item.key);
-          }}
-        >
-          {item.label}
-        </MiniBtn>
-      ))}
-    </MiniBtnGroupRoot>
-  );
-};
-
-const GlobalSearchRoot = styled.div`
-  display: flex;
-  align-items: center;
-  margin-inline-end: 24px;
-`;
-
-const SearchWraper = styled.div`
-  display: flex;
-  align-items: center;
-  width: 256px;
-  border-radius: 4px;
-  overflow: hidden;
-  padding-inline: 6px;
-  background-color: rgba(0, 0, 0, 0.03);
-`;
-
-const SearchInput = styled(Input)`
-  padding-inline: 0;
-`;
-
-const options = [
-  { label: "试卷", key: "paper" },
-  { label: "题目", key: "topic" },
-];
-
-const GlobalSearch = ({ onPressEnter, ...props }) => {
-  const [searchType, setSearchType] = useState("paper");
-  const checkedItem = options.find((item) => searchType === item.key);
-  return (
-    <GlobalSearchRoot key="SearchOutlined">
-      <SearchWraper>
-        <MiniBtnGroup
-          activeKey={searchType}
-          items={options}
-          onChange={setSearchType}
-        />
-        <Divider type="vertical" />
-        <SearchInput
-          prefix={
-            <SearchOutlined
-              style={{
-                color: "rgba(0, 0, 0, 0.15)",
-              }}
-            />
-          }
-          placeholder={"搜索" + checkedItem.label}
-          bordered={false}
-          onPressEnter={(e) => {
-            e.stopPropagation();
-            onPressEnter && onPressEnter(searchType, e);
-          }}
-          {...props}
-        />
-      </SearchWraper>
-    </GlobalSearchRoot>
-  );
-};
 
 const ComponentRoot = styled.div`
   height: 100vh;
@@ -164,14 +42,14 @@ const defaultProps = {
     path: "/exam",
     routes: [
       {
-        path: "/exam/exampeperlibrary",
-        name: "试卷库",
+        path: "/exam/category",
+        name: "试题库",
         icon: <FileTextOutlined />,
       },
       {
-        path: "/exam/topiclibrary",
-        name: "试题库",
-        icon: <AlignLeftOutlined />,
+        path: "/exam/search",
+        name: "搜题",
+        icon: <SearchOutlined />,
       },
     ],
   },
@@ -324,13 +202,6 @@ export default () => {
                 <Navigate to={item.path}>{dom}</Navigate>
               )}
               actionsRender={() => [
-                <GlobalSearch
-                  onPressEnter={(mode, e) =>
-                    navigate(
-                      `/exam/search?mode=${mode}&keyword=${e.target.value}`
-                    )
-                  }
-                />,
                 <img
                   src="/imgs/vip.png"
                   width={36}

@@ -58,7 +58,7 @@ const Component = () => {
               {item.children.map((item) => (
                 <Col span={4} key={item.id}>
                   <CategoryTag>
-                    <Link to={"./" + item.id}>{item.name}</Link>
+                    <Link to={"/exam/certificate/" + item.id}>{item.name}</Link>
                   </CategoryTag>
                 </Col>
               ))}

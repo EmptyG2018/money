@@ -1,12 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, Divider, List } from "antd";
-import { BookFilled, SwapOutlined } from "@ant-design/icons";
+import { BookFilled, SwapOutlined, CarryOutFilled } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { GetSubjectByCourseId } from "../../services/exam/category";
 import { GetTopicQuery } from "../../services/exam/topic";
 import styled, { css } from "styled-components";
 import Container from "../../components/Container";
+
+const ActionDiyIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  background-color: ${({ color }) => color};
+  border-radius: 12px;
+  font-size: 20px;
+  color: #fff;
+`;
 
 const NoStyledCard = styled(Card)`
   border-radius: 0;
@@ -136,73 +149,118 @@ const ActionDesc = styled.p`
 
 const TopicCard = styled(NoStyledCard)``;
 
-const ACTIONS_LIST = [
-  {
-    key: 1,
-    title: "顺序练习",
-    desc: "依次排序练习",
-    icon: "/imgs/exam/shunxu_icon.png",
-  },
-  {
-    key: 2,
-    title: "模拟考试",
-    desc: "随机抽题仿真练习",
-    icon: "/imgs/exam/moni_icon.png",
-  },
-  {
-    key: 3,
-    title: "随机练习",
-    desc: "试题顺序打乱练习",
-    icon: "/imgs/exam/suiji_icon.png",
-  },
-  {
-    key: 4,
-    title: "题型练习",
-    desc: "按题型分类练习",
-    icon: "/imgs/exam/tixing_icon.png",
-  },
-  {
-    key: 5,
-    title: "章节练习",
-    desc: "按章节分类练习",
-    icon: "/imgs/exam/zhangjie_icon.png",
-  },
-  {
-    key: 6,
-    title: "历年真题",
-    desc: "往年真题/模拟题",
-    icon: "/imgs/exam/zhengti_icon.png",
-  },
-  {
-    key: 7,
-    title: "高频错题",
-    desc: "精选高评易错题",
-    icon: "/imgs/exam/gaopin_icon.png",
-  },
-];
-
 const Component = () => {
   const params = useParams();
   const [collpased, setCollpased] = useState(false);
   const [active, setActive] = useState("");
 
-  const { data: subjects } = useRequest(GetSubjectByCourseId, {
+  const { data: subject } = useRequest(GetSubjectByCourseId, {
     defaultParams: [{ pId: params.id }],
-    onSuccess(res) {
-      res?.length && setActive(res[0].id);
-    },
   });
 
   const { run: getTopicQuery, data: topics } = useRequest(GetTopicQuery, {
     manual: true,
   });
 
-  const subject = (subjects || []).find((item) => item.id === active);
+  useEffect(() => {
+    subject?.subList.length && setActive(subject.subList[0].id);
+  }, [subject]);
+
+  const subjectInfo = useMemo(() => subject?.subList || []).find(
+    (item) => item.id === active,
+    [subject, active]
+  );
+
+  const ACTIONS_LIST = [
+    {
+      key: 1,
+      title: "每日一练",
+      desc: "进入今日练习",
+      icon: (
+        <ActionDiyIcon color="#995dff">
+          <CarryOutFilled />
+        </ActionDiyIcon>
+      ),
+      url: "/exam/exercise/mrylkm/" + subjectInfo?.id,
+    },
+    {
+      key: 2,
+      title: "顺序练习",
+      desc: "依次排序练习",
+      icon: <ActionIcon src="/imgs/exam/shunxu_icon.png" />,
+      url: "/exam/exercise/sxctkm/" + subjectInfo?.id,
+    },
+    {
+      key: 3,
+      title: "随机练习",
+      desc: "试题顺序打乱练习",
+      icon: <ActionIcon src="/imgs/exam/suiji_icon.png" />,
+      url: "/exam/exercise/sjctkm/" + subjectInfo?.id,
+    },
+    {
+      key: 4,
+      title: "题型练习",
+      desc: "按题型分类练习",
+      icon: <ActionIcon src="/imgs/exam/tixing_icon.png" />,
+      url: "/exam/topictype/" + subjectInfo?.id,
+    },
+    {
+      key: 5,
+      title: "高频错题",
+      desc: "精选高评易错题",
+      icon: <ActionIcon src="/imgs/exam/gaopin_icon.png" />,
+      url: "/exam/exercise/gpct/" + subjectInfo?.id,
+    },
+    {
+      key: 6,
+      title: "章节练习",
+      desc: "按章节分类练习",
+      icon: <ActionIcon src="/imgs/exam/zhangjie_icon.png" />,
+      url: "/exam/chapter/" + subjectInfo?.id,
+    },
+    // {
+    //   key: 7,
+    //   title: "模拟考试",
+    //   desc: "随机抽题仿真练习",
+    //   icon: <ActionIcon src="/imgs/exam/moni_icon.png" />,
+    // },
+    // {
+    //   key: 8,
+    //   title: "押题试卷",
+    //   desc: "随机抽题仿真练习",
+    //   icon: <ActionIcon src="/imgs/exam/moni_icon.png" />,
+    // },
+    {
+      key: 9,
+      title: "历年真题",
+      desc: "往年真题/模拟题",
+      icon: <ActionIcon src="/imgs/exam/zhengti_icon.png" />,
+      url: "/exam/historypaper/" + subjectInfo?.id,
+    },
+    // {
+    //   key: 10,
+    //   title: "在线考试",
+    //   desc: "往年真题/模拟题",
+    //   icon: <ActionIcon src="/imgs/exam/zhengti_icon.png" />,
+    // },
+    // {
+    //   key: 11,
+    //   title: "阶段测验",
+    //   desc: "往年真题/模拟题",
+    //   icon: <ActionIcon src="/imgs/exam/zhengti_icon.png" />,
+    // },
+    // {
+    //   key: 12,
+    //   title: "综合测验",
+    //   desc: "往年真题/模拟题",
+    //   icon: <ActionIcon src="/imgs/exam/zhengti_icon.png" />,
+    // },
+  ];
 
   useEffect(() => {
-    subject &&
-      getTopicQuery({ subjectId: subject.id, pageNum: 1, pageSize: 9999 });
-  }, [subject]);
+    subjectInfo &&
+      getTopicQuery({ subjectId: subjectInfo.id, pageNum: 1, pageSize: 9999 });
+  }, [subjectInfo]);
 
   return (
     <Container title={false} gutter={[0, 24]}>
@@ -212,9 +270,9 @@ const Component = () => {
             <BookFilled style={{ color: "#1677ff", fontSize: "48px" }} />
             <CollapseCell>
               <CollapseHeader>
-                <b>XXXXXXX</b>
+                <b>{subject?.courseName}</b>
                 <Divider type="vertical" />
-                {subject?.name}
+                {subjectInfo?.name}
                 <ToggleBtn onClick={() => setCollpased(!collpased)}>
                   <SwapOutlined style={{ fontSize: "14px" }} /> 切换科目
                 </ToggleBtn>
@@ -224,7 +282,7 @@ const Component = () => {
           </CollapsePanel>
           {collpased && (
             <CollapseCardBox>
-              {(subjects || []).map((item) => (
+              {(subject?.subList || []).map((item) => (
                 <CollapseCardItem
                   actived={item.id === active ? 1 : 0}
                   key={item.id}
@@ -246,8 +304,8 @@ const Component = () => {
         >
           {ACTIONS_LIST.map((item) => (
             <Card.Grid hoverable={false} key={item.key}>
-              <ActionGrid>
-                <ActionIcon src={item.icon}></ActionIcon>
+              <ActionGrid to={item.url}>
+                {item.icon}
                 <div>
                   <ActionTitle>{item.title}</ActionTitle>
                   <ActionDesc>{item.desc}</ActionDesc>

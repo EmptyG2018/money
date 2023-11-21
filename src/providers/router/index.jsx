@@ -9,7 +9,7 @@ import { LoginedPage } from "../../plugins/access";
 
 import navigationRoutes from "./navigation";
 import { communityRoutes, communityMobileRoutes } from "./community";
-import { examRoutes } from "./exam";
+import { examRoutes, examMobileRoutes } from "./exam";
 import adminRoutes from "./_admin";
 
 import User from "../../layouts/user";
@@ -69,6 +69,7 @@ const routes = createBrowserRouter([
   communityRoutes,
   communityMobileRoutes,
   examRoutes,
+  examMobileRoutes,
   adminRoutes,
   {
     path: "/demo",

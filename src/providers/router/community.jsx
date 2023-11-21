@@ -10,7 +10,7 @@ import Category from "../../pages/community/category";
 import Article from "../../pages/community/article";
 
 import Mobile from "../../layouts/mobile";
-import Tabbar from "../../layouts/tabbar";
+import Tabbar from "../../layouts/communityTabbar";
 import MobileIndex from "../../pages/community/mini/index";
 import MobileSearch from "../../pages/community/mini/search";
 import MobileList from "../../pages/community/mini/list";

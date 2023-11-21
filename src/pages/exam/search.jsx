@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
-import { useSearchParams, Link } from "react-router-dom";
-import { Button, Card, List, Space } from "antd";
-import { FileTextTwoTone, AlignLeftOutlined } from "@ant-design/icons";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { Input, Button, Card, List, Space } from "antd";
+import { FileTextTwoTone, ProfileTwoTone } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { GetExamPaperByKeyword } from "../../services/exam/exampaper";
 import { GetTopicQuery } from "../../services/exam/topic";
@@ -71,10 +71,8 @@ const Filter = ({ activeKey, items, onChange, ...props }) => {
   );
 };
 
-const Info = styled.div`
-  margin-bottom: 24px;
-  padding-inline: 12px;
-  font-size: 15px;
+const SearchPanel = styled.div`
+  padding: 72px 236px;
 `;
 
 const RecrodCard = styled(Card)`
@@ -84,17 +82,21 @@ const RecrodCard = styled(Card)`
 const RecordTitle = styled(Link)`
   font-size: 16px;
   font-weight: 400;
+  > p {
+    margin: 0;
+    img {
+      display: none;
+    }
+  }
 `;
 
-const RecordDesc = styled.div`
+const RecordDesc = styled.span`
   font-size: 12px;
 `;
 
 const Component = () => {
-  const [searchParams] = useSearchParams();
-  const word = searchParams.get("keyword");
-  const mode = searchParams.get("mode");
-  const [active, setActive] = useState(mode);
+  const keyword = useRef("");
+  const [active, setActive] = useState("paper");
   const [pagination, setPagination] = useState([1, 10]);
   const { run: searchExamPaper, data: examPapers } = useRequest(
     GetExamPaperByKeyword,
@@ -103,8 +105,6 @@ const Component = () => {
   const { run: searchTopic, data: topics } = useRequest(GetTopicQuery, {
     manual: true,
   });
-
-  const keyword = decodeURIComponent(word || "");
 
   const filter = [
     {
@@ -119,30 +119,38 @@ const Component = () => {
     },
   ];
 
-  const record = useMemo(() => {
-    if (active === "paper") return examPapers;
-    if (active === "topic") return topics;
-  }, [active, examPapers, topics]);
-
-  useEffect(() => {
-    setActive(mode === "topic" ? "topic" : "paper");
-  }, [mode]);
-
-  useEffect(() => {
+  const submit = () => {
     const paylod = {
-      title: keyword,
+      title: keyword.current,
       pageNum: pagination[0],
       pageSize: pagination[1],
     };
     if (active === "paper") searchExamPaper(paylod);
     if (active === "topic") searchTopic(paylod);
-  }, [pagination, active, keyword]);
+  };
+
+  const record = useMemo(() => {
+    if (active === "paper") return examPapers;
+    if (active === "topic") return topics;
+  }, [active, examPapers, topics]);
+
+  useEffect(() => submit(), [pagination, active]);
 
   return (
     <Container title={false} gutter={[0, 24]}>
-      <Info>
-        以下关于 “<b>{keyword}</b>” 的搜索结果：
-      </Info>
+      <SearchPanel>
+        <Input.Search
+          size="large"
+          defaultValue={keyword.current}
+          enterButton="搜索"
+          placeholder="搜索试题内容"
+          allowClear
+          onChange={(e) => {
+            keyword.current = e.target.value;
+          }}
+          onSearch={submit}
+        />
+      </SearchPanel>
       <RecrodCard>
         <Filter
           items={filter}
@@ -181,23 +189,39 @@ const Component = () => {
                       />
                     )}
                     {active === "topic" && (
-                      <AlignLeftOutlined
+                      <ProfileTwoTone
                         style={{ marginTop: 8, marginLeft: 8, fontSize: 28 }}
                       />
                     )}
                   </>
                 }
                 title={
-                  <RecordTitle href="https://ant.design">
-                    {active === "paper" && item.name}
-                    {active === "topic" && (
-                      <span
-                        dangerouslySetInnerHTML={{ __html: item.title }}
-                      ></span>
+                  <>
+                    {active === "paper" && (
+                      <RecordTitle>{item.name}</RecordTitle>
                     )}
-                  </RecordTitle>
+                    {active === "topic" && (
+                      <RecordTitle
+                        dangerouslySetInnerHTML={{ __html: item.title }}
+                      />
+                    )}
+                  </>
                 }
-                description={<RecordDesc>类型</RecordDesc>}
+                description={
+                  <>
+                    {active === "paper" && (
+                      <>
+                        <RecordDesc>{item.typeName}</RecordDesc>
+                      </>
+                    )}
+                    {active === "topic" && (
+                      <>
+                        <RecordDesc>{item.typename}题</RecordDesc>・
+                        <RecordDesc>{item.score}分</RecordDesc>
+                      </>
+                    )}
+                  </>
+                }
               />
             </List.Item>
           )}

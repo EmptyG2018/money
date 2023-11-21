@@ -1,6 +1,4 @@
 import { useState, useCallback } from "react";
-import { Input, Button, Card } from "antd";
-import { CheckOutlined } from "@ant-design/icons";
 import styled, { css } from "styled-components";
 
 const ResultRoot = styled.div`
@@ -33,11 +31,8 @@ export const Result = ({ result, analyze, ...props }) => {
   );
 };
 
-const TopicCard = styled(Card)`
-  border-radius: 0;
-  &:not(.ant-card-bordered) {
-    box-shadow: none;
-  }
+const TopicCard = styled.div`
+  padding: 24px;
 `;
 
 const TopicHeader = styled.div`
@@ -122,13 +117,45 @@ const TopicOptionWord = styled.div`
   }
 `;
 
-const TopicTextArea = styled(Input.TextArea)`
+const TopicTextArea = styled.textarea`
+  outline: none;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 4px 11px;
+  font-size: 15px;
   margin-bottom: 16px;
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.88);
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  &:hover {
+    border-color: #4096ff;
+  }
 `;
 
-const EmitConfirmBtn = styled(Button)`
-  border-color: #1677ff;
+const EmitConfirmBtn = styled.button`
+  outline: none;
+  display: inline-block;
+  font-weight: 400;
+  padding: 4px 16px;
+  border-radius: 32px;
+  font-size: 14px;
+  height: 32px;
+  background-color: transparent;
+  border: 1px solid #1677ff;
+  cursor: pointer;
+  user-select: none;
   color: #1677ff;
+
+  ${({ disabled }) =>
+    !!disabled &&
+    css`
+      cursor: not-allowed;
+      border-color: #d9d9d9;
+      color: rgba(0, 0, 0, 0.25);
+      background-color: rgba(0, 0, 0, 0.04);
+    `}
 `;
 
 // 单选题
@@ -142,8 +169,11 @@ const SingleTopic = ({
   showResult,
   showAnswer,
   onChange,
+  onConfirm,
   ...props
 }) => {
+  const [cacheSelected, setCacheSelected] = useState(selected);
+
   const readOnly = showAnswer || showResult;
 
   const getStatus = useCallback(
@@ -151,11 +181,15 @@ const SingleTopic = ({
       if (showAnswer) return value === answer ? "success" : "";
 
       if (showResult)
-        return answer === value ? "success" : value === selected ? "error" : "";
+        return answer === value
+          ? "success"
+          : value === cacheSelected
+          ? "error"
+          : "";
 
-      return value === selected ? "active" : "";
+      return value === cacheSelected ? "active" : "";
     },
-    [showAnswer, showResult, answer, selected]
+    [showAnswer, showResult, answer, cacheSelected]
   );
 
   return (
@@ -171,7 +205,12 @@ const SingleTopic = ({
             key={item.value}
             onClick={(e) => {
               e.stopPropagation();
-              onChange && !readOnly && onChange(item.value);
+              !readOnly && setCacheSelected(item.value);
+              onChange &&
+                !readOnly &&
+                item.value !== cacheSelected &&
+                onChange(item.value);
+              onConfirm && !readOnly && onConfirm(item.value);
             }}
           >
             <b>{item.value}、</b>
@@ -192,10 +231,12 @@ const MultipleTopic = ({
   title,
   answer = [],
   options,
+  showConfirmBtn,
   showResult,
   showAnswer,
   selected = [],
   analyze,
+  onChange,
   onConfirm,
   ...props
 }) => {
@@ -234,14 +275,14 @@ const MultipleTopic = ({
             key={item.value}
             onClick={(e) => {
               e.stopPropagation();
-              !readOnly &&
-                setCacheSelected(
-                  cacheSelected.includes(item.value)
-                    ? cacheSelected.filter(
-                        (selected) => selected !== item.value
-                      )
-                    : [...cacheSelected, item.value]
-                );
+              const records = cacheSelected.includes(item.value)
+                ? cacheSelected.filter((selected) => selected !== item.value)
+                : [...cacheSelected, item.value];
+              !readOnly && setCacheSelected(records);
+              onChange &&
+                !readOnly &&
+                item.value !== cacheSelected &&
+                onChange(records);
             }}
           >
             <b>{item.value}、</b>
@@ -249,17 +290,17 @@ const MultipleTopic = ({
           </TopicOption>
         ))}
       </TopicOptionGroup>
-      <EmitConfirmBtn
-        disabled={readOnly}
-        shape="round"
-        icon={<CheckOutlined />}
-        onClick={(e) => {
-          e.stopPropagation();
-          onConfirm && onConfirm(cacheSelected);
-        }}
-      >
-        提交答案
-      </EmitConfirmBtn>
+      {showConfirmBtn && (
+        <EmitConfirmBtn
+          disabled={readOnly ? 1 : 0}
+          onClick={(e) => {
+            e.stopPropagation();
+            onConfirm && onConfirm(cacheSelected);
+          }}
+        >
+          提交答案
+        </EmitConfirmBtn>
+      )}
       {readOnly && (
         <Result
           style={{ marginTop: 16 }}
@@ -278,8 +319,10 @@ const Component = ({
   content,
   answer,
   analyze,
+  showConfirmBtn,
   showResult,
   showAnswer,
+  onChange,
   onConfirm,
   ...props
 }) => {
@@ -298,19 +341,22 @@ const Component = ({
         readOnly={readOnly}
         value={cacheContnt}
         placeholder="请输入内容"
-        onChange={(e) => setCacheContent(e.target.value)}
-      />
-      <EmitConfirmBtn
-        disabled={readOnly}
-        shape="round"
-        icon={<CheckOutlined />}
-        onClick={(e) => {
-          e.stopPropagation();
-          onConfirm && onConfirm(cacheContnt);
+        onChange={(e) => {
+          setCacheContent(e.target.value);
+          onChange && onChange(e.target.value);
         }}
-      >
-        提交答案
-      </EmitConfirmBtn>
+      />
+      {showConfirmBtn && (
+        <EmitConfirmBtn
+          disabled={readOnly ? 1 : 0}
+          onClick={(e) => {
+            e.stopPropagation();
+            onConfirm && onConfirm(cacheContnt);
+          }}
+        >
+          提交答案
+        </EmitConfirmBtn>
+      )}
       {readOnly && (
         <Result style={{ marginTop: 16 }} result={answer} analyze={analyze} />
       )}
