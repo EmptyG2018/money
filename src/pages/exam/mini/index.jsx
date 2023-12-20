@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Tabs, NavBar, Image, Swiper } from "antd-mobile";
 import { SearchOutline, TextOutline } from "antd-mobile-icons";
 import { useRequest } from "ahooks";
+import { GetCrousel } from "../../../services/exam/setting";
 import { GetCorrelationCategoryTrees } from "../../../services/exam/category";
 import { GetExamPaperByCertificateId } from "../../../services/exam/exampaper";
 import { styled } from "styled-components";
@@ -128,24 +129,17 @@ const DotIndicator = styled.div`
 
 const Component = () => {
   const navigate = useNavigate();
+  const { data: carousels } = useRequest(GetCrousel, {
+    defaultParams: [
+      {
+        modeId: 38,
+        project: 3,
+      },
+    ],
+  });
   const { data: correlationCategoryTrees } = useRequest(
     GetCorrelationCategoryTrees
   );
-
-  const carsouel = [
-    {
-      key: "1",
-      thumb:
-        "http://tp.mxqe.com/banner/20210615/59aa5e19b60b65c5782bb6b5c79a8c4c.jpg",
-      url: "http://www.baidu.com",
-    },
-    {
-      key: "2",
-      thumb:
-        "http://tp.mxqe.com/banner/20210615/59aa5e19b60b65c5782bb6b5c79a8c4c.jpg",
-      url: "http://www.baidu.com",
-    },
-  ];
 
   return (
     <>
@@ -160,7 +154,7 @@ const Component = () => {
         资料下载网
       </NavBar>
       <Page background="#f5f5f5" yScroll style={{ position: "relative" }}>
-        {carsouel?.length && (
+        {!!carousels?.length && (
           <Swiper
             autoplay
             indicator={(total, current) => (
@@ -172,12 +166,9 @@ const Component = () => {
               marginBottom: "10px",
             }}
           >
-            {(carsouel || []).map((item) => (
-              <Swiper.Item
-                key={item.key}
-                onClick={() => navigate("/m/community/article/" + item.key)}
-              >
-                <Image src={item.thumb} height={160} fit="cover" />
+            {(carousels || []).map((item) => (
+              <Swiper.Item key={item.id} onClick={() => navigate(item.goUrl)}>
+                <Image src={item.imgUrl} height={160} fit="cover" />
               </Swiper.Item>
             ))}
           </Swiper>

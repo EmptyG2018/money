@@ -7,9 +7,10 @@ import {
 import { Agent } from "../../plugins/agent";
 import { LoginedPage } from "../../plugins/access";
 
-import navigationRoutes from "./navigation";
 import { communityRoutes, communityMobileRoutes } from "./community";
 import { examRoutes, examMobileRoutes } from "./exam";
+import navigationRoutes from "./navigation";
+import collectionRoutes from "./collection";
 import adminRoutes from "./_admin";
 
 import User from "../../layouts/user";
@@ -66,6 +67,7 @@ const routes = createBrowserRouter([
     ],
   },
   navigationRoutes,
+  collectionRoutes,
   communityRoutes,
   communityMobileRoutes,
   examRoutes,

@@ -47,7 +47,7 @@ const defaultProps = {
         icon: <FlagOutlined />,
       },
       {
-        path: "/navigation/work",
+        path: "/collection",
         name: "工作台",
         icon: <HighlightOutlined />,
       },

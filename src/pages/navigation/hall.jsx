@@ -205,7 +205,7 @@ const Component = () => {
 
   const navTabs = [
     { key: "team", label: "优秀团队" },
-    { key: "collect", label: "收藏夹" },
+    { key: "collect", label: "收藏集" },
   ];
 
   const [navTabKey, setNavTabKey] = useState("team");

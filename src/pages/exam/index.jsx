@@ -3,6 +3,7 @@ import { Card, Tabs, Carousel, Spin } from "antd";
 import { FileTextTwoTone } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useRequest } from "ahooks";
+import { GetCrousel } from "../../services/exam/setting";
 import {
   GetAllCategoryTrees,
   GetCorrelationCategoryTrees,
@@ -149,12 +150,12 @@ const FullCarousel = ({
 }) => {
   return (
     <FullCarouselRoot>
-      {items.length && (
+      {!!items.length && (
         <FullCarouselControl autoplay>
           {items.map((item, index) => (
             <div key={index}>
-              <Link to={item.url}>
-                <FullCarouselThumb src={item.thumb} />
+              <Link to={item.goUrl}>
+                <FullCarouselThumb src={item.imgUrl} />
               </Link>
             </div>
           ))}
@@ -340,30 +341,23 @@ const CategoryItem = styled(Link)`
 `;
 
 const Component = () => {
+  const { data: carsouels } = useRequest(GetCrousel, {
+    defaultParams: [
+      {
+        modeId: 37,
+        project: 3,
+      },
+    ],
+  });
   const { data: allCategoryTrees } = useRequest(GetAllCategoryTrees);
   const { data: correlationCategoryTrees } = useRequest(
     GetCorrelationCategoryTrees
   );
 
-  const carsouel = [
-    {
-      key: "1",
-      thumb:
-        "http://tp.mxqe.com/banner/20210615/59aa5e19b60b65c5782bb6b5c79a8c4c.jpg",
-      url: "http://www.baidu.com",
-    },
-    {
-      key: "2",
-      thumb:
-        "http://tp.mxqe.com/banner/20210615/59aa5e19b60b65c5782bb6b5c79a8c4c.jpg",
-      url: "http://www.baidu.com",
-    },
-  ];
-
   return (
     <>
       <FullCarousel
-        items={carsouel}
+        items={carsouels || []}
         categorys={allCategoryTrees?.result || []}
         menuItemRender={(item) => <div>{item.parentName}</div>}
         categoryItemRender={(item) => (

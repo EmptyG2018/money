@@ -52,10 +52,9 @@ const TopicTitle = styled.div`
   }
 `;
 
-const Topic = ({ order, item }) => {
+const Topic = ({ item }) => {
   return (
     <TopicRoot bodyStyle={{ display: "flex", alignItems: "flex-start" }}>
-      <TopicOrder>{order}.</TopicOrder>
       <TopicCell>
         <TopicTitle dangerouslySetInnerHTML={{ __html: item.title }} />
       </TopicCell>
@@ -344,8 +343,8 @@ const Component = () => {
             </Grid>
           </NoStyledCard>
           <TopicCard title="题库预览">
-            {(topics?.rows || []).map((item, index) => (
-              <Topic item={item} order={index + 1} key={item.id} />
+            {(topics?.rows || []).map((item) => (
+              <Topic item={item} key={item.id} />
             ))}
           </TopicCard>
         </div>

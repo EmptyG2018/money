@@ -1,7 +1,29 @@
-const array = new Array(100000).fill({ title: "xxxx" });
+import { cloneElement, memo, useState } from "react";
+import { Button, Dropdown, Tooltip } from "antd";
+
+const Child = ({ key }) => {
+  const [text, setText] = useState("moren");
+
+  console.log(key);
+
+  return (
+    <>
+      <button onClick={() => setText("child")}>{text}</button>
+    </>
+  );
+};
+
+const SS = memo(Child);
 
 const Component = () => {
-  return array.map((item, index) => <div key={index}>{item.title}</div>);
+  const [text, setText] = useState("xt1");
+
+  return (
+    <>
+      <button onClick={() => setText(Math.random())}>{text}</button>
+      <SS keys={text} />
+    </>
+  );
 };
 
 export default Component;

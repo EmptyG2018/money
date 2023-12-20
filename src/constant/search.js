@@ -9,7 +9,7 @@ export const navData = [
       },
       {
         key: "internal_collect",
-        label: "收藏夹",
+        label: "收藏集",
       },
     ],
   },
