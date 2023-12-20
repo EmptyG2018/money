@@ -407,7 +407,9 @@ export default () => {
                         : []
                     );
                   }}
-                  onLoad
+                  onScrolled={() => {
+                    
+                  }}
                 />
               </Container>
             </>
