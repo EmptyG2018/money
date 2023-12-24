@@ -1,8 +1,9 @@
-import { useEffect, useRef, cloneElement } from "react";
+import { useRef, cloneElement } from "react";
 import { Button, Dropdown, Space, Checkbox } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { Fragment } from "react";
+import InfiniteScroll from "react-infinite-scroller";
 
 const selectedRender = (items, key) => {
   const item = items.find((item) => item.key === key);
@@ -80,11 +81,13 @@ const ActionPanel = ({
                       items: filters[field].items,
                       selectable: true,
                       selectedKeys: [filters[field].key],
+                      onClick: (e) => {
+                        onChange &&
+                          filters[field].key !== e.key &&
+                          onChange(field, e.key, e);
+                      },
                     }}
                     trigger={["click"]}
-                    onClick={(e) => {
-                      onChange && onChange(field, e.key, e);
-                    }}
                   >
                     {selectedRender(filters[field].items, filters[field].key)}
                   </Dropdown>
@@ -122,29 +125,14 @@ export const MarkDataView = ({
   itemRender,
   footerRender,
   onSelect,
-  onScrolled,
+  hasMore,
+  loadMore,
 }) => {
   const el = useRef();
 
   const checkAll = items.length > 0 && items.length === selectedKeys.length;
   const indeterminate =
     selectedKeys.length > 0 && selectedKeys.length < items.length;
-
-  useEffect(() => {
-    // const handleScroll = () => {
-    //   const scrollTop = el.current.scrollTop;
-    //   const height = el.current.offsetHeight;
-    //   const totalHeight = el.current.scrollHeight;
-    //   const isBottom = scrollTop + height >= totalHeight;
-    //   isBottom && onScrolled && onScrolled();
-    // };
-
-    // el.current.addEventListener("scroll", handleScroll);
-
-    // return () => {
-    //   el.current.removeEventListener("scroll", handleScroll);
-    // };
-  }, []);
 
   return (
     <MarkDataViewRoot>
@@ -156,18 +144,30 @@ export const MarkDataView = ({
         filter={filter}
         onSelect={onSelect}
       />
-      <MarkDataViewContent ref={el}>
-        {cloneElement(layoutRender, {
-          children: items.map((item) => (
-            <Fragment key={item[rowKey]}>
-              {itemRender(
-                item[rowKey],
-                item,
-                selectedKeys.includes(item[rowKey])
-              )}
-            </Fragment>
-          )),
-        })}
+      <MarkDataViewContent>
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={loadMore}
+          hasMore={hasMore}
+          loader={
+            <div style={{ textAlign: "center" }} key={0}>
+              Loading ...
+            </div>
+          }
+          useWindow={false}
+        >
+          {cloneElement(layoutRender, {
+            children: items.map((item) => (
+              <Fragment key={item[rowKey]}>
+                {itemRender(
+                  item[rowKey],
+                  item,
+                  selectedKeys.includes(item[rowKey])
+                )}
+              </Fragment>
+            )),
+          })}
+        </InfiniteScroll>
         {!!footerRender && footerRender(hasMore)}
       </MarkDataViewContent>
     </MarkDataViewRoot>

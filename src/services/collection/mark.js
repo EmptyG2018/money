@@ -77,6 +77,7 @@ export const UpdateMark = ({
 export const GetMarksByCollectionId = ({
   collectionsId,
   title,
+  offset,
   pageSize,
   pageNum,
   sort,
@@ -88,6 +89,7 @@ export const GetMarksByCollectionId = ({
       data: {
         collectionsId,
         title,
+        offset,
         pageNum,
         pageSize,
         sort,
@@ -100,7 +102,7 @@ export const GetMarksByCollectionId = ({
   );
 
 // 移动书签
-export const MoveMarks = ({ collectionsId, ids }) =>
+export const MoveMarks = ({ collectionsId, ids, pid }) =>
   request(
     {
       url: "/collections/website/updateCollectionsWebsiteMove",
@@ -108,6 +110,7 @@ export const MoveMarks = ({ collectionsId, ids }) =>
       data: {
         collectionsId,
         ids,
+        pid,
       },
     },
     {
@@ -116,7 +119,7 @@ export const MoveMarks = ({ collectionsId, ids }) =>
     }
   );
 
-// 移动书签
+// 删除回收站全部书签
 export const DelAllMarks = () =>
   request(
     {

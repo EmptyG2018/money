@@ -43,13 +43,7 @@ export default ({
       }}
       {...props}
     >
-      <Form
-        ref={formRef}
-        layout="vertical"
-        initialValues={record}
-        preserve={false}
-        {...form}
-      >
+      <Form ref={formRef} initialValues={record} preserve={false} {...form}>
         <Form.Item name={rowKey} hidden>
           <Input type="hidden" />
         </Form.Item>

@@ -120,7 +120,7 @@ export const FavoriteMenuSub = ({ expand, children, ...rest }) => {
   return (
     <>
       <Node
-        indentWidth={10}
+        indentWidth={16}
         prefix={
           <FolderCollpaseIcon>
             <FolderCollpaseIconSvg expand={expand} size={18} />

@@ -8,6 +8,11 @@ import {
   DragOutlined,
   FrownOutlined,
 } from "@ant-design/icons";
+import {
+  HistoryOutlined,
+  SortDescendingOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { DELKEY } from "../../../stores/collectionReducer";
 import {
@@ -18,7 +23,6 @@ import {
   DelAllMarks,
 } from "../../../services/collection/mark";
 import { ResourceSearch, HeaderPanel, CreateActionsBtn } from "./HeaderPanel";
-import { useAction } from "./ActionPanel";
 import {
   LinkEditFormModal,
   ImgEditFormModal,
@@ -26,6 +30,7 @@ import {
 } from "./MarkFormAction";
 import { Mark, ImgMark, WordMark } from "../../../components/collection/Mark";
 import { MarkDataView } from "./MarkDataView";
+import MoveMarkModal from "../AsideBar/MoveMarkModal";
 import styled from "styled-components";
 
 const Content = styled.div`
@@ -61,13 +66,17 @@ export default () => {
 
   const [messageApi, contextHolder] = message.useMessage();
   const keyword = useRef();
-  const { filters } = useAction();
   const [editKeys, setEditKeys] = useState([]);
   const [previewImg, setPreviewImg] = useState({ show: false, url: "" });
   const [previewWord, setPreviewWord] = useState({
     show: false,
     title: "",
     word: "",
+  });
+
+  const [moveMarkMdoal, setMoveMarkModal] = useState({
+    open: false,
+    defaultKey: "",
   });
 
   const [linkFormModal, setLinkFormModal] = useState({
@@ -83,19 +92,41 @@ export default () => {
     record: null,
   });
 
+  const [records, setRecords] = useState([]);
+
+  const [sort, setSort] = useState("up");
+
+  const resetRecordActionHistory = () => {
+    setRecords([]);
+    setEditKeys([]);
+  };
+
   const { refresh: refreshMarks, data: mark } = useRequest(
     () =>
       GetMarksByCollectionId({
         title: keyword.current,
         collectionsId: params.id,
-        pageNum: 1,
-        pageSize: 20,
-        sort: "up",
+        offset: records.length,
+        pageSize: 16,
+        sort,
       }),
     {
-      refreshDeps: [params.id],
+      debounceWait: 300,
+      refreshDeps: [params.id, sort],
+      refreshDepsAction: () => {
+        resetRecordActionHistory();
+        refreshMarks();
+      },
+      onSuccess(res) {
+        setRecords([...records].concat(res.rows || []));
+      },
     }
   );
+
+  const hasMore = useMemo(() => {
+    console.log(mark?.total, records.length);
+    return mark?.total > records.length;
+  }, [mark]);
 
   const { runAsync: createMark } = useRequest(CreateMark, { manual: true });
 
@@ -121,6 +152,7 @@ export default () => {
     title,
     content,
     collectionsId,
+    pid,
     ids,
     onSuccess,
   }) => {
@@ -130,7 +162,7 @@ export default () => {
       okType: "danger",
       onOk: async (close) => {
         try {
-          await moveMarks({ collectionsId, ids });
+          await moveMarks({ collectionsId, ids, pid });
           close();
 
           onSuccess && onSuccess();
@@ -154,6 +186,7 @@ export default () => {
                     placeholder="请输入关键词"
                     onSearch={(value) => {
                       keyword.current = value;
+                      resetRecordActionHistory();
                       refreshMarks();
                     }}
                   />
@@ -202,12 +235,22 @@ export default () => {
                 <MarkDataView
                   rowKey="id"
                   title={collection.title}
-                  items={mark?.rows || []}
+                  items={records}
                   selectedKeys={editKeys}
                   edit={{
                     editable,
                     actions: [
-                      <Button icon={<DragOutlined />}>移动</Button>,
+                      <Button
+                        icon={<DragOutlined />}
+                        onClick={() => {
+                          setMoveMarkModal({
+                            open: true,
+                            defaultKey: selectedKey,
+                          });
+                        }}
+                      >
+                        移动
+                      </Button>,
                       isDelPage ? (
                         <Button
                           danger
@@ -220,7 +263,8 @@ export default () => {
                               onOk: async (close) => {
                                 try {
                                   await delAllMarks();
-                                  refreshMarks();
+                                  setRecords([]);
+                                  setEditKeys([]);
                                   close();
                                 } catch (err) {
                                   messageApi.error(err.message);
@@ -241,7 +285,12 @@ export default () => {
                               title: "批量删除",
                               content: `您确认删除所选中的书签吗？`,
                               onSuccess() {
-                                refreshMarks();
+                                setRecords(
+                                  records.filter(
+                                    (item) => !editKeys.includes(item.id)
+                                  )
+                                );
+                                setEditKeys([]);
                               },
                             })
                           }
@@ -253,8 +302,51 @@ export default () => {
                     onEdit: () => setEditKeys([]),
                   }}
                   filter={{
-                    items: filters,
-                    onChange: () => {},
+                    items: {
+                      sort: {
+                        key: sort,
+                        items: [
+                          {
+                            key: "up",
+                            icon: <HistoryOutlined />,
+                            label: "按最新",
+                          },
+                          {
+                            key: "down",
+                            icon: <HistoryOutlined />,
+                            label: "按最早",
+                          },
+                          {
+                            key: "count",
+                            icon: <SortDescendingOutlined />,
+                            label: "按浏览量",
+                          },
+                        ],
+                      },
+                      view: {
+                        key: "card",
+                        items: [
+                          {
+                            key: "card",
+                            icon: <AppstoreOutlined />,
+                            label: "卡片",
+                          },
+                          // {
+                          //   key: "list",
+                          //   icon: <BarsOutlined />,
+                          //   label: "列表",
+                          // },
+                          // {
+                          //   key: "title",
+                          //   icon: <AlignLeftOutlined />,
+                          //   label: "标题",
+                          // },
+                        ],
+                      },
+                    },
+                    onChange: (key, value) => {
+                      key === "sort" && setSort(value);
+                    },
                   }}
                   layoutRender={<MarkLayoutCard />}
                   itemRender={(key, item, checked) => (
@@ -289,7 +381,11 @@ export default () => {
                                     title: "删除链接",
                                     content: `您确认删除名为 “${item.title}” 的链接吗`,
                                     onSuccess() {
-                                      refreshMarks();
+                                      setRecords(
+                                        records.filter(
+                                          (item) => item.id !== key
+                                        )
+                                      );
                                     },
                                   })
                                 }
@@ -327,7 +423,11 @@ export default () => {
                                     title: "删除图片",
                                     content: `您确认删除图片吗`,
                                     onSuccess() {
-                                      refreshMarks();
+                                      setRecords(
+                                        records.filter(
+                                          (item) => item.id !== key
+                                        )
+                                      );
                                     },
                                   })
                                 }
@@ -373,7 +473,11 @@ export default () => {
                                     title: "删除文本",
                                     content: `您确认删除名为 “${item.title}” 的文本吗`,
                                     onSuccess() {
-                                      refreshMarks();
+                                      setRecords(
+                                        records.filter(
+                                          (item) => item.id !== key
+                                        )
+                                      );
                                     },
                                   })
                                 }
@@ -399,16 +503,14 @@ export default () => {
                       )}
                     </>
                   )}
-                  hasMore
                   onSelect={(e) => {
                     setEditKeys(
-                      e.target.checked
-                        ? (mark?.rows || []).map((item) => item.id)
-                        : []
+                      e.target.checked ? records.map((item) => item.id) : []
                     );
                   }}
-                  onScrolled={() => {
-                    
+                  hasMore={hasMore}
+                  loadMore={() => {
+                    refreshMarks();
                   }}
                 />
               </Container>
@@ -457,18 +559,24 @@ export default () => {
               collectionsId: record.collectionsId,
               mediaType: record.mediaType,
             };
-            !isEdit
-              ? await createMark(formData)
-              : await updateMark({
-                  ...formData,
-                  id: record.id,
-                  title: values.title,
-                  icon: values.icon,
-                  imageUrl: values.imageUrl,
-                });
+            if (!isEdit) {
+              const newRecord = await createMark(formData);
+              setRecords([newRecord, ...records]);
+            } else {
+              const newRecord = await updateMark({
+                ...formData,
+                id: record.id,
+                title: values.title,
+                icon: values.icon,
+                imageUrl: values.imageUrl,
+              });
+              setRecords(
+                records.map((item) =>
+                  item.id === newRecord.id ? newRecord : item
+                )
+              );
+            }
             setLinkFormModal({ ...linkFormModal, open: false });
-
-            refreshMarks();
           } catch (err) {
             messageApi.error(err.message);
           }
@@ -481,15 +589,16 @@ export default () => {
         onCancel={() => setImgFormModal({ ...imgFormModal, open: false })}
         onSubmit={async (values, isEdit, record) => {
           try {
-            !isEdit &&
-              (await createMark({
+            if (!isEdit) {
+              const newRecord = await createMark({
                 domain: values.domain,
                 collectionsId: record.collectionsId,
                 mediaType: record.mediaType,
-              }));
-            setImgFormModal({ ...imgFormModal, open: false });
+              });
+              setRecords([newRecord, ...records]);
+            }
 
-            refreshMarks();
+            setImgFormModal({ ...imgFormModal, open: false });
           } catch (err) {
             messageApi.error(err.message);
           }
@@ -508,15 +617,43 @@ export default () => {
               collectionsId: record.collectionsId,
               mediaType: record.mediaType,
             };
-            !isEdit
-              ? await createMark(formData)
-              : await updateMark({ ...formData, id: record.id });
+            if (!isEdit) {
+              const newRecord = await createMark(formData);
+              setRecords([newRecord, ...records]);
+            } else {
+              const newRecord = await updateMark({
+                ...formData,
+                id: record.id,
+              });
+              const index = records.findIndex(
+                (item) => item.id === newRecord.id
+              );
+              setRecords(records.toSpliced(index, 1, newRecord));
+            }
             setWordFormModal({ ...wordFormModal, open: false });
-
-            refreshMarks();
           } catch (err) {
             messageApi.error(err.message);
           }
+        }}
+      />
+
+      <MoveMarkModal
+        open={moveMarkMdoal.open}
+        defaultKey={moveMarkMdoal.defaultKey}
+        onCancel={() => setMoveMarkModal({ open: false, defaultKey: "" })}
+        onConfirm={(key) => {
+          moveMarksConfirm({
+            ids: editKeys.join(","),
+            collectionsId: key,
+            pid: isDelPage ? -99 : undefined,
+            title: "批量移动",
+            content: `您确认移动所选中的书签吗？`,
+            onSuccess() {
+              setRecords(records.filter((item) => !editKeys.includes(item.id)));
+              setEditKeys([]);
+              setMoveMarkModal({ open: false, defaultKey: "" });
+            },
+          });
         }}
       />
     </>

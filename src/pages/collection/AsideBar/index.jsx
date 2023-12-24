@@ -15,6 +15,7 @@ import {
   UpdateGroupTitle,
   DelGroup,
   CreateCollectionByGroupId,
+  UpdateCollectionTitle,
   DelCollection,
 } from "../../../services/collection/category";
 import {
@@ -65,6 +66,11 @@ export default () => {
     useRequest(CreateCollectionByGroupId, {
       manual: true,
     });
+
+  const {
+    runAsync: updateCollectionTitle,
+    loading: updateCollectionTitleLoading,
+  } = useRequest(UpdateCollectionTitle, { manual: true });
 
   const { runAsync: deleteCollection } = useRequest(DelCollection, {
     manual: true,
@@ -170,13 +176,23 @@ export default () => {
               },
             },
             collection: {
-              items: () => ["CREATECOLLECTION", "DELETECOLLECTION"],
+              items: () => [
+                "CREATECOLLECTION",
+                "RENAMECOLLECTION",
+                "DELETECOLLECTION",
+              ],
               onClick: (_, item, menuKey) => {
                 switch (menuKey) {
                   case "CREATECOLLECTION":
                     setCollectionFormModal({
                       open: true,
                       record: { parentId: item.id, title: "" },
+                    });
+                    break;
+                  case "RENAMECOLLECTION":
+                    setCollectionFormModal({
+                      open: true,
+                      record: item,
                     });
                     break;
                   case "DELETECOLLECTION":
@@ -235,13 +251,17 @@ export default () => {
       <CollectionEditFormModal
         open={collectionFormModal.open}
         record={collectionFormModal.record}
-        confirmLoading={(isEdit) => !isEdit && createCollectionLoading}
+        confirmLoading={(isEdit) =>
+          !isEdit ? createCollectionLoading : updateCollectionTitleLoading
+        }
         onCancel={() =>
           setCollectionFormModal({ ...collectionFormModal, open: false })
         }
         onSubmit={async (values, isEdit, record) => {
           try {
-            !isEdit && (await createCollection({ ...record, ...values }));
+            !isEdit
+              ? await createCollection({ ...record, ...values })
+              : await updateCollectionTitle(values);
             setCollectionFormModal({ ...collectionFormModal, open: false });
 
             refreshCollections();

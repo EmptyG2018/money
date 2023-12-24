@@ -90,6 +90,23 @@ export const CreateCollectionByGroupId = ({ title, groupId, parentId }) =>
     }
   );
 
+// 修改分组标题
+export const UpdateCollectionTitle = ({ id, title }) =>
+  request(
+    {
+      url: "/collections/updateCollectionsTitle",
+      method: "POST",
+      data: {
+        id,
+        title,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
 // 根据分组Id新增收藏集
 export const DelCollection = ({ id }) =>
   request(

@@ -230,7 +230,8 @@ const FavoriteItem = memo(
                             )
                           }
                           style={{ width: 18, height: 18, lineHeight: "16px" }}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setOpenKeys(
                               opend
                                 ? openKeys.filter((key) => key !== item.id)

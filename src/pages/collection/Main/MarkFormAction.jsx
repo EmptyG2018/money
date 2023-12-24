@@ -20,18 +20,19 @@ export const LinkEditFormModal = ({ record, ...props }) => {
     >
       {isEdit ? (
         <>
-          <Form.Item name="title">
+          <Form.Item label="标题" name="title">
             <Input placeholder="标题" />
           </Form.Item>
-          <Form.Item name="imageUrl">
+          <Form.Item label="封面" name="imageUrl">
             <Input placeholder="封面" />
           </Form.Item>
-          <Form.Item name="icon">
+          <Form.Item label="图标" name="icon">
             <Input placeholder="图标" />
           </Form.Item>
         </>
       ) : (
         <Form.Item
+          label="URL"
           name="domain"
           rules={[{ required: true, message: "请输入URL" }]}
         >
@@ -47,6 +48,7 @@ export const ImgEditFormModal = ({ ...props }) => {
     <EditFormModal rowKey="id" width={480} title="图片" {...props}>
       <Form.Item
         name="domain"
+        label="图片地址"
         rules={[{ required: true, message: "请输入图片地址" }]}
       >
         <Input placeholder="https://" />
