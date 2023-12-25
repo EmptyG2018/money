@@ -3,7 +3,7 @@ import { Form, Input } from "antd";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import EditFormModal, {
   EditModal,
-} from "../../../components/collection/EditFormModal";
+} from "./EditFormModal";
 import styled from "styled-components";
 
 export const LinkEditFormModal = ({ record, ...props }) => {

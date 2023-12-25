@@ -11,6 +11,7 @@ export const fetchPropertyCount = createAsyncThunk(
 );
 
 const initialState = {
+  collapsed: false,
   selectedKey: "",
   openKeys: [],
   systemCollections: [
@@ -41,6 +42,9 @@ const slice = createSlice({
   name: "collection",
   initialState,
   reducers: {
+    setCollapsed: (state, { payload }) => {
+      state.collapsed = payload;
+    },
     setSelectedKey: (state, { payload }) => {
       state.selectedKey = payload;
     },
@@ -82,5 +86,6 @@ export const {
   setSystemCollapseCount,
   setCollapses,
   setCollections,
+  setCollapsed,
 } = slice.actions;
 export default slice.reducer;

@@ -11,15 +11,16 @@ import {
   RightOutlined,
   FolderOutlined,
   CaretDownOutlined,
-  CaretRightOutlined
+  CaretRightOutlined,
+  FlagOutlined,
 } from "@ant-design/icons";
 import FavoriteMenu, {
   FavoriteMenuItem,
   FavoriteMenuSub,
   FavoriteBadge,
-} from "../../../components/collection/FavoriteMenu";
+} from "./FavoriteMenu";
 import styled from "styled-components";
-import { arrayToTree, findHierarchyById } from "../../../utils/helper";
+import { arrayToTree, findHierarchyById } from "../../utils/helper";
 
 const CONTEXTMENUOPTIONS = {
   DIVIDER: {
@@ -61,6 +62,11 @@ const CONTEXTMENUOPTIONS = {
     label: "删除收藏集",
     icon: <DeleteOutlined />,
     danger: true,
+  },
+  APPLYJOINPLAZA: {
+    key: "APPLYJOINPLAZA",
+    label: "申请加入广场",
+    icon: <FlagOutlined />,
   },
 };
 

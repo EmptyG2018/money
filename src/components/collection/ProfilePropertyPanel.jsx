@@ -17,13 +17,10 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
-import {
-  Node,
-  FavoriteBadge,
-} from "../../../components/collection/FavoriteMenu";
-import { useUser } from "../../../hooks/user";
+import { Node, FavoriteBadge } from "./FavoriteMenu";
+import { useUser } from "../../hooks/user";
 import { useRequest } from "ahooks";
-import { CreateGroup } from "../../../services/collection/category";
+import { CreateGroup } from "../../services/collection/category";
 import styled from "styled-components";
 
 const PROPERTYICONMAP = {
@@ -61,11 +58,11 @@ const ProfileUser = styled.div`
   }
 `;
 
-export const ProfilePanel = ({ extend, onLogouted }) => {
+export const ProfilePanel = ({ extend, onLogouted, ...props }) => {
   const { user, logout } = useUser();
 
   return (
-    <ProfilePanelRoot>
+    <ProfilePanelRoot {...props}>
       <ProfileCell>
         <Dropdown
           trigger="click"
@@ -104,7 +101,12 @@ const CategoryPanelRoot = styled.div`
   padding-bottom: 8px;
 `;
 
-export const PropertyPanel = ({ activeKey, showAll = true, onSelect }) => {
+export const PropertyPanel = ({
+  activeKey,
+  showAll = true,
+  onSelect,
+  ...props
+}) => {
   const { systemCollections } = useSelector(({ collection }) => collection);
 
   const propertys = useMemo(
@@ -117,7 +119,7 @@ export const PropertyPanel = ({ activeKey, showAll = true, onSelect }) => {
   );
 
   return (
-    <CategoryPanelRoot>
+    <CategoryPanelRoot {...props}>
       {propertys.map((item) => (
         <Node
           selected={activeKey === item.id}

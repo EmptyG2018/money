@@ -55,7 +55,6 @@ const Component = () => {
   const { runAsync: deleteDomain } = useRequest(DelDomain, { manual: true });
 
   const submit = async (values) => {
-    console.log("values", values);
     try {
       await createDomain(values);
       refreshDomains();

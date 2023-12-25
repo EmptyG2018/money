@@ -1,8 +1,9 @@
 import { redirect, Outlet } from "react-router-dom";
-
-import { Agent } from "../../plugins/agent";
-
-import Index from "../../pages/collection/index";
+import { Agent } from "@plugins/agent";
+import Root from "@layouts/collection/root";
+import Index from "@pages/collection/index";
+import Team from "@pages/collection/team";
+import My from "@pages/collection/my";
 
 export default {
   path: "/",
@@ -10,11 +11,25 @@ export default {
   children: [
     {
       path: "collection",
-      loader: () => redirect("/collection/-1"),
-    },
-    {
-      path: "collection/:id",
-      element: <Index />,
+      element: <Root />,
+      children: [
+        {
+          path: "",
+          loader: () => redirect("/collection/-1"),
+        },
+        {
+          path: ":id",
+          element: <Index />,
+        },
+        {
+          path: "team",
+          element: <Team />,
+        },
+        {
+          path: "my",
+          element: <My />,
+        },
+      ],
     },
   ],
 };
