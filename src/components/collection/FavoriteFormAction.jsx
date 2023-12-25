@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { Modal, Form, Input, Select } from "antd";
+import { useRequest } from "ahooks";
 import { GetPlazaCategorys } from "@services/collection/plaza";
 import EditFormModal from "./EditFormModal";
 
@@ -28,23 +30,38 @@ export const CollectionEditFormModal = ({ ...props }) => {
   );
 };
 
-export const PlazaFormModal = ({ ...props }) => {
+export const PlazaFormModal = ({ record, onSubmit, ...props }) => {
+  const formRef = useRef();
+  const { data: categorys } = useRequest(GetPlazaCategorys);
+
   return (
     <Modal
       closeIcon={false}
       destroyOnClose
-      width={480}
+      width={460}
       title="申请加入广场"
+      onOk={() => {
+        if (onSubmit) {
+          formRef.current.validateFields().then((values) => {
+            onSubmit(values);
+          });
+        }
+      }}
       {...props}
     >
-      <Form>
+      <Form ref={formRef} initialValues={record} preserve={false}>
         <Form.Item hidden name="id">
           <Input type="hidden" />
         </Form.Item>
-        <Form.Item type="classId">
-          <Select>
-            <Option value="USD">$</Option>
-            <Option value="CNY">¥</Option>
+        <Form.Item
+          label="分类"
+          name="classId"
+          rules={[{ required: true, message: "请选择分类" }]}
+        >
+          <Select placeholder="分类">
+            {(categorys || []).map((item) => (
+              <Select.Option value={item.id}>{item.title}</Select.Option>
+            ))}
           </Select>
         </Form.Item>
         <Form.Item

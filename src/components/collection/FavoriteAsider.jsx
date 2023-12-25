@@ -8,7 +8,7 @@ import {
   setCollections,
   setSelectedKey,
   setCollapsed,
-} from "../../stores/collectionReducer";
+} from "@stores/collectionReducer";
 import { useRequest, useResponsive } from "ahooks";
 import {
   GetGroups,
@@ -18,7 +18,8 @@ import {
   CreateCollectionByGroupId,
   UpdateCollectionTitle,
   DelCollection,
-} from "../../services/collection/category";
+} from "@services/collection/category";
+import { JoinPlaza } from "@services/collection/plaza";
 import {
   ProfilePanel,
   PropertyPanel,
@@ -104,6 +105,8 @@ const FavoriteAsider = () => {
       dispatch(setCollections(res || []));
     },
   });
+
+  const { runAsync: joinPlaza } = useRequest(JoinPlaza, { manual: true });
 
   useEffect(() => {
     dispatch(fetchPropertyCount());
@@ -236,7 +239,7 @@ const FavoriteAsider = () => {
                     case "APPLYJOINPLAZA":
                       setPlazaFormModal({
                         open: true,
-                        record: item,
+                        record: { id: item.id },
                       });
                       break;
                   }
@@ -306,8 +309,15 @@ const FavoriteAsider = () => {
         onCancel={() =>
           setPlazaFormModal({ ...collectionFormModal, open: false })
         }
-        onSubmit={async (values, isEdit, record) => {
+        onSubmit={async (values) => {
+          try {
+            const result = await joinPlaza(values);
+            setPlazaFormModal({ ...collectionFormModal, open: false });
 
+            messageApi.success(result);
+          } catch (err) {
+            messageApi.error(err.message);
+          }
         }}
       />
     </>

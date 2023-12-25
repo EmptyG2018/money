@@ -21,6 +21,8 @@ export const JoinPlaza = ({ id, classId, description }) =>
       method: "POST",
       data: {
         id,
+        iconUrl: '',
+        tagName: '',
         classId,
         description,
       },
