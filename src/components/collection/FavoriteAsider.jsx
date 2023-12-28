@@ -19,7 +19,7 @@ import {
   UpdateCollectionTitle,
   DelCollection,
 } from "@services/collection/category";
-import { JoinPlaza } from "@services/collection/plaza";
+import { JoinCollectPlaza } from "@services/collection/plaza";
 import {
   ProfilePanel,
   PropertyPanel,
@@ -106,7 +106,7 @@ const FavoriteAsider = () => {
     },
   });
 
-  const { runAsync: joinPlaza } = useRequest(JoinPlaza, { manual: true });
+  const { runAsync: joinPlaza } = useRequest(JoinCollectPlaza, { manual: true });
 
   useEffect(() => {
     dispatch(fetchPropertyCount());
@@ -307,12 +307,12 @@ const FavoriteAsider = () => {
         open={plazaFormModal.open}
         record={plazaFormModal.record}
         onCancel={() =>
-          setPlazaFormModal({ ...collectionFormModal, open: false })
+          setPlazaFormModal({ ...plazaFormModal, open: false })
         }
         onSubmit={async (values) => {
           try {
             const result = await joinPlaza(values);
-            setPlazaFormModal({ ...collectionFormModal, open: false });
+            setPlazaFormModal({ ...plazaFormModal, open: false });
 
             messageApi.success(result);
           } catch (err) {
@@ -349,7 +349,10 @@ export default () => {
 
   return (
     <>
-      <FavoriteSider width={290} display={!collapsed && responsive.sm}>
+      <FavoriteSider
+        width={290}
+        display={!collapsed && responsive.sm ? "block" : "none"}
+      >
         <FavoriteAsider />
       </FavoriteSider>
       <FixedAsiderDrawer

@@ -73,6 +73,21 @@ export const UpdateProfileSetting = ({
     }
   );
 
+
+// 查找用户
+export const GetSearchUser = ({ account }) =>
+  request(
+    {
+      url: "/user/getuserInfoByAccount",
+      method: "POST",
+      data: { account },
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
 // 获取用户跳转类型
 export const GetPublicToUrl = () =>
   request(

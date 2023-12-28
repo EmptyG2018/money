@@ -1,4 +1,4 @@
-import { useRef, cloneElement } from "react";
+import { cloneElement } from "react";
 import { Button, Dropdown, Space, Checkbox } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
@@ -128,8 +128,6 @@ export const MarkDataView = ({
   hasMore,
   loadMore,
 }) => {
-  const el = useRef();
-
   const checkAll = items.length > 0 && items.length === selectedKeys.length;
   const indeterminate =
     selectedKeys.length > 0 && selectedKeys.length < items.length;

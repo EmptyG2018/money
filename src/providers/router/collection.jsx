@@ -4,6 +4,7 @@ import Root from "@layouts/collection/root";
 import Index from "@pages/collection/index";
 import Team from "@pages/collection/team";
 import My from "@pages/collection/my";
+import TeamSetting from "@pages/collection/teamSetting";
 
 export default {
   path: "/",
@@ -24,6 +25,10 @@ export default {
         {
           path: "team",
           element: <Team />,
+        },
+        {
+          path: "team/:teamId",
+          element: <TeamSetting />
         },
         {
           path: "my",

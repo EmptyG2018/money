@@ -193,23 +193,26 @@ ImgMark.Compact = ({ thumb, ...props }) => (
   </CardMark>
 );
 
+const ImgMarkPreview = styled.span`
+  position: fixed;
+  left: -999px;
+  top: -999px;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  display: none;
+  visibility: hidden;
+  z-index: -9999;
+`;
+
 ImgMark.Preview = ({ ...props }) => (
-  <Image
-    style={{
-      position: "fixed",
-      left: "-999px",
-      top: "-999px",
-      width: 0,
-      height: 0,
-      overflow: "hidden",
-      display: "none",
-      visibility: "hidden",
-      zIndex: -9999,
-    }}
-    preview={{
-      ...props,
-    }}
-  />
+  <ImgMarkPreview>
+    <Image
+      preview={{
+        ...props,
+      }}
+    />
+  </ImgMarkPreview>
 );
 
 const WordMarkContent = styled(MarkdownEditor.Markdown)`

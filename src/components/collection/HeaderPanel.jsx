@@ -1,4 +1,4 @@
-import { Row, Col, Input, Dropdown, Button } from "antd";
+import { Flex, Input, Dropdown, Button } from "antd";
 import {
   StarFilled,
   DownOutlined,
@@ -26,20 +26,22 @@ export const CreateActionsBtn = ({ onClick }) => {
 };
 
 export const ResourceSearch = ({ ...props }) => (
-  <Input.Search style={{ width: 360 }} {...props} />
+  <Input.Search style={{ maxWidth: 360 }} {...props} />
 );
 
 const HeaderTop = styled.div`
   padding: 8px 16px;
 `;
 
-export const HeaderPanel = ({ title, extend }) => {
+export const HeaderPanel = ({ title, extend, ...props }) => {
   return (
-    <HeaderTop>
-      <Row justify="space-between" align="middle">
-        <Col>{title}</Col>
-        <Col>{extend}</Col>
-      </Row>
+    <HeaderTop {...props}>
+      <Flex align="center" gap={16}>
+        <Flex flex="1 0 0" align="center" gap={8}>
+          {title}
+        </Flex>
+        <Flex>{extend}</Flex>
+      </Flex>
     </HeaderTop>
   );
 };

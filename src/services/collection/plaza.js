@@ -13,16 +13,36 @@ export const GetPlazaCategorys = () =>
     }
   );
 
-// 获取分类组的收藏数量
-export const JoinPlaza = ({ id, classId, description }) =>
+// 申请加入广场
+export const JoinCollectPlaza = ({ id, classId, description }) =>
   request(
     {
       url: "/collections/collectionsJoinMarket",
       method: "POST",
       data: {
         id,
-        iconUrl: '',
-        tagName: '',
+        iconUrl: "",
+        tagName: "",
+        classId,
+        description,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 申请加入广场
+export const JoinTeamPlaza = ({ id, classId, description }) =>
+  request(
+    {
+      url: "/team/info/teamJoinMarket",
+      method: "POST",
+      data: {
+        id,
+        iconUrl: "",
+        tagName: "",
         classId,
         description,
       },

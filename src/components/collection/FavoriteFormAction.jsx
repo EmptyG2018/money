@@ -1,8 +1,7 @@
 import { useRef } from "react";
-import { Modal, Form, Input, Select } from "antd";
-import { useRequest } from "ahooks";
-import { GetPlazaCategorys } from "@services/collection/plaza";
+import { Modal, Form, Input } from "antd";
 import EditFormModal from "./EditFormModal";
+import PlazaCategorySelector from "./PlazaCategorySelector";
 
 export const CollapseEditFormModal = ({ ...props }) => {
   return (
@@ -32,7 +31,6 @@ export const CollectionEditFormModal = ({ ...props }) => {
 
 export const PlazaFormModal = ({ record, onSubmit, ...props }) => {
   const formRef = useRef();
-  const { data: categorys } = useRequest(GetPlazaCategorys);
 
   return (
     <Modal
@@ -58,11 +56,7 @@ export const PlazaFormModal = ({ record, onSubmit, ...props }) => {
           name="classId"
           rules={[{ required: true, message: "请选择分类" }]}
         >
-          <Select placeholder="分类">
-            {(categorys || []).map((item) => (
-              <Select.Option value={item.id}>{item.title}</Select.Option>
-            ))}
-          </Select>
+          <PlazaCategorySelector />
         </Form.Item>
         <Form.Item
           label="简介"

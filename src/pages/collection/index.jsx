@@ -180,365 +180,357 @@ export default () => {
   return (
     <>
       {contextHolder}
-      <Layout.Content>
-        <Content>
-          {collection ? (
-            <>
-              <HeaderPanel
-                title={
-                  <>
-                    <ToggleCollapsedBtn />
-                    <ResourceSearch
-                      placeholder="请输入关键词"
-                      onSearch={(value) => {
-                        keyword.current = value;
-                        resetRecordActionHistory();
-                        refreshMarks();
-                      }}
-                    />
-                  </>
-                }
-                extend={
-                  <CreateActionsBtn
-                    onClick={(e) => {
-                      switch (e.key) {
-                        case "0":
-                          setLinkFormModal({
-                            open: true,
-                            record: {
-                              collectionsId: params.id,
-                              mediaType: 0,
-                              domain: "",
-                            },
-                          });
-                          break;
-                        case "1":
-                          setImgFormModal({
-                            open: true,
-                            record: {
-                              collectionsId: params.id,
-                              mediaType: 1,
-                              domain: "",
-                            },
-                          });
-                          break;
-                        case "2":
-                          setWordFormModal({
-                            open: true,
-                            record: {
-                              collectionsId: params.id,
-                              mediaType: 2,
-                              title: "",
-                              description: "",
-                            },
-                          });
-                          break;
-                      }
+      <Content>
+        {collection ? (
+          <>
+            <HeaderPanel
+              title={
+                <>
+                  <ToggleCollapsedBtn />
+                  <ResourceSearch
+                    placeholder="请输入关键词"
+                    onSearch={(value) => {
+                      keyword.current = value;
+                      resetRecordActionHistory();
+                      refreshMarks();
                     }}
                   />
-                }
-              />
-              <Container>
-                <MarkDataView
-                  rowKey="id"
-                  title={collection.title}
-                  items={records}
-                  selectedKeys={editKeys}
-                  edit={{
-                    editable,
-                    actions: [
-                      <Button
-                        icon={<DragOutlined />}
-                        onClick={() => {
-                          setMoveMarkModal({
-                            open: true,
-                            defaultKey: selectedKey,
-                          });
-                        }}
-                      >
-                        移动
-                      </Button>,
-                      isDelPage ? (
-                        <Button
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={() =>
-                            Modal.confirm({
-                              title: "清空回收站",
-                              content: "清空后不可恢复，是否继续？",
-                              okType: "danger",
-                              onOk: async (close) => {
-                                try {
-                                  await delAllMarks();
-                                  setRecords([]);
-                                  setEditKeys([]);
-                                  close();
-                                } catch (err) {
-                                  messageApi.error(err.message);
-                                }
-                              },
-                            })
-                          }
-                        >
-                          清空回收站
-                        </Button>
-                      ) : (
-                        <Button
-                          icon={<DeleteOutlined />}
-                          onClick={() =>
-                            moveMarksConfirm({
-                              ids: editKeys.join(","),
-                              collectionsId: -99,
-                              title: "批量删除",
-                              content: `您确认删除所选中的书签吗？`,
-                              onSuccess() {
-                                setRecords(
-                                  records.filter(
-                                    (item) => !editKeys.includes(item.id)
-                                  )
-                                );
-                                setEditKeys([]);
-                              },
-                            })
-                          }
-                        >
-                          移至回收站
-                        </Button>
-                      ),
-                    ],
-                    onEdit: () => setEditKeys([]),
-                  }}
-                  filter={{
-                    items: {
-                      sort: {
-                        key: sort,
-                        items: [
-                          {
-                            key: "up",
-                            icon: <HistoryOutlined />,
-                            label: "按最新",
+                </>
+              }
+              extend={
+                <CreateActionsBtn
+                  onClick={(e) => {
+                    switch (e.key) {
+                      case "0":
+                        setLinkFormModal({
+                          open: true,
+                          record: {
+                            collectionsId: params.id,
+                            mediaType: 0,
+                            domain: "",
                           },
-                          {
-                            key: "down",
-                            icon: <HistoryOutlined />,
-                            label: "按最早",
+                        });
+                        break;
+                      case "1":
+                        setImgFormModal({
+                          open: true,
+                          record: {
+                            collectionsId: params.id,
+                            mediaType: 1,
+                            domain: "",
                           },
-                          {
-                            key: "count",
-                            icon: <SortDescendingOutlined />,
-                            label: "按浏览量",
+                        });
+                        break;
+                      case "2":
+                        setWordFormModal({
+                          open: true,
+                          record: {
+                            collectionsId: params.id,
+                            mediaType: 2,
+                            title: "",
+                            description: "",
                           },
-                        ],
-                      },
-                      view: {
-                        key: "card",
-                        items: [
-                          {
-                            key: "card",
-                            icon: <AppstoreOutlined />,
-                            label: "卡片",
-                          },
-                          // {
-                          //   key: "list",
-                          //   icon: <BarsOutlined />,
-                          //   label: "列表",
-                          // },
-                          // {
-                          //   key: "title",
-                          //   icon: <AlignLeftOutlined />,
-                          //   label: "标题",
-                          // },
-                        ],
-                      },
-                    },
-                    onChange: (key, value) => {
-                      key === "sort" && setSort(value);
-                    },
-                  }}
-                  layoutRender={<MarkLayoutCard />}
-                  itemRender={(key, item, checked) => (
-                    <>
-                      {item.mediaType === 0 && (
-                        <Mark
-                          editable={editable}
-                          checked={checked}
-                          title={item.title}
-                          icon={item.icon}
-                          thumb={item.imageUrl}
-                          location={item.collectionsTitle}
-                          date={item.createTime}
-                          watch={item.count}
-                          actions={
-                            !isDelPage && [
-                              <Button
-                                icon={<HighlightOutlined />}
-                                onClick={() =>
-                                  setLinkFormModal({
-                                    open: true,
-                                    record: item,
-                                  })
-                                }
-                              />,
-                              <Button
-                                icon={<DeleteOutlined />}
-                                onClick={() =>
-                                  moveMarksConfirm({
-                                    ids: key,
-                                    collectionsId: -99,
-                                    title: "删除链接",
-                                    content: `您确认删除名为 “${item.title}” 的链接吗`,
-                                    onSuccess() {
-                                      setRecords(
-                                        records.filter(
-                                          (item) => item.id !== key
-                                        )
-                                      );
-                                    },
-                                  })
-                                }
-                              />,
-                            ]
-                          }
-                          onCheckChange={(e) => {
-                            setEditKeys(
-                              e.target.checked
-                                ? [...editKeys, key]
-                                : editKeys.filter((editKey) => editKey !== key)
-                            );
-                          }}
-                          onClick={() => {
-                            !editable && open(item.domain);
-                          }}
-                        />
-                      )}
-                      {item.mediaType === 1 && (
-                        <ImgMark
-                          editable={editable}
-                          checked={checked}
-                          thumb={item.domain}
-                          location={item.collectionsTitle}
-                          date={item.createTime}
-                          watch={item.count}
-                          actions={
-                            !isDelPage && [
-                              <Button
-                                icon={<DeleteOutlined />}
-                                onClick={() =>
-                                  moveMarksConfirm({
-                                    ids: item.id,
-                                    collectionsId: -99,
-                                    title: "删除图片",
-                                    content: `您确认删除图片吗`,
-                                    onSuccess() {
-                                      setRecords(
-                                        records.filter(
-                                          (item) => item.id !== key
-                                        )
-                                      );
-                                    },
-                                  })
-                                }
-                              />,
-                            ]
-                          }
-                          onCheckChange={(e) => {
-                            setEditKeys(
-                              e.target.checked
-                                ? [...editKeys, key]
-                                : editKeys.filter((editKey) => editKey !== key)
-                            );
-                          }}
-                          onClick={() => {
-                            !editable &&
-                              setPreviewImg({ show: true, url: item.domain });
-                          }}
-                        />
-                      )}
-                      {item.mediaType === 2 && (
-                        <WordMark
-                          editable={editable}
-                          checked={checked}
-                          title={item.title}
-                          word={item.description}
-                          location={item.collectionsTitle}
-                          date={item.createTime}
-                          watch={item.count}
-                          actions={
-                            !isDelPage && [
-                              <Button
-                                icon={<HighlightOutlined />}
-                                onClick={() =>
-                                  setWordFormModal({ open: true, record: item })
-                                }
-                              />,
-                              <Button
-                                icon={<DeleteOutlined />}
-                                onClick={() =>
-                                  moveMarksConfirm({
-                                    ids: item.id,
-                                    collectionsId: -99,
-                                    title: "删除文本",
-                                    content: `您确认删除名为 “${item.title}” 的文本吗`,
-                                    onSuccess() {
-                                      setRecords(
-                                        records.filter(
-                                          (item) => item.id !== key
-                                        )
-                                      );
-                                    },
-                                  })
-                                }
-                              />,
-                            ]
-                          }
-                          onCheckChange={(e) => {
-                            setEditKeys(
-                              e.target.checked
-                                ? [...editKeys, key]
-                                : editKeys.filter((editKey) => editKey !== key)
-                            );
-                          }}
-                          onClick={() => {
-                            !editable &&
-                              setPreviewWord({
-                                show: true,
-                                title: item.title,
-                                word: item.description,
-                              });
-                          }}
-                        />
-                      )}
-                    </>
-                  )}
-                  onSelect={(e) => {
-                    setEditKeys(
-                      e.target.checked ? records.map((item) => item.id) : []
-                    );
-                  }}
-                  hasMore={hasMore}
-                  loadMore={() => {
-                    refreshMarks();
+                        });
+                        break;
+                    }
                   }}
                 />
-              </Container>
-            </>
-          ) : (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "100%",
-                color: "#787878",
-              }}
-            >
-              <FrownOutlined style={{ fontSize: 68 }} />
-              <p style={{ fontSize: 18 }}>收藏集不存在！</p>
-            </div>
-          )}
-        </Content>
-      </Layout.Content>
+              }
+            />
+            <Container>
+              <MarkDataView
+                rowKey="id"
+                title={collection.title}
+                items={records}
+                selectedKeys={editKeys}
+                edit={{
+                  editable,
+                  actions: [
+                    <Button
+                      icon={<DragOutlined />}
+                      onClick={() => {
+                        setMoveMarkModal({
+                          open: true,
+                          defaultKey: selectedKey,
+                        });
+                      }}
+                    >
+                      移动
+                    </Button>,
+                    isDelPage ? (
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() =>
+                          Modal.confirm({
+                            title: "清空回收站",
+                            content: "清空后不可恢复，是否继续？",
+                            okType: "danger",
+                            onOk: async (close) => {
+                              try {
+                                await delAllMarks();
+                                setRecords([]);
+                                setEditKeys([]);
+                                close();
+                              } catch (err) {
+                                messageApi.error(err.message);
+                              }
+                            },
+                          })
+                        }
+                      >
+                        清空回收站
+                      </Button>
+                    ) : (
+                      <Button
+                        icon={<DeleteOutlined />}
+                        onClick={() =>
+                          moveMarksConfirm({
+                            ids: editKeys.join(","),
+                            collectionsId: -99,
+                            title: "批量删除",
+                            content: `您确认删除所选中的书签吗？`,
+                            onSuccess() {
+                              setRecords(
+                                records.filter(
+                                  (item) => !editKeys.includes(item.id)
+                                )
+                              );
+                              setEditKeys([]);
+                            },
+                          })
+                        }
+                      >
+                        移至回收站
+                      </Button>
+                    ),
+                  ],
+                  onEdit: () => setEditKeys([]),
+                }}
+                filter={{
+                  items: {
+                    sort: {
+                      key: sort,
+                      items: [
+                        {
+                          key: "up",
+                          icon: <HistoryOutlined />,
+                          label: "按最新",
+                        },
+                        {
+                          key: "down",
+                          icon: <HistoryOutlined />,
+                          label: "按最早",
+                        },
+                        {
+                          key: "count",
+                          icon: <SortDescendingOutlined />,
+                          label: "按浏览量",
+                        },
+                      ],
+                    },
+                    view: {
+                      key: "card",
+                      items: [
+                        {
+                          key: "card",
+                          icon: <AppstoreOutlined />,
+                          label: "卡片",
+                        },
+                        // {
+                        //   key: "list",
+                        //   icon: <BarsOutlined />,
+                        //   label: "列表",
+                        // },
+                        // {
+                        //   key: "title",
+                        //   icon: <AlignLeftOutlined />,
+                        //   label: "标题",
+                        // },
+                      ],
+                    },
+                  },
+                  onChange: (key, value) => {
+                    key === "sort" && setSort(value);
+                  },
+                }}
+                layoutRender={<MarkLayoutCard />}
+                itemRender={(key, item, checked) => (
+                  <>
+                    {item.mediaType === 0 && (
+                      <Mark
+                        editable={editable}
+                        checked={checked}
+                        title={item.title}
+                        icon={item.icon}
+                        thumb={item.imageUrl}
+                        location={item.collectionsTitle}
+                        date={item.createTime}
+                        watch={item.count}
+                        actions={
+                          !isDelPage && [
+                            <Button
+                              icon={<HighlightOutlined />}
+                              onClick={() =>
+                                setLinkFormModal({
+                                  open: true,
+                                  record: item,
+                                })
+                              }
+                            />,
+                            <Button
+                              icon={<DeleteOutlined />}
+                              onClick={() =>
+                                moveMarksConfirm({
+                                  ids: key,
+                                  collectionsId: -99,
+                                  title: "删除链接",
+                                  content: `您确认删除名为 “${item.title}” 的链接吗`,
+                                  onSuccess() {
+                                    setRecords(
+                                      records.filter((item) => item.id !== key)
+                                    );
+                                  },
+                                })
+                              }
+                            />,
+                          ]
+                        }
+                        onCheckChange={(e) => {
+                          setEditKeys(
+                            e.target.checked
+                              ? [...editKeys, key]
+                              : editKeys.filter((editKey) => editKey !== key)
+                          );
+                        }}
+                        onClick={() => {
+                          !editable && open(item.domain);
+                        }}
+                      />
+                    )}
+                    {item.mediaType === 1 && (
+                      <ImgMark
+                        editable={editable}
+                        checked={checked}
+                        thumb={item.domain}
+                        location={item.collectionsTitle}
+                        date={item.createTime}
+                        watch={item.count}
+                        actions={
+                          !isDelPage && [
+                            <Button
+                              icon={<DeleteOutlined />}
+                              onClick={() =>
+                                moveMarksConfirm({
+                                  ids: item.id,
+                                  collectionsId: -99,
+                                  title: "删除图片",
+                                  content: `您确认删除图片吗`,
+                                  onSuccess() {
+                                    setRecords(
+                                      records.filter((item) => item.id !== key)
+                                    );
+                                  },
+                                })
+                              }
+                            />,
+                          ]
+                        }
+                        onCheckChange={(e) => {
+                          setEditKeys(
+                            e.target.checked
+                              ? [...editKeys, key]
+                              : editKeys.filter((editKey) => editKey !== key)
+                          );
+                        }}
+                        onClick={() => {
+                          !editable &&
+                            setPreviewImg({ show: true, url: item.domain });
+                        }}
+                      />
+                    )}
+                    {item.mediaType === 2 && (
+                      <WordMark
+                        editable={editable}
+                        checked={checked}
+                        title={item.title}
+                        word={item.description}
+                        location={item.collectionsTitle}
+                        date={item.createTime}
+                        watch={item.count}
+                        actions={
+                          !isDelPage && [
+                            <Button
+                              icon={<HighlightOutlined />}
+                              onClick={() =>
+                                setWordFormModal({ open: true, record: item })
+                              }
+                            />,
+                            <Button
+                              icon={<DeleteOutlined />}
+                              onClick={() =>
+                                moveMarksConfirm({
+                                  ids: item.id,
+                                  collectionsId: -99,
+                                  title: "删除文本",
+                                  content: `您确认删除名为 “${item.title}” 的文本吗`,
+                                  onSuccess() {
+                                    setRecords(
+                                      records.filter((item) => item.id !== key)
+                                    );
+                                  },
+                                })
+                              }
+                            />,
+                          ]
+                        }
+                        onCheckChange={(e) => {
+                          setEditKeys(
+                            e.target.checked
+                              ? [...editKeys, key]
+                              : editKeys.filter((editKey) => editKey !== key)
+                          );
+                        }}
+                        onClick={() => {
+                          !editable &&
+                            setPreviewWord({
+                              show: true,
+                              title: item.title,
+                              word: item.description,
+                            });
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+                onSelect={(e) => {
+                  setEditKeys(
+                    e.target.checked ? records.map((item) => item.id) : []
+                  );
+                }}
+                hasMore={hasMore}
+                loadMore={() => {
+                  refreshMarks();
+                }}
+              />
+            </Container>
+          </>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              color: "#787878",
+            }}
+          >
+            <FrownOutlined style={{ fontSize: 68 }} />
+            <p style={{ fontSize: 18 }}>收藏集不存在！</p>
+          </div>
+        )}
+      </Content>
 
       <ImgMark.Preview
         visible={previewImg.show}
