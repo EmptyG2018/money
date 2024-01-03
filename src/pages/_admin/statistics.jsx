@@ -37,14 +37,14 @@ const Component = () => {
         suffix: "个",
         icon: <PoweroffOutlined />,
         color: "#31b831",
-        value: stats?.singularCount,
+        value: stats?.userCount,
       },
       {
         title: "累计成交",
         prefix: "¥",
         icon: <TransactionOutlined />,
         color: "orange",
-        value: stats?.todayCount,
+        value: stats?.singularCount,
       },
       {
         title: "今日收入",
@@ -58,7 +58,7 @@ const Component = () => {
         suffix: "个",
         icon: <FileDoneOutlined />,
         color: "#1677ff",
-        value: stats?.userCount,
+        value: stats?.todayCount,
       },
       {
         title: "昨日收入",
