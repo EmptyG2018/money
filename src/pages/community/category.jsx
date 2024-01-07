@@ -63,7 +63,7 @@ const Component = () => {
                   <Application
                     thumb={item.icon}
                     title={item.name}
-                    desc={"贴数：" + item.posts}
+                    desc={"贴数：" + item.threads}
                     key={item.fid}
                   />
                 </Link>
