@@ -29,11 +29,11 @@ const Component = () => {
       fieldProps: {
         options: [
           {
-            label: "关闭",
+            label: "开启",
             value: 0,
           },
           {
-            label: "开启",
+            label: "关闭",
             value: 1,
           },
         ],

@@ -54,9 +54,9 @@ const PostListRender = () => {
         metas={{
           avatar: {
             dataIndex: "author",
-            render: (_, { author }) => (
+            render: (_, { author,photoUrl }) => (
               <Space direction="vertical" align="center" size={0}>
-                <Avatar src={CONSTAVATARIMG} />
+                <Avatar src={photoUrl} />
                 <span
                   style={{ fontSize: "12px", color: "rgba(0, 0, 0, 0.45)" }}
                 >
