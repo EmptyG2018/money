@@ -2,7 +2,7 @@ import { Space, Image } from "antd";
 import { ProCard } from "@ant-design/pro-components";
 import { styled } from "styled-components";
 import { useRequest } from "ahooks";
-import { GetAgentHelpMethods } from "../services/setting";
+import { GetAgentHelpMethods } from "@services/setting";
 
 const ComponentRoot = styled.div`
   &::before {

@@ -21,8 +21,8 @@ export const AgentError = () => {
       title="获取站点配置异常"
       subTitle="请在重新提交之前检查并修改以下信息。"
       extra={[
-        <Button type="primary" key="get">
-          重新获取
+        <Button type="primary" key="get" onClick={() => location.reload()}>
+          重新加载
         </Button>,
       ]}
     >

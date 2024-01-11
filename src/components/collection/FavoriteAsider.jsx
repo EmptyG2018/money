@@ -8,6 +8,12 @@ import {
   setCollections,
   setSelectedKey,
   setCollapsed,
+  setSystemCollapseCount,
+  setOpenKeys,
+  opend,
+  unOpend,
+  openCollapsed,
+  closeCollapsed,
 } from "@stores/collectionReducer";
 import { useRequest, useResponsive } from "ahooks";
 import {
@@ -31,6 +37,7 @@ import {
   CollectionEditFormModal,
   PlazaFormModal,
 } from "./FavoriteFormAction";
+import { arrayToTree, findHierarchyById } from "../../utils/helper";
 import FixedAsiderLink from "./FixedAsiderLink";
 import styled from "styled-components";
 
@@ -51,13 +58,11 @@ const FavoriteAsider = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { selectedKey, collapses, collections } = useSelector(
+  const { collapsedKeys, openKeys, selectedKey, collapses, collections } = useSelector(
     ({ collection }) => collection
   );
 
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [collapsedKeys, setCollapsedKeys] = useState([]);
 
   const [collapseFormModal, setCollapseFormModal] = useState({
     open: false,
@@ -106,10 +111,15 @@ const FavoriteAsider = () => {
     },
   });
 
-  const { runAsync: joinPlaza } = useRequest(JoinCollectPlaza, { manual: true });
+  const { runAsync: joinPlaza } = useRequest(JoinCollectPlaza, {
+    manual: true,
+  });
 
   useEffect(() => {
-    dispatch(fetchPropertyCount());
+    (async () => {
+      const propertyCount = await dispatch(fetchPropertyCount());
+      dispatch(setSystemCollapseCount(propertyCount.payload));
+    })();
   }, []);
 
   useEffect(() => {
@@ -118,7 +128,7 @@ const FavoriteAsider = () => {
 
   useEffect(() => {
     const collection = collections.find((item) => item.id === selectedKey);
-    collection && setCollapsedKeys([...collapsedKeys, collection.groupId]);
+    collection && dispatch(openCollapsed(collection.groupId));
   }, [collections, selectedKey]);
 
   const collectionMap = useMemo(() => {
@@ -128,6 +138,25 @@ const FavoriteAsider = () => {
     });
     return map;
   }, [collections]);
+
+  useEffect(() => {
+    let keys = [];
+    const treeList = Object.values(collectionMap);
+    treeList.forEach((item) => {
+      const tree = arrayToTree({
+        rowKey: "id",
+        items: item,
+        parentId: 0,
+        level: 1,
+      });
+      const openKeys = findHierarchyById({
+        targetId: selectedKey,
+        tree,
+      }).filter((key) => key !== selectedKey);
+      keys = [...keys, ...openKeys];
+    });
+    dispatch(setOpenKeys(keys));
+  }, [selectedKey, collectionMap]);
 
   return (
     <>
@@ -147,6 +176,7 @@ const FavoriteAsider = () => {
           <FavoritePanel
             selectedKey={selectedKey}
             collapsedKeys={collapsedKeys}
+            openKeys={openKeys}
             collapses={collapses}
             collections={collectionMap}
             conextMenu={{
@@ -161,12 +191,10 @@ const FavoriteAsider = () => {
                 onClick: (key, item, menuKey) => {
                   switch (menuKey) {
                     case "COLLAPSED":
-                      setCollapsedKeys([...collapsedKeys, key]);
+                      dispatch(openCollapsed(key));
                       break;
                     case "UNCOLLAPSED":
-                      setCollapsedKeys(
-                        collapsedKeys.filter((item) => item !== key)
-                      );
+                      dispatch(closeCollapsed(key));
                       break;
                     case "CREATECOLLECTION":
                       setCollectionFormModal({
@@ -247,14 +275,13 @@ const FavoriteAsider = () => {
               },
             }}
             onCollapse={async (collapsed, key) => {
-              setCollapsedKeys(
-                collapsed
-                  ? [...collapsedKeys, key]
-                  : collapsedKeys.filter((item) => item !== key)
-              );
+              dispatch(collapsed ? openCollapsed(key) : closeCollapsed(key));
             }}
             onSelect={(key) => {
               navigate("./" + key, { relative: "path" });
+            }}
+            onOpen={(openState, item) => {
+              dispatch(openState ? opend(item.id) : unOpend(item.id));
             }}
           />
         </FlexFullContent>
@@ -306,9 +333,7 @@ const FavoriteAsider = () => {
       <PlazaFormModal
         open={plazaFormModal.open}
         record={plazaFormModal.record}
-        onCancel={() =>
-          setPlazaFormModal({ ...plazaFormModal, open: false })
-        }
+        onCancel={() => setPlazaFormModal({ ...plazaFormModal, open: false })}
         onSubmit={async (values) => {
           try {
             const result = await joinPlaza(values);

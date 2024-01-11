@@ -3,6 +3,7 @@ import { Modal } from "antd";
 import { useSelector } from "react-redux";
 import { PropertyPanel } from "./ProfilePropertyPanel";
 import { FavoritePanel } from "./FavoritePanel";
+import { arrayToTree, findHierarchyById } from "../../utils/helper";
 
 const MoveMarkModal = ({ defaultKey, onConfirm, ...props }) => {
   const { collapses, collections } = useSelector(
@@ -11,6 +12,7 @@ const MoveMarkModal = ({ defaultKey, onConfirm, ...props }) => {
 
   const [selectedKey, setSelectedKey] = useState("");
   const [collapsedKeys, setCollapsedKeys] = useState([]);
+  const [openKeys, setOpenKeys] = useState([]);
 
   const isDefaultSelect = useMemo(() => {
     return selectedKey === defaultKey;
@@ -33,6 +35,25 @@ const MoveMarkModal = ({ defaultKey, onConfirm, ...props }) => {
     return map;
   }, [collections]);
 
+  useEffect(() => {
+    let keys = [];
+    const treeList = Object.values(collectionMap);
+    treeList.forEach((item) => {
+      const tree = arrayToTree({
+        rowKey: "id",
+        items: item,
+        parentId: 0,
+        level: 1,
+      });
+      const openKeys = findHierarchyById({
+        targetId: selectedKey,
+        tree,
+      }).filter((key) => key !== selectedKey);
+      keys = [...keys, ...openKeys];
+    });
+    setOpenKeys(keys);
+  }, [selectedKey, collectionMap]);
+
   return (
     <Modal
       width={360}
@@ -53,6 +74,7 @@ const MoveMarkModal = ({ defaultKey, onConfirm, ...props }) => {
         <FavoritePanel
           selectedKey={selectedKey}
           collapsedKeys={collapsedKeys}
+          openKeys={openKeys}
           collapses={collapses}
           collections={collectionMap}
           conextMenu={{
@@ -71,6 +93,11 @@ const MoveMarkModal = ({ defaultKey, onConfirm, ...props }) => {
             );
           }}
           onSelect={setSelectedKey}
+          onOpen={(opend, item) => {
+            setOpenKeys(
+              opend ? [...openKeys, item.id] : openKeys.filter(key !== item.id)
+            );
+          }}
         />
       </div>
     </Modal>

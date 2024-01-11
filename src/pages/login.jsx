@@ -2,11 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { Card, Form, Input, Button, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { styled } from "styled-components";
-import { useAgentSetting } from "../plugins/agent";
+import { useAgentSetting } from "@plugins/agent";
 import { useRequest } from "ahooks";
-import { LoginAccount } from "../services/user";
-import { useUser } from "../hooks/user";
-import { useRedirectPath } from "../hooks/recordPath";
+import { LoginAccount } from "@services/user";
+import { useUser } from "@hooks/user";
+import { useRedirectPath } from "@hooks/recordPath";
 
 const ComponentRoot = styled.div`
   display: flex;

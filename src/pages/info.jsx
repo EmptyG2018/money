@@ -8,12 +8,12 @@ import {
   ProFormSelect,
 } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { UploadFile } from "../services/upload";
+import { UploadFile } from "@services/upload";
 import {
   GetProfileSetting,
   UpdateProfileSetting,
   GetPublicToUrl,
-} from "../services/user";
+} from "@services/user";
 
 const Component = () => {
   const infoRef = useRef();
