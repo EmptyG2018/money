@@ -129,7 +129,7 @@ const PostListRender = () => {
               <ArticleAuthor>
                 <Avatar
                   style={{ "--size": "48px", "--border-radius": "24px" }}
-                  src={CONSTAVATARIMG}
+                  src={item.photoUrl}
                   fit="cover"
                 />
                 <NickName>{item.author}</NickName>

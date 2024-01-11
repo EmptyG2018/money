@@ -94,7 +94,7 @@ const StyleModuleTemplate = ({ styleKey, items }) => {
         {items.map((item) => (
           <StyleModuleA
             key={item.tid}
-            url={item.photoUrl}
+            url={item.attachment}
             title={item.subject}
             onClick={() => navigate("/community/article/" + item.tid)}
           />
@@ -106,7 +106,7 @@ const StyleModuleTemplate = ({ styleKey, items }) => {
         {items.map((item) => (
           <StyleModuleB
             key={item.tid}
-            url={item.photoUrl}
+            url={item.attachment}
             title={item.subject}
             onClick={() => navigate("/community/article/" + item.tid)}
           />
