@@ -37,7 +37,7 @@ const Component = () => {
         rowKey="tid"
         actionRef={listRef}
         pagination={{
-          pageSize: 24,
+          pageSize: 20,
         }}
         request={async ({ current, pageSize }) => {
           const res = await getKeywordPost({

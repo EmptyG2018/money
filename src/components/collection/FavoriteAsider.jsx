@@ -58,9 +58,8 @@ const FavoriteAsider = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { collapsedKeys, openKeys, selectedKey, collapses, collections } = useSelector(
-    ({ collection }) => collection
-  );
+  const { collapsedKeys, openKeys, selectedKey, collapses, collections } =
+    useSelector(({ collection }) => collection);
 
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -170,7 +169,7 @@ const FavoriteAsider = () => {
           <PropertyPanel
             activeKey={selectedKey}
             onSelect={(key) => {
-              navigate("./" + key, { relative: "path" });
+              navigate("./" + key);
             }}
           />
           <FavoritePanel
@@ -278,7 +277,7 @@ const FavoriteAsider = () => {
               dispatch(collapsed ? openCollapsed(key) : closeCollapsed(key));
             }}
             onSelect={(key) => {
-              navigate("./" + key, { relative: "path" });
+              navigate("./" + key);
             }}
             onOpen={(openState, item) => {
               dispatch(openState ? opend(item.id) : unOpend(item.id));

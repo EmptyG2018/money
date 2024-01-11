@@ -34,11 +34,10 @@ const PostListRender = () => {
         rowKey="tid"
         actionRef={listRef}
         pagination={{
-          pageSize: 12,
+          pageSize: 20,
         }}
-        request={async ({ current, pageSize, ...args }) => {
+        request={async ({ current, pageSize }) => {
           const res = await getPost({
-            ...args,
             fid: params.id,
             pageNum: current,
             pageSize: PAGE_SIZE,
