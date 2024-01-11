@@ -1,9 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { ReduxProvider, RouterProvider, AntdProvider } from "./providers";
+import GlobalStyle from "./globalStyle";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const ConfigProvider = ({ children }) => (
+  <ReduxProvider>
+    <AntdProvider>
+      <RouterProvider />
+      {children}
+    </AntdProvider>
+  </ReduxProvider>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+    <GlobalStyle />
+    <ConfigProvider />
+  </React.StrictMode>
+);

@@ -31,110 +31,102 @@ const MobileExercise = lazy(() => import("@package_exam/pages/mini/exercise"));
 const MobileAnswer = lazy(() => import("@package_exam/pages/mini/answer"));
 const MobileArticle = lazy(() => import("@package_exam/pages/mini/article"));
 
-export const examRoutes = {
-  path: "/",
-  element: <Agent element={<Outlet />} />,
-  children: [
-    {
-      path: "exam",
-      element: <LazyRoute element={<Header />} />,
-      children: [
-        {
-          index: true,
-          element: <LazyRoute element={<Index />} />,
-        },
-        {
-          path: "category",
-          element: <LazyRoute element={<Category />} />,
-        },
-        {
-          path: "certificate/:id",
-          element: <LazyRoute element={<Certificate />} />,
-        },
-        {
-          path: "chapter/:id",
-          element: <LazyRoute element={<Chapter />} />,
-        },
-        {
-          path: "topictype/:id",
-          element: <LazyRoute element={<TopicType />} />,
-        },
-        {
-          path: "historypaper/:id",
-          element: <LazyRoute element={<HistoryPaper />} />,
-        },
-        {
-          path: "topic/:id",
-          element: <LazyRoute element={<Topic />} />,
-        },
-        {
-          path: "search",
-          element: <LazyRoute element={<Search />} />,
-        },
-        {
-          path: "exercise/:mode/:id",
-          element: <LazyRoute element={<Exercise />} />,
-        },
-        {
-          path: "answer/:id",
-          element: <LazyRoute element={<Answer />} />,
-        },
-      ],
-    },
-  ],
-};
+export const examRoutes = [
+  {
+    path: "exam",
+    element: <LazyRoute element={<Header />} />,
+    children: [
+      {
+        path: "",
+        element: <LazyRoute element={<Index />} />,
+      },
+      {
+        path: "category",
+        element: <LazyRoute element={<Category />} />,
+      },
+      {
+        path: "certificate/:id",
+        element: <LazyRoute element={<Certificate />} />,
+      },
+      {
+        path: "chapter/:id",
+        element: <LazyRoute element={<Chapter />} />,
+      },
+      {
+        path: "topictype/:id",
+        element: <LazyRoute element={<TopicType />} />,
+      },
+      {
+        path: "historypaper/:id",
+        element: <LazyRoute element={<HistoryPaper />} />,
+      },
+      {
+        path: "topic/:id",
+        element: <LazyRoute element={<Topic />} />,
+      },
+      {
+        path: "search",
+        element: <LazyRoute element={<Search />} />,
+      },
+      {
+        path: "exercise/:mode/:id",
+        element: <LazyRoute element={<Exercise />} />,
+      },
+      {
+        path: "answer/:id",
+        element: <LazyRoute element={<Answer />} />,
+      },
+    ],
+  },
+];
 
-export const examMobileRoutes = {
-  path: "/",
-  element: <Agent element={<Outlet />} />,
-  children: [
-    {
-      path: "m/exam",
-      element: <LazyRoute element={<Mobile />} />,
-      children: [
-        {
-          path: "",
-          element: <LazyRoute element={<Tabbar />} />,
-          children: [
-            {
-              index: true,
-              element: <LazyRoute element={<MobileIndex />} />,
-            },
-            {
-              path: "category",
-              element: <LazyRoute element={<MobileCategory />} />,
-            },
-            {
-              path: "certificate/:id",
-              element: <LazyRoute element={<MobileCertificate />} />,
-            },
-            {
-              path: "list/:id",
-              element: <LazyRoute element={<MobileList />} />,
-            },
-            {
-              path: "user",
-              element: <LazyRoute element={<MobileUser />} />,
-            },
-          ],
-        },
-        {
-          path: "search",
-          element: <LazyRoute element={<MobileSearch />} />,
-        },
-        {
-          path: "exercise/:mode/:id",
-          element: <LazyRoute element={<MobileExercise />} />,
-        },
-        {
-          path: "answer/:id",
-          element: <LazyRoute element={<MobileAnswer />} />,
-        },
-        {
-          path: "article/:id",
-          element: <LazyRoute element={<MobileArticle />} />,
-        },
-      ],
-    },
-  ],
-};
+export const examMobileRoutes = [
+  {
+    path: "m/exam",
+    element: <LazyRoute element={<Mobile />} />,
+    children: [
+      {
+        path: "",
+        element: <LazyRoute element={<Tabbar />} />,
+        children: [
+          {
+            path: "",
+            element: <LazyRoute element={<MobileIndex />} />,
+          },
+          {
+            path: "category",
+            element: <LazyRoute element={<MobileCategory />} />,
+          },
+          {
+            path: "certificate/:id",
+            element: <LazyRoute element={<MobileCertificate />} />,
+          },
+          {
+            path: "list/:id",
+            element: <LazyRoute element={<MobileList />} />,
+          },
+          {
+            path: "user",
+            element: <LazyRoute element={<MobileUser />} />,
+          },
+        ],
+      },
+      {
+        path: "search",
+        element: <LazyRoute element={<MobileSearch />} />,
+      },
+      {
+        path: "exercise/:mode/:id",
+        element: <LazyRoute element={<MobileExercise />} />,
+      },
+      {
+        path: "answer/:id",
+        element: <LazyRoute element={<MobileAnswer />} />,
+      },
+      {
+        path: "article/:id",
+        element: <LazyRoute element={<MobileArticle />} />,
+      },
+    ],
+  },
+];

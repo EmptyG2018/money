@@ -1,7 +1,6 @@
 import { lazy } from "react";
-import { redirect, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
-import { Agent } from "@plugins/agent";
 import { LoginedPage, AdminPage } from "@plugins/access";
 import LazyRoute from "@components/LazyRoute";
 
@@ -25,119 +24,111 @@ const _BookmarkIndex = lazy(() =>
   import("@package_admin/pages/bookmark/index")
 );
 
-export default {
-  path: "/",
-  element: <Agent element={<Outlet />} />,
-  children: [
-    {
-      path: "admin",
-      element: (
-        <LoginedPage
-          element={<AdminPage element={<LazyRoute element={<Admin />} />} />}
-        />
-      ),
-      children: [
-        {
-          index: true,
-          loader: () => redirect("/admin/base/_statistics"),
-        },
-        {
-          path: "base",
-          element: <Outlet />,
-          children: [
-            {
-              index: true,
-              loader: () => redirect("/admin/base/_statistics"),
-            },
-            {
-              path: "_statistics",
-              element: <LazyRoute element={<_Statistics />} />,
-            },
-            {
-              path: "_website",
-              element: <LazyRoute element={<_Website />} />,
-            },
-            {
-              path: "_vip",
-              element: <LazyRoute element={<_Vip />} />,
-            },
-            {
-              path: "_site",
-              element: <LazyRoute element={<_Site />} />,
-            },
-            {
-              path: "_domain",
-              element: <LazyRoute element={<_Domain />} />,
-            },
-            {
-              path: "_vipkey",
-              element: <LazyRoute element={<_VipKey />} />,
-            },
-            {
-              path: "_joinkey",
-              element: <LazyRoute element={<_JoinKey />} />,
-            },
-            {
-              path: "_recharge",
-              element: <LazyRoute element={<_Recharge />} />,
-            },
-            {
-              path: "_flowrecord",
-              element: <LazyRoute element={<_FlowRecord />} />,
-            },
-            {
-              path: "_income",
-              element: <LazyRoute element={<_Income />} />,
-            },
-            {
-              path: "_help",
-              element: <LazyRoute element={<_Help />} />,
-            },
-          ],
-        },
-        {
-          path: "bookmark",
-          element: <Outlet />,
-          children: [
-            {
-              index: true,
-              loader: () => redirect("/admin/bookmark/_index"),
-            },
-            {
-              path: "_index",
-              element: <LazyRoute element={<_BookmarkIndex />} />,
-            },
-          ],
-        },
-        {
-          path: "community",
-          element: <Outlet />,
-          children: [
-            {
-              index: true,
-              loader: () => redirect("/admin/community/_module"),
-            },
-            {
-              path: "_module",
-              element: <LazyRoute element={<_CommunityModule />} />,
-            },
-          ],
-        },
-        {
-          path: "exam",
-          element: <Outlet />,
-          children: [
-            {
-              index: true,
-              loader: () => redirect("/admin/exam/_index"),
-            },
-            {
-              path: "_index",
-              element: <LazyRoute element={<_ExamIndex />} />,
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+export default [
+  {
+    path: "admin",
+    element: (
+      <LoginedPage
+        element={<AdminPage element={<LazyRoute element={<Admin />} />} />}
+      />
+    ),
+    children: [
+      {
+        path: "",
+        element: <Navigate to="/admin/base/_statistics" replace />,
+      },
+      {
+        path: "base",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/admin/base/_statistics" replace />,
+          },
+          {
+            path: "_statistics",
+            element: <LazyRoute element={<_Statistics />} />,
+          },
+          {
+            path: "_website",
+            element: <LazyRoute element={<_Website />} />,
+          },
+          {
+            path: "_vip",
+            element: <LazyRoute element={<_Vip />} />,
+          },
+          {
+            path: "_site",
+            element: <LazyRoute element={<_Site />} />,
+          },
+          {
+            path: "_domain",
+            element: <LazyRoute element={<_Domain />} />,
+          },
+          {
+            path: "_vipkey",
+            element: <LazyRoute element={<_VipKey />} />,
+          },
+          {
+            path: "_joinkey",
+            element: <LazyRoute element={<_JoinKey />} />,
+          },
+          {
+            path: "_recharge",
+            element: <LazyRoute element={<_Recharge />} />,
+          },
+          {
+            path: "_flowrecord",
+            element: <LazyRoute element={<_FlowRecord />} />,
+          },
+          {
+            path: "_income",
+            element: <LazyRoute element={<_Income />} />,
+          },
+          {
+            path: "_help",
+            element: <LazyRoute element={<_Help />} />,
+          },
+        ],
+      },
+      {
+        path: "bookmark",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/admin/bookmark/_index" replace />,
+          },
+          {
+            path: "_index",
+            element: <LazyRoute element={<_BookmarkIndex />} />,
+          },
+        ],
+      },
+      {
+        path: "community",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/admin/community/_module" replace />,
+          },
+          {
+            path: "_module",
+            element: <LazyRoute element={<_CommunityModule />} />,
+          },
+        ],
+      },
+      {
+        path: "exam",
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/admin/exam/_index" replace />,
+          },
+          {
+            path: "_index",
+            element: <LazyRoute element={<_ExamIndex />} />,
+          },
+        ],
+      },
+    ],
+  },
+];

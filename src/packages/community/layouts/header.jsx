@@ -41,16 +41,10 @@ const defaultProps = {
     path: "/community",
     routes: [
       {
-        path: "/community",
-        name: "首页",
-        icon: <UnorderedListOutlined />,
-      },
-      {
         path: "/community/category",
         name: "分类",
         icon: <UnorderedListOutlined />,
       },
-        
     ],
   },
 };

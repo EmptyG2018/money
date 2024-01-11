@@ -1,7 +1,5 @@
 import { lazy } from "react";
-import { redirect, Outlet } from "react-router-dom";
 
-import { Agent } from "@plugins/agent";
 import { LoginedPage } from "@plugins/access";
 import LazyRoute from "@components/LazyRoute";
 
@@ -13,43 +11,35 @@ const Team = lazy(() => import("@package_navigation/pages/team"));
 const Collect = lazy(() => import("@package_navigation/pages/collect"));
 const User = lazy(() => import("@package_navigation/pages/user"));
 
-export default {
-  path: "/",
-  element: <Agent element={<Outlet />} />,
-  children: [
-    {
-      index: true,
-      loader: () => redirect("/navigation"),
-    },
-    {
-      path: "navigation",
-      element: <LazyRoute element={<Header />} />,
-      children: [
-        {
-          index: true,
-          element: <LazyRoute element={<Index />} />,
-        },
-        {
-          path: "search",
-          element: <LazyRoute element={<Search />} />,
-        },
-        {
-          path: "hall",
-          element: <LazyRoute element={<Hall />} />,
-        },
-        {
-          path: "team/:id",
-          element: <LazyRoute element={<Team />} />,
-        },
-        {
-          path: "collect/:id",
-          element: <LazyRoute element={<Collect />} />,
-        },
-        {
-          path: "user",
-          element: <LoginedPage element={<LazyRoute element={<User />} />} />,
-        },
-      ],
-    },
-  ],
-};
+export default [
+  {
+    path: "navigation",
+    element: <LazyRoute element={<Header />} />,
+    children: [
+      {
+        path: "",
+        element: <LazyRoute element={<Index />} />,
+      },
+      {
+        path: "search",
+        element: <LazyRoute element={<Search />} />,
+      },
+      {
+        path: "hall",
+        element: <LazyRoute element={<Hall />} />,
+      },
+      {
+        path: "team/:id",
+        element: <LazyRoute element={<Team />} />,
+      },
+      {
+        path: "collect/:id",
+        element: <LazyRoute element={<Collect />} />,
+      },
+      {
+        path: "user",
+        element: <LoginedPage element={<LazyRoute element={<User />} />} />,
+      },
+    ],
+  },
+];
