@@ -34,6 +34,7 @@ const initialState = {
       viewType: 0,
     },
   ],
+  collapsedKeys: [],
   collapses: [],
   collections: [],
 };
@@ -47,6 +48,9 @@ const slice = createSlice({
     },
     setSelectedKey: (state, { payload }) => {
       state.selectedKey = payload;
+    },
+    setOpenKeys: (state, { payload }) => {
+      state.openKeys = payload;
     },
     opend: (state, { payload }) => {
       state.openKeys = [...state.openKeys, payload];
@@ -73,6 +77,17 @@ const slice = createSlice({
     setCollapses: (state, { payload }) => {
       state.collapses = payload;
     },
+    setCollapsedKeys: (state, { payload }) => {
+      state.collapsedKeys = payload;
+    },
+    openCollapsed: (state, { payload }) => {
+      state.collapsedKeys = [...state.collapsedKeys, payload];
+    },
+    closeCollapsed: (state, { payload }) => {
+      state.collapsedKeys = state.collapsedKeys.filter(
+        (key) => key !== payload
+      );
+    },
     setCollections: (state, { payload }) => {
       state.collections = payload;
     },
@@ -87,5 +102,9 @@ export const {
   setCollapses,
   setCollections,
   setCollapsed,
+  setOpenKeys,
+  setCollapsedKeys,
+  openCollapsed,
+  closeCollapsed,
 } = slice.actions;
 export default slice.reducer;

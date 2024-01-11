@@ -1,5 +1,6 @@
 import storage from "store";
 import axios from "axios";
+import { message } from "antd";
 
 const resMap = {
   json: (response) => {
@@ -10,6 +11,22 @@ const resMap = {
         return Promise.reject(response?.data);
       },
       (error) => {
+        if (error.response.status === 401) {
+          setTimeout(() => {
+            storage.remove("token");
+            location.href = "/login";
+          }, 1000);
+          message.error({
+            key: "system",
+            content: error.response.data.message,
+          });
+        } else {
+          message.error({
+            key: "system",
+            content: error.response.message,
+          });
+        }
+
         return Promise.reject({
           code: error.response.status,
           message: error.message,

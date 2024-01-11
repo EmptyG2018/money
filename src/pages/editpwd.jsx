@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Button, message } from "antd";
 import { ProForm, ProFormText } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { UpdateUserPwd } from "../services/user";
+import { UpdateUserPwd } from "@services/user";
 
 const Component = () => {
   const editpwdForm = useRef();

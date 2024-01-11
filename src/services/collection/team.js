@@ -18,6 +18,74 @@ export const GetMyTeamLikes = ({ title, pageNum, pageSize }) =>
     }
   );
 
+// 获取团队类型
+export const GetTeamCategorys = ({ teamId }) =>
+  request(
+    {
+      url: "/team/info/getTeamclass",
+      method: "POST",
+      data: {
+        teamId,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 新增团队类型
+export const AddTeamCategory = ({ teamId, title }) =>
+  request(
+    {
+      url: "/team/info/addTeamclass",
+      method: "POST",
+      data: {
+        teamId,
+        title,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 修改团队类型
+export const UpdateTeamCategory = ({ teamId, title, id }) =>
+  request(
+    {
+      url: "/team/info/updateTeamclass",
+      method: "POST",
+      data: {
+        teamId,
+        title,
+        id,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 删除团队类型
+export const DeleteTeamCategory = ({ teamId, id }) =>
+  request(
+    {
+      url: "/team/info/deleteTeamclass",
+      method: "POST",
+      data: {
+        teamId,
+        id,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
 // 获取团队信息
 export const GetTeamInfo = ({ teamId }) =>
   request(

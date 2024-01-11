@@ -5,6 +5,7 @@ import {
   PictureOutlined,
   AlignLeftOutlined,
   LinkOutlined,
+  ImportOutlined,
 } from "@ant-design/icons";
 import styled from "styled-components";
 
@@ -12,6 +13,8 @@ export const ACTION_MENUS = [
   { key: "0", icon: <LinkOutlined />, label: "链接" },
   { key: "1", icon: <PictureOutlined />, label: "图片" },
   { key: "2", icon: <AlignLeftOutlined />, label: "文本" },
+  { type: "divider" },
+  { key: "3", icon: <ImportOutlined />, label: "导入书签" },
 ];
 
 export const CreateActionsBtn = ({ onClick }) => {

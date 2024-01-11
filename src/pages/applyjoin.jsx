@@ -13,9 +13,9 @@ import {
   GetSiteDomainSuffix,
   GetRandSiteDomainPrefix,
   CreateAgentSite,
-} from "../services/agent";
-import { useUser } from "../hooks/user";
-import { useNavigatorPath } from "../hooks/recordPath";
+} from "@services/agent";
+import { useUser } from "@hooks/user";
+import { useNavigatorPath } from "@hooks/recordPath";
 import styled from "styled-components";
 
 const ComponentRoot = styled.div`

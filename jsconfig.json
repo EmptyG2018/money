@@ -1,11 +1,29 @@
 {
   "compilerOptions": {
     "paths": {
+      "@package_admin/*": [
+        "./src/packages/_admin/*"
+      ],
+      "@package_collection/*": [
+        "./src/packages/collection/*"
+      ],
+      "@package_community/*": [
+        "./src/packages/community/*"
+      ],
+      "@package_exam/*": [
+        "./src/packages/exam/*"
+      ],
+      "@package_navigation/*": [
+        "./src/packages/navigation/*"
+      ],
       "@/*": [
         "./src/*"
       ],
       "@pages/*": [
         "./src/pages/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
       ],
       "@stores/*": [
         "./src/stores/*"
@@ -21,7 +39,7 @@
       ],
       "@components/*": [
         "./src/components/*"
-      ]
+      ],
     }
   },
 }

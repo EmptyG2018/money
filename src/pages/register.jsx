@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, Form, Input, Button, message } from "antd";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 import { styled } from "styled-components";
-import { useAgentSetting } from "../plugins/agent";
+import { useAgentSetting } from "@plugins/agent";
 import { useRequest } from "ahooks";
-import { RegisterAccount } from "../services/user";
+import { RegisterAccount } from "@services/user";
 
 const ComponentRoot = styled.div`
   display: flex;

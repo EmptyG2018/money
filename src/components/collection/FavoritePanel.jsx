@@ -20,7 +20,7 @@ import FavoriteMenu, {
   FavoriteBadge,
 } from "./FavoriteMenu";
 import styled from "styled-components";
-import { arrayToTree, findHierarchyById } from "../../utils/helper";
+import { arrayToTree } from "../../utils/helper";
 
 const CONTEXTMENUOPTIONS = {
   DIVIDER: {
@@ -108,15 +108,14 @@ const FavoriteItem = memo(
     items = [],
     selectedKey,
     collapsed,
+    openKeys = [],
     collapseRender,
     conextMenu,
     onSelect,
+    onOpen,
   }) => {
     const contextMenuItems = conextMenu?.items || [];
     const contextMenuTrigger = conextMenu?.onClick || null;
-
-    const initset = useRef(true);
-    const [openKeys, setOpenKeys] = useState([]);
 
     const tree = useMemo(
       () =>
@@ -128,17 +127,6 @@ const FavoriteItem = memo(
         }),
       [items]
     );
-
-    useEffect(() => {
-      if (initset.current && !!selectedKey && tree.length) {
-        setOpenKeys(
-          findHierarchyById({ targetId: selectedKey, tree }).filter(
-            (key) => key !== selectedKey
-          )
-        );
-        initset.current = false;
-      }
-    }, [selectedKey, tree]);
 
     return (
       <>
@@ -238,11 +226,7 @@ const FavoriteItem = memo(
                           style={{ width: 18, height: 18, lineHeight: "16px" }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            setOpenKeys(
-                              opend
-                                ? openKeys.filter((key) => key !== item.id)
-                                : [...openKeys, item.id]
-                            );
+                            onOpen && onOpen(!opend, item);
                           }}
                         />
                       }
@@ -286,7 +270,6 @@ const FavoriteItem = memo(
 );
 
 export const FavoritePanel = ({
-  selectedKey,
   collapsedKeys = [],
   collapses = [],
   collections = {},
@@ -300,7 +283,6 @@ export const FavoritePanel = ({
   return collapses.map((item) => (
     <FavoriteItem
       collapsed={collapsedKeys.includes(item.id)}
-      selectedKey={selectedKey}
       items={collections[item.id] || []}
       conextMenu={conextMenu?.collection}
       collapseRender={
