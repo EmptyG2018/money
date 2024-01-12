@@ -6,7 +6,7 @@ import { useRequest } from "ahooks";
 import { GetSubjectByCourseId } from "../../../services/exam/category";
 import { GetTopicQuery } from "../../../services/exam/topic";
 import styled, { css } from "styled-components";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 
 const ActionDiyIcon = styled.div`
   display: flex;
@@ -263,7 +263,7 @@ const Component = () => {
   }, [subjectInfo]);
 
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <NoStyledCard bordered={false}>
           <CollapsePanel>

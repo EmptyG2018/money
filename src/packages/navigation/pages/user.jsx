@@ -15,7 +15,7 @@ import {
   GetBookmarkUserOpenTeam,
   GetBookmarkUserJoinTeam,
 } from "@services/bookmark";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 
 const TeamRoot = styled(Card)``;
 
@@ -311,7 +311,7 @@ const Component = () => {
   });
 
   return (
-    <Container title={false} gutter={[0, 12]}>
+    <Container $gutter={[0, 12]}>
       <ProCard gutter={[24, 24]} wrap ghost>
         <ProCard colSpan={{ sm: 24, md: 8, lg: 6 }}>
           <UserInfo>

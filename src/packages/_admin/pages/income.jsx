@@ -12,7 +12,6 @@ import {
   ProFormText,
   ProFormMoney,
   ProTable,
-  PageContainer,
   StatisticCard,
   CheckCard,
 } from "@ant-design/pro-components";
@@ -22,11 +21,12 @@ import {
   GetAgentProperty,
   DrawAgentAliMoney,
   BindAgentAliAccount,
-} from "../../../services/property";
+} from "@services/property";
 import {
   GetAgentKickbackRecord,
   GetAgentDrawMoneyRecord,
-} from "../../../services/statistics";
+} from "@services/statistics";
+import { PageContainer } from "@components/Container";
 
 const Alert = styled.p`
   margin: 0;

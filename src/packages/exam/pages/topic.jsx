@@ -1,6 +1,6 @@
 import { Card } from "antd";
 import styled from "styled-components";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 
 const Topic = styled(Card)``;
 const TopicTitle = styled.h3`
@@ -25,7 +25,7 @@ const TopicOption = styled.li`
 
 const Component = () => {
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       <Topic>
         <TopicTitle>
           经酸洗后的设备和管道内壁要进行钝化，钝化时应遵循的规定（）。

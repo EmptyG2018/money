@@ -3,20 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Typography, Button, Space, message, notification } from "antd";
 import {
   ProCard,
-  PageContainer,
   ProForm,
   ProFormText,
   ProFormTextArea,
   ProFormUploadButton,
 } from "@ant-design/pro-components";
-import { useUser } from "../../../hooks/user";
-import { useAgentSetting } from "../../../plugins/agent";
+import { useUser } from "@hooks/user";
+import { useAgentSetting } from "@plugins/agent";
 import { useRequest } from "ahooks";
-import { UploadFile } from "../../../services/upload";
+import { UploadFile } from "@services/upload";
 import {
   GetAdminAgentGlobalSetting,
   UpdateAdminAgentGlobalSetting,
-} from "../../../services/setting";
+} from "@services/setting";
+import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const formRef = useRef(null);

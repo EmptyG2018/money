@@ -5,7 +5,7 @@ import { FileTextTwoTone, ProfileTwoTone } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { GetExamPaperByKeyword } from "../../../services/exam/exampaper";
 import { GetTopicQuery } from "../../../services/exam/topic";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 import styled, { css } from "styled-components";
 import { RightOutline } from "antd-mobile-icons";
 
@@ -137,7 +137,7 @@ const Component = () => {
   useEffect(() => submit(), [pagination, active]);
 
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       <SearchPanel>
         <Input.Search
           size="large"

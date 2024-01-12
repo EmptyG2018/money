@@ -5,7 +5,7 @@ import { EyeOutline, HistogramOutline } from "antd-mobile-icons";
 import { ProList } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { GetKeywordPosts } from "@package_community/services/post";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 import styled from "styled-components";
 
 const CONSTAVATARIMG =
@@ -31,7 +31,7 @@ const Component = () => {
   }, [word]);
 
   return (
-    <Container title={false} gutter={[16, 24]}>
+    <Container $gutter={[16, 24]}>
       <Info>以下关于 “{keyword}” 的搜索结果：</Info>
       <ProList
         rowKey="tid"

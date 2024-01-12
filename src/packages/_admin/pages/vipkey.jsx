@@ -2,7 +2,6 @@ import { useRef } from "react";
 import { Button, message, Popconfirm, Popover } from "antd";
 import { HourglassOutlined, ExportOutlined } from "@ant-design/icons";
 import {
-  PageContainer,
   ProTable,
   ProForm,
   ProFormDigit,
@@ -16,8 +15,9 @@ import {
   GenerateRandVipKey,
   ExportVipKey,
   DelVipkey,
-} from "../../../services/key";
-import useDownload from "../../../hooks/download";
+} from "@services/key";
+import useDownload from "@hooks/download";
+import { PageContainer } from "@components/Container";
 
 const VipKeyFormRender = ({ groupOptions, onFinish }) => {
   return (

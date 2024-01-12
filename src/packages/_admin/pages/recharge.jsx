@@ -2,7 +2,6 @@ import { useRef, useEffect } from "react";
 import { Button, Space, Typography, message } from "antd";
 import {
   ProCard,
-  PageContainer,
   ProForm,
   ProFormText,
   ProFormRadio,
@@ -10,7 +9,8 @@ import {
 } from "@ant-design/pro-components";
 import { styled } from "styled-components";
 import { useRequest } from "ahooks";
-import { GetProperty, RechargeCard } from "../../../services/user";
+import { GetProperty, RechargeCard } from "@services/user";
+import { PageContainer } from "@components/Container";
 
 const Alert = styled.p`
   margin: 0;

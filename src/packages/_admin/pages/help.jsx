@@ -11,7 +11,6 @@ import {
 import {
   ProCard,
   ProForm,
-  PageContainer,
   ProFormRadio,
   EditableProTable,
 } from "@ant-design/pro-components";
@@ -21,7 +20,8 @@ import {
   GetAgentHelpSetting,
   GetAgentHelpOption,
   UpdateAgentHelpSetting,
-} from "../../../services/setting";
+} from "@services/setting";
+import { PageContainer } from "@components/Container";
 
 const LocationIconRoot = styled.div`
   display: flex;

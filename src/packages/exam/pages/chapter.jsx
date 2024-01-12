@@ -4,7 +4,7 @@ import { Card, List } from "antd";
 import { useRequest } from "ahooks";
 import { GetChapterBySubjectId } from "../../../services/exam/category";
 import styled from "styled-components";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 
 const NoStyledCard = styled(Card)`
   border-radius: 0;
@@ -57,7 +57,7 @@ const Component = () => {
   );
 
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       <NoStyledCard title="章节练习">
         <List
           rowKey="id"

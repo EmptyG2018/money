@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Button, message } from "antd";
 import {
   ProCard,
-  PageContainer,
   ProTable,
   ProForm,
   ProFormText,
@@ -11,6 +10,7 @@ import {
 import { useRequest } from "ahooks";
 import { BindSiteCardKey } from "../../../services/vip";
 import { GetAdminSites, UpdateAdminSite } from "../../../services/agent";
+import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const columns = [

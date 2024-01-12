@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Button, message } from "antd";
 import {
   ProCard,
-  PageContainer,
   ProTable,
   ProForm,
   ProFormText,
@@ -13,7 +12,8 @@ import {
   GetAdminVipUserGroups,
   UpdateAdminVipUserGroup,
   BindVipUserGroupCardKey,
-} from "../../../services/vip";
+} from "@services/vip";
+import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const columns = [

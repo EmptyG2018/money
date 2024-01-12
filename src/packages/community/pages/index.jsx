@@ -6,7 +6,7 @@ import { useRequest } from "ahooks";
 import { GetConfigStyleModuleList } from "@services/setting";
 import { GetPostCarsouels, GetIfPosts } from "@package_community/services/post";
 import styled, { css } from "styled-components";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 
 const Ellipsis = styled.div`
   overflow: hidden;
@@ -340,7 +340,7 @@ const Component = () => {
   });
 
   return (
-    <Container title={false} gutter={[16, 24]}>
+    <Container $gutter={[16, 24]}>
       <HeaderTop>
         <HeaderTopSide>
           <Swiper items={carsouels || []} placeholder={<SwiperPlaceholder />} />

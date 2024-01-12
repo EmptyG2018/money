@@ -18,7 +18,7 @@ import {
   GetBookmarkMarketTeams,
   GetBookmarkMarketCollects,
 } from "@services/bookmark";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 
 const TeamRoot = styled(Card)``;
 
@@ -113,7 +113,7 @@ const TeamView = ({ searchKey }) => {
   const { data: teams } = useRequest(GetBookmarkMarketTeams);
 
   return (
-    <Container title={false} gutter={[12, 24]}>
+    <Container $gutter={[12, 24]}>
       <Row
         gutter={[
           { xs: 8, sm: 12, md: 18, lg: 20 },
@@ -153,7 +153,7 @@ const CollectView = ({ searchKey }) => {
   const { data: collects } = useRequest(GetBookmarkMarketCollects);
 
   return (
-    <Container title={false} gutter={[12, 24]}>
+    <Container $gutter={[12, 24]}>
       <Row
         gutter={[
           { xs: 8, sm: 12, md: 18, lg: 20 },
@@ -204,7 +204,7 @@ const Component = () => {
 
   return (
     <>
-      <Container title={false} gutter={[16, 24]}>
+      <Container $gutter={[16, 24]}>
         <SearchPanel>
           <Input.Search
             defaultValue={keyword}

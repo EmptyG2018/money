@@ -47,6 +47,7 @@ const defaultProps = {
       },
       {
         path: "/collection",
+        target: "_blank",
         name: "工作台",
         icon: <HighlightOutlined />,
       },
@@ -137,8 +138,10 @@ export default () => {
               }}
               avatarProps={avatarProps}
               onMenuHeaderClick={() => navigate("/navigation")}
-              menuItemRender={(item, dom) => (
-                <Navigate to={item.path}>{dom}</Navigate>
+              menuItemRender={({ path, target }, dom) => (
+                <Navigate to={path} target={target}>
+                  {dom}
+                </Navigate>
               )}
               actionsRender={() => [
                 <img

@@ -52,5 +52,5 @@ export default [
 
 export const noFoundRoute = {
   path: "*",
-  element: <NoFound />,
+  element: <LazyRoute element={<NoFound />} />,
 };

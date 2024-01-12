@@ -2,13 +2,13 @@ import { useRef } from "react";
 import { Button, Alert, message, Popconfirm } from "antd";
 import {
   ProCard,
-  PageContainer,
   ProTable,
   ProForm,
   ProFormText,
 } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { GetDomains, DelDomain, CreateDomain } from "../../../services/agent";
+import { GetDomains, DelDomain, CreateDomain } from "@services/agent";
+import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const columns = [

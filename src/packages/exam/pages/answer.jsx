@@ -5,7 +5,7 @@ import { Button, Card, Divider } from "antd";
 import { HourglassOutlined } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { GetTopicByPaperId } from "../../../services/exam/topic";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 import styled, { css } from "styled-components";
 import Topic from "../../../components/exam/Topic";
 
@@ -270,7 +270,7 @@ const Component = () => {
 
   return (
     <>
-      <Container title={false} gutter={[0, 24]}>
+      <Container $gutter={[0, 24]}>
         <Content>
           <Main bordered={false} bodyStyle={{ padding: 0 }}>
             <PaperHeader bordered={false} bodyStyle={{ padding: "36px 24px" }}>

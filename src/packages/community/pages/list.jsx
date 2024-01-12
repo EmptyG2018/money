@@ -9,7 +9,7 @@ import {
 import { Avatar, Image, Space } from "antd";
 import { EyeOutlined, HistoryOutlined } from "@ant-design/icons";
 import { ProCard, ProList } from "@ant-design/pro-components";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 
 const CONSTAVATARIMG =
   "http://6uzy.com/uc_server/avatar.php?uid=1&size=middle&ts=1";
@@ -122,7 +122,7 @@ const Component = () => {
   const isPost = postModuleChilds && !postModuleChilds.sub?.length;
 
   return (
-    <Container title={false} gutter={[16, 24]}>
+    <Container $gutter={[16, 24]}>
       {!loading && isModule && (
         <ProCard wrap gutter={[16, 16]}>
           {postModuleChilds.sub.map((item) => (

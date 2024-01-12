@@ -4,7 +4,7 @@ import { Button, Card, Switch, Typography, Skeleton } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import { GetTopicByType } from "../../../services/exam/topic";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 import styled, { css } from "styled-components";
 import Topic from "../../../components/exam/Topic";
 
@@ -185,7 +185,7 @@ const Component = () => {
   }, [data]);
 
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       <Content>
         <Main bordered={false} bodyStyle={{ padding: 0 }}>
           {currentTopic ? (

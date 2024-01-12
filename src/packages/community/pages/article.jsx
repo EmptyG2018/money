@@ -15,7 +15,7 @@ import useDownload from "@hooks/download";
 import Byte from "@components/Byte";
 import BBcodeRender from "@components/BBCodeRender";
 import DownloadFile from "@components/community/DownloadFile";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 import { ProCard } from "@ant-design/pro-components";
 
 const SINGLE_TAG = ["img", "br", "hr", "input", "link", "meta"];
@@ -290,7 +290,7 @@ const Component = () => {
   return (
     <>
       {contextHolder}
-      <Container title={false} gutter={[16, 24]}>
+      <Container $gutter={[16, 24]}>
         <ProCard>
           {showError && (
             <div style={{ textAlign: "center", padding: "16px" }}>

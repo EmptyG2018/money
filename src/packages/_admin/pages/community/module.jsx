@@ -1,8 +1,9 @@
 import { useRef } from "react";
-import { Input, InputNumber, message, Popconfirm, Switch } from "antd";
-import { PageContainer, ProTable } from "@ant-design/pro-components";
+import { message } from "antd";
+import { ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { GetModules, UpdateModule } from "../../../../services/community/module";
+import { GetModules, UpdateModule } from "@services/community/module";
+import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const actionRef = useRef(null);

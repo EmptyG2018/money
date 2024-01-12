@@ -4,7 +4,7 @@ import { ProCard } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { GetPostModules } from "@package_community/services/post";
 import { styled } from "styled-components";
-import Container from "@components/Container";
+import { Container } from "@components/Container";
 
 const ApplicationCell = styled.div`
   margin-left: 10px;
@@ -47,7 +47,7 @@ const Component = () => {
   const { data: postModules } = useRequest(GetPostModules);
 
   return (
-    <Container title={false} gutter={[16, 24]}>
+    <Container $gutter={[16, 24]}>
       <Space direction="vertical" size={16}>
         {(postModules || []).map((item) => (
           <ProCard

@@ -8,9 +8,10 @@ import {
   AccountBookOutlined,
   FileDoneOutlined,
 } from "@ant-design/icons";
-import { PageContainer, StatisticCard } from "@ant-design/pro-components";
+import { StatisticCard } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import { GetStatistics } from "../../../services/statistics";
+import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const [messageApi, contextHolder] = message.useMessage();

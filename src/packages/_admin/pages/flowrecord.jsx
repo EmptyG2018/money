@@ -1,7 +1,8 @@
 import { message } from "antd";
-import { ProCard, PageContainer, ProTable } from "@ant-design/pro-components";
+import { ProCard, ProTable } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { GetConsumeRecord, GetFlowRecord } from "../../../services/statistics";
+import { GetConsumeRecord, GetFlowRecord } from "@services/statistics";
+import { PageContainer } from "@components/Container";
 
 const ConsumeRecord = () => {
   const { runAsync: getConsumeRecord } = useRequest(GetConsumeRecord);

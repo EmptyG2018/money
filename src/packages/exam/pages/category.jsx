@@ -3,7 +3,7 @@ import { Card, Row, Col } from "antd";
 import { useRequest } from "ahooks";
 import { GetCorrelationCategoryTrees } from "../../../services/exam/category";
 import styled from "styled-components";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 
 const CategorySection = styled.div`
   background-color: #fff;
@@ -47,7 +47,7 @@ const Component = () => {
   );
 
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       {(correlationCategoryTrees || []).map((item) => (
         <CategorySection key={item.parentId}>
           <CategoryCard

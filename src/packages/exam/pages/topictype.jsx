@@ -9,7 +9,7 @@ import {
 import { useRequest } from "ahooks";
 import { GetTopicTypeBySubjectId } from "../../../services/exam/topic";
 import styled from "styled-components";
-import Container from "../../../components/Container";
+import { Container } from "../../../components/Container";
 
 const ActionDiyIcon = styled.div`
   display: flex;
@@ -171,7 +171,7 @@ const Component = () => {
   };
 
   return (
-    <Container title={false} gutter={[0, 24]}>
+    <Container $gutter={[0, 24]}>
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <ActionCard
           bordered={false}

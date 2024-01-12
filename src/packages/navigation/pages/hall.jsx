@@ -1,112 +1,26 @@
 import { useState, useEffect } from "react";
-import {
-  Tabs,
-  Card,
-  Avatar,
-  Space,
-  Image,
-  Row,
-  Col,
-  Tag,
-  Pagination,
-} from "antd";
+import { useNavigate } from "react-router-dom";
+import { Tabs, Row, Col, Pagination } from "antd";
 import { useRequest } from "ahooks";
 import {
   GetBookmarkMarketCategorys,
   GetBookmarkMarketCollects,
   GetBookmarkMarketTeams,
 } from "@services/bookmark";
-import Container from "@components/Container";
-import { styled } from "styled-components";
+import { Container } from "@components/Container";
+import Team from "@components/Team";
+import Favorite from "@components/Favorite";
+import styled from "styled-components";
 
 const PAGE_SIZE = 16;
 
-const TeamRoot = styled(Card)``;
-
-const TeamCell = styled.div`
-  min-height: 52px;
+const View = styled.div`
+  min-height: 520px;
+  padding-block: 16px;
 `;
-
-const TeamThumb = styled(Image)`
-  margin-bottom: 6px;
-`;
-
-const TeamTitle = styled.h2`
-  margin: 0;
-  padding: 0;
-  font-size: 15px;
-  color: #000;
-`;
-
-const TeamDesc = styled.p`
-  margin: 0;
-  padding: 0;
-  color: #5f5f5f;
-  font-size: 12px;
-`;
-
-const TeamTag = styled(Tag)`
-  border: none;
-  line-height: 18px;
-  padding-inline: 4px;
-  color: rgba(0, 0, 0, 0.48);
-`;
-
-const TeamInfo = styled.div``;
-
-const TeamInfoItem = styled.span`
-  color: #666;
-  font-size: 12px;
-`;
-
-const TeamDate = styled.div`
-  color: #666;
-  font-size: 12px;
-  text-align: right;
-`;
-
-const Team = ({ title, desc, thumb, tags, name, avatar, date }) => {
-  return (
-    <TeamRoot
-      bodyStyle={{ display: "flex", flexDirection: "column", padding: 14 }}
-    >
-      <Row>
-        <Col xs={{ md: 24, order: 2 }} md={{ span: 14, order: 1 }}>
-          <TeamCell>
-            <TeamTitle>{title}</TeamTitle>
-            <TeamDesc>{desc}</TeamDesc>
-            {tags.map((item, index) => (
-              <TeamTag bordered={false} key={index}>
-                {item}
-              </TeamTag>
-            ))}
-          </TeamCell>
-        </Col>
-        <Col xs={{ md: 24, order: 1 }} md={{ span: 10, order: 2 }}>
-          <TeamThumb width="100%" preview={false} src={thumb} />
-        </Col>
-      </Row>
-      <Row style={{ display: "flex", alignItems: "center" }}>
-        <Col xs={24} md={12}>
-          <TeamInfo>
-            <Space size={6}>
-              <Avatar size={14} src={avatar} />
-              <TeamInfoItem>{name}</TeamInfoItem>
-              <TeamInfoItem>0</TeamInfoItem>
-              <TeamInfoItem>0</TeamInfoItem>
-              <TeamInfoItem>0</TeamInfoItem>
-            </Space>
-          </TeamInfo>
-        </Col>
-        <Col xs={24} md={12}>
-          <TeamDate>{date}</TeamDate>
-        </Col>
-      </Row>
-    </TeamRoot>
-  );
-};
 
 const TeamView = ({ classId }) => {
+  const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(1);
   const { data: bookmarkTeam } = useRequest(
     () =>
@@ -120,8 +34,8 @@ const TeamView = ({ classId }) => {
   );
 
   return (
-    <Container title={false} gutter={[12, 24]}>
-      <div style={{ minHeight: 480 }}>
+    <>
+      <View>
         <Row
           gutter={[
             { xs: 8, sm: 12, md: 18, lg: 20 },
@@ -131,32 +45,33 @@ const TeamView = ({ classId }) => {
           {(bookmarkTeam?.rows || []).map((item) => (
             <Col xs={12} sm={8} lg={6} key={item.id}>
               <Team
+                key={item.id}
                 title={item.title}
                 desc={item.description}
                 thumb={item.iconUri}
-                tags={item.tagVoList.map((item) => item.tagName)}
+                tags={item.tagVoList}
                 name={item.userName}
                 avatar={item.photoUrl}
-                date={item.createTime}
+                onGo={() => navigate("../team/" + item.id)}
               />
             </Col>
           ))}
         </Row>
-      </div>
-
+      </View>
       <Pagination
-        style={{ textAlign: "center" }}
+        style={{ textAlign: "center", marginBlockStart: 32 }}
         current={pageNum}
         size={PAGE_SIZE}
         onChange={setPageNum}
         total={bookmarkTeam?.total || 0}
         showSizeChanger={false}
       />
-    </Container>
+    </>
   );
 };
 
 const CollectView = ({ classId }) => {
+  const navigate = useNavigate();
   const [pageNum, setPageNum] = useState(1);
   const { data: bookmarkCollect } = useRequest(
     () =>
@@ -170,8 +85,8 @@ const CollectView = ({ classId }) => {
   );
 
   return (
-    <Container title={false} gutter={[12, 24]}>
-      <div style={{ minHeight: 480 }}>
+    <>
+      <View>
         <Row
           gutter={[
             { xs: 8, sm: 12, md: 18, lg: 20 },
@@ -180,19 +95,17 @@ const CollectView = ({ classId }) => {
         >
           {(bookmarkCollect?.rows || []).map((item) => (
             <Col xs={12} sm={8} lg={6} key={item.id}>
-              <Team
+              <Favorite
+                key={item.id}
                 title={item.title}
-                desc={item.description}
-                thumb={item.iconUri}
-                tags={item.tagVoList.map((item) => item.tagName)}
                 name={item.userName}
                 avatar={item.photoUrl}
-                date={item.createTime}
+                onGo={() => navigate("../collect/" + item.id)}
               />
             </Col>
           ))}
         </Row>
-      </div>
+      </View>
       <Pagination
         style={{ textAlign: "center" }}
         current={pageNum}
@@ -201,7 +114,7 @@ const CollectView = ({ classId }) => {
         total={bookmarkCollect?.total || 0}
         showSizeChanger={false}
       />
-    </Container>
+    </>
   );
 };
 
@@ -215,29 +128,34 @@ const SubTypeView = ({ typeKey }) => {
 
   return (
     <>
-      <CategoryBar
-        size="small"
-        animated={false}
-        activeKey={navCategoryKey}
-        items={[
-          {
-            label: "全部",
-            key: "",
-          },
-          ...(bookmarkCategorys || []).map((item) => ({
-            label: item.title,
-            key: item.id,
-          })),
-        ]}
-        onChange={setNavCategoryKey}
-      />
-
-      {typeKey === "team" && (
-        <TeamView classId={navCategoryKey} key={navCategoryKey} />
-      )}
-      {typeKey === "collect" && (
-        <CollectView classId={navCategoryKey} key={navCategoryKey} />
-      )}
+      <TabWrap>
+        <Container $gutter={[16, 0]}>
+          <CategoryBar
+            size="small"
+            animated={false}
+            activeKey={navCategoryKey}
+            items={[
+              {
+                label: "全部",
+                key: "",
+              },
+              ...(bookmarkCategorys || []).map((item) => ({
+                label: item.title,
+                key: item.id,
+              })),
+            ]}
+            onChange={setNavCategoryKey}
+          />
+        </Container>
+      </TabWrap>
+      <Container $gutter={[16, 0]}>
+        {typeKey === "team" && (
+          <TeamView classId={navCategoryKey} key={navCategoryKey} />
+        )}
+        {typeKey === "collect" && (
+          <CollectView classId={navCategoryKey} key={navCategoryKey} />
+        )}
+      </Container>
     </>
   );
 };
@@ -253,6 +171,10 @@ const Title = styled.h1`
 
 const Desc = styled.p`
   font-size: 14px;
+`;
+
+const TabWrap = styled.div`
+  background-color: #fff;
 `;
 
 const NavBar = styled(Tabs)`
@@ -275,22 +197,24 @@ const Component = () => {
   return (
     <>
       <BannerPanel>
-        <Container title={false} gutter={[12, 24]}>
+        <Container $gutter={[16, 24]}>
           <Title>发现你身边有趣好玩的事物</Title>
           <Desc>发现·收藏·分享--记忆·兴趣·智慧</Desc>
         </Container>
       </BannerPanel>
-      <Container title={false} gutter={[12, 0]}>
-        <NavBar
-          activeKey={navTabKey}
-          items={[
-            { key: "team", label: "优秀团队" },
-            { key: "collect", label: "收藏集" },
-          ]}
-          onChange={setNavTabKey}
-        />
-        <SubTypeView typeKey={navTabKey} />
-      </Container>
+      <TabWrap>
+        <Container $gutter={[16, 0]}>
+          <NavBar
+            activeKey={navTabKey}
+            items={[
+              { key: "team", label: "优秀团队" },
+              { key: "collect", label: "收藏集" },
+            ]}
+            onChange={setNavTabKey}
+          />
+        </Container>
+      </TabWrap>
+      <SubTypeView typeKey={navTabKey} />
     </>
   );
 };
