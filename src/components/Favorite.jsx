@@ -1,5 +1,4 @@
-import { Card, Typography, Flex, Avatar, Row, Col, Button } from "antd";
-import { EyeFilled, CopyFilled } from "@ant-design/icons";
+import { Card, Typography, Avatar, Button } from "antd";
 import styled from "styled-components";
 import { Divider } from "antd";
 
@@ -32,14 +31,22 @@ const Author = styled.div`
   margin-bottom: 24px;
 `;
 
-const Component = ({ title, name, avatar, onGo, ...props }) => {
+const Component = ({
+  title,
+  name,
+  avatar,
+  count,
+  likeCount,
+  onGo,
+  ...props
+}) => {
   return (
     <FavoriteRoot bodyStyle={{ padding: 32, textAlign: "center" }} {...props}>
       <FavoriteTitle level={5}>{title}</FavoriteTitle>
       <FavoriteInfo>
-        浏览量 239
+        点赞量 {likeCount}
         <Divider type="vertical" />
-        书签 1478
+        书签 {count}
       </FavoriteInfo>
       <Author>
         <Avatar size={18} src={avatar} /> <span>{name}</span>

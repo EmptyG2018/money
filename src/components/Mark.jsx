@@ -1,8 +1,8 @@
-import { Fragment } from "react";
+import { useState, Fragment } from "react";
 import { Checkbox, Image, Avatar, Modal } from "antd";
 import { InboxOutlined, EyeOutlined } from "@ant-design/icons";
 import styled, { css } from "styled-components";
-import { fromNow } from "../../utils/time";
+import { fromNow } from "@utils/time";
 import MarkdownEditor from "@uiw/react-markdown-editor";
 import DefaultWebsite from "@/assets/default_website.svg";
 
@@ -14,6 +14,7 @@ const CardItem = styled.div`
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.08);
+  background-color: #fff;
   cursor: pointer;
 
   transition: transform 0.3s;
@@ -21,13 +22,6 @@ const CardItem = styled.div`
     transform: scale(1.01);
     box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.06);
   }
-  ${({ checked }) =>
-    checked &&
-    css`
-      border-width: 2px;
-      border-color: #1677ff;
-      box-shadow: 0 0 4px 2px rgba(22, 119, 255, 0.2);
-    `}
 `;
 
 const FixedCheckBox = styled(Checkbox)`
@@ -102,19 +96,9 @@ const MarkExtra = styled.div`
   color: #7a7a7a;
 `;
 
-const CardMark = ({
-  editable,
-  checked,
-  location,
-  date,
-  watch,
-  actions,
-  children,
-  onCheckChange,
-  ...props
-}) => {
+const CardMark = ({ location, date, watch, children, ...props }) => {
   return (
-    <CardItem checked={checked} {...props}>
+    <CardItem {...props}>
       {children}
       <MarkFooter>
         <MarkLocation>
@@ -129,34 +113,23 @@ const CardMark = ({
           </span>
         </MarkExtra>
       </MarkFooter>
-      <FixedCheckBox
-        checked={checked}
-        editable={editable}
-        onChange={onCheckChange}
-        onClick={(e) => e.stopPropagation()}
-      />
-      {!!actions && (
-        <FixedAction editable={editable} onClick={(e) => e.stopPropagation()}>
-          {actions.map((item, index) => (
-            <Fragment key={index}>{item}</Fragment>
-          ))}
-        </FixedAction>
-      )}
     </CardItem>
   );
 };
 
-export const Mark = ({ title, icon, thumb, ...props }) => (
-  <CardMark {...props}>
-    <MarkTitle>
-      {!!icon && <Avatar size={18} src={icon} />}
-      {title}
-    </MarkTitle>
-    <MarkContent>
-      <MarkThumb fallback={DefaultWebsite} src={thumb} preview={false} />
-    </MarkContent>
-  </CardMark>
-);
+export const Mark = ({ title, icon, thumb, url, ...props }) => {
+  return (
+    <CardMark onClick={() => window.open(url)} {...props}>
+      <MarkTitle>
+        {!!icon && <Avatar size={18} src={icon} />}
+        {title}
+      </MarkTitle>
+      <MarkContent>
+        <MarkThumb fallback={DefaultWebsite} src={thumb} preview={false} />
+      </MarkContent>
+    </CardMark>
+  );
+};
 
 Mark.Compact = ({ title, icon, thumb, ...props }) => (
   <CardMark {...props}>
@@ -164,7 +137,7 @@ Mark.Compact = ({ title, icon, thumb, ...props }) => (
       {!!icon && <Avatar size={18} src={icon} />}
       {title}
     </MarkTitle>
-    <MarkThumb fallback={DefaultWebsite} src={thumb} preview={false} />
+    <MarkThumb src={thumb} preview={false} />
   </CardMark>
 );
 
@@ -180,13 +153,26 @@ const ImgMarkThumb = styled.img`
   object-fit: cover;
 `;
 
-export const ImgMark = ({ thumb, ...props }) => (
-  <CardMark {...props}>
-    <ImgMarkContent>
-      <ImgMarkThumb src={thumb} />
-    </ImgMarkContent>
-  </CardMark>
-);
+export const ImgMark = ({ thumb, ...props }) => {
+  const [previewShow, setPreviewShow] = useState(false);
+  return (
+    <>
+      <CardMark onClick={() => setPreviewShow(true)} {...props}>
+        <ImgMarkContent>
+          <ImgMarkThumb src={thumb} />
+        </ImgMarkContent>
+      </CardMark>
+
+      <ImgMark.Preview
+        visible={previewShow}
+        src={thumb}
+        onVisibleChange={() => {
+          setPreviewShow(false);
+        }}
+      />
+    </>
+  );
+};
 
 ImgMark.Compact = ({ thumb, ...props }) => (
   <CardMark {...props}>
@@ -210,6 +196,7 @@ ImgMark.Preview = ({ ...props }) => (
   <ImgMarkPreview>
     <Image
       preview={{
+        destroyOnClose: true,
         ...props,
       }}
     />
@@ -228,12 +215,24 @@ const WordMarkContent = styled(MarkdownEditor.Markdown)`
     `}
 `;
 
-export const WordMark = ({ title, word, ...props }) => (
-  <CardMark {...props}>
-    <MarkTitle>{title}</MarkTitle>
-    <WordMarkContent source={word} />
-  </CardMark>
-);
+export const WordMark = ({ title, word, ...props }) => {
+  const [previewShow, setPreviewShow] = useState(false);
+  return (
+    <>
+      <CardMark onClick={() => setPreviewShow(true)} {...props}>
+        <MarkTitle>{title}</MarkTitle>
+        <WordMarkContent source={word} />
+      </CardMark>
+
+      <WordMark.Preview
+        open={previewShow}
+        title={title}
+        word={word}
+        onCancel={() => setPreviewShow(false)}
+      />
+    </>
+  );
+};
 
 WordMark.Compact = ({ title, word, ...props }) => (
   <CardMark {...props}>

@@ -398,3 +398,68 @@ export const DelTeamDelHistory = ({ teamId, id }) =>
       carry: ["site", "auth"],
     }
   );
+
+// 获取市场团队详情
+export const GetMarkeTeamInfo = ({ id }) =>
+  request(
+    {
+      url: "/myTeam/getMarkeTeamInfo",
+      method: "POST",
+      data: {
+        id,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 加入市场团队
+export const JoinMarkeTeam = ({ teamId }) =>
+  request(
+    {
+      url: "/team/info/joinTeam",
+      method: "POST",
+      data: {
+        teamId,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 收藏市场团队
+export const UpdateMarkeTeamCollection = ({ id }) =>
+  request(
+    {
+      url: "/myCollection/addmarketCollectionLike",
+      method: "POST",
+      data: {
+        id,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 点赞市场团队
+export const UpdateMarkeTeamLike = ({ id }) =>
+  request(
+    {
+      url: "/myCollection/updatemarketCollectionLike",
+      method: "POST",
+      data: {
+        id,
+        type: 2,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );

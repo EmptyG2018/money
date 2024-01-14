@@ -25,6 +25,7 @@ import {
   UpdateMark,
   MoveMarks,
   DelAllMarks,
+  ImportMarks,
 } from "@services/collection/mark";
 import {
   ResourceSearch,
@@ -40,6 +41,7 @@ import { Mark, ImgMark, WordMark } from "@components/collection/Mark";
 import { MarkDataView } from "@components/collection/MarkDataView";
 import MoveMarkModal from "@components/collection/MoveMarkModal";
 import ToggleCollapsedBtn from "@components/collection/ToggleCollapsedBtn";
+import ExportMarksFormModal from "@package_collection/components/ExportMarksFormModal";
 import styled from "styled-components";
 
 const Content = styled.div`
@@ -100,6 +102,8 @@ export default () => {
     open: false,
     record: null,
   });
+
+  const [importModalShow, setImportModalShow] = useState(false);
 
   const [records, setRecords] = useState([]);
 
@@ -245,6 +249,9 @@ export default () => {
                             description: "",
                           },
                         });
+                        break;
+                      case "3":
+                        setImportModalShow(true);
                         break;
                     }
                   }}
@@ -679,6 +686,27 @@ export default () => {
               asyncLoadProperyCount();
             },
           });
+        }}
+      />
+
+      <ExportMarksFormModal
+        open={importModalShow}
+        onSubmit={async ({ groupName, file }) => {
+          const formData = new FormData();
+          formData.append("groupName", groupName);
+          formData.append("file", file.file);
+          try {
+            await ImportMarks(formData);
+            messageApi.success("书签导入成功！");
+
+            setTimeout(() => {
+              location.reload();
+            }, 2000);
+          } catch (err) {
+            messageApi.error(err.message);
+          } finally {
+            setImportModalShow(false);
+          }
         }}
       />
     </>

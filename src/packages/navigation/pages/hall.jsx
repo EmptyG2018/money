@@ -10,6 +10,7 @@ import {
 import { Container } from "@components/Container";
 import Team from "@components/Team";
 import Favorite from "@components/Favorite";
+import NoData from "@components/NoData";
 import styled from "styled-components";
 
 const PAGE_SIZE = 16;
@@ -35,37 +36,43 @@ const TeamView = ({ classId }) => {
 
   return (
     <>
-      <View>
-        <Row
-          gutter={[
-            { xs: 8, sm: 12, md: 18, lg: 20 },
-            { xs: 4, sm: 8, md: 12, lg: 16 },
-          ]}
-        >
-          {(bookmarkTeam?.rows || []).map((item) => (
-            <Col xs={12} sm={8} lg={6} key={item.id}>
-              <Team
-                key={item.id}
-                title={item.title}
-                desc={item.description}
-                thumb={item.iconUri}
-                tags={item.tagVoList}
-                name={item.userName}
-                avatar={item.photoUrl}
-                onGo={() => navigate("../team/" + item.id)}
-              />
-            </Col>
-          ))}
-        </Row>
-      </View>
-      <Pagination
-        style={{ textAlign: "center", marginBlockStart: 32 }}
-        current={pageNum}
-        size={PAGE_SIZE}
-        onChange={setPageNum}
-        total={bookmarkTeam?.total || 0}
-        showSizeChanger={false}
-      />
+      {bookmarkTeam?.rows.length ? (
+        <>
+          <View>
+            <Row
+              gutter={[
+                { xs: 8, sm: 12, md: 18, lg: 20 },
+                { xs: 4, sm: 8, md: 12, lg: 16 },
+              ]}
+            >
+              {(bookmarkTeam.rows || []).map((item) => (
+                <Col xs={12} sm={8} lg={6} key={item.id}>
+                  <Team
+                    key={item.id}
+                    title={item.title}
+                    desc={item.description}
+                    thumb={item.iconUri}
+                    tags={item.tagVoList}
+                    name={item.userName}
+                    avatar={item.photoUrl}
+                    onGo={() => navigate("../team/" + item.id)}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </View>
+          <Pagination
+            style={{ textAlign: "center", marginBlockStart: 32 }}
+            current={pageNum}
+            pageSize={PAGE_SIZE}
+            onChange={setPageNum}
+            total={bookmarkTeam?.total || 0}
+            showSizeChanger={false}
+          />
+        </>
+      ) : (
+        <NoData />
+      )}
     </>
   );
 };
@@ -86,34 +93,42 @@ const CollectView = ({ classId }) => {
 
   return (
     <>
-      <View>
-        <Row
-          gutter={[
-            { xs: 8, sm: 12, md: 18, lg: 20 },
-            { xs: 4, sm: 8, md: 12, lg: 16 },
-          ]}
-        >
-          {(bookmarkCollect?.rows || []).map((item) => (
-            <Col xs={12} sm={8} lg={6} key={item.id}>
-              <Favorite
-                key={item.id}
-                title={item.title}
-                name={item.userName}
-                avatar={item.photoUrl}
-                onGo={() => navigate("../collect/" + item.id)}
-              />
-            </Col>
-          ))}
-        </Row>
-      </View>
-      <Pagination
-        style={{ textAlign: "center" }}
-        current={pageNum}
-        size={PAGE_SIZE}
-        onChange={setPageNum}
-        total={bookmarkCollect?.total || 0}
-        showSizeChanger={false}
-      />
+      {bookmarkCollect?.rows.length ? (
+        <>
+          <View>
+            <Row
+              gutter={[
+                { xs: 8, sm: 12, md: 18, lg: 20 },
+                { xs: 4, sm: 8, md: 12, lg: 16 },
+              ]}
+            >
+              {(bookmarkCollect?.rows || []).map((item) => (
+                <Col xs={12} sm={8} lg={6} key={item.id}>
+                  <Favorite
+                    key={item.id}
+                    title={item.title}
+                    name={item.userName}
+                    count={item.count}
+                    likeCount={item.likeNumber}
+                    avatar={item.photoUrl}
+                    onGo={() => navigate("../collect/" + item.id)}
+                  />
+                </Col>
+              ))}
+            </Row>
+          </View>
+          <Pagination
+            style={{ textAlign: "center" }}
+            current={pageNum}
+            pageSize={PAGE_SIZE}
+            onChange={setPageNum}
+            total={bookmarkCollect?.total || 0}
+            showSizeChanger={false}
+          />
+        </>
+      ) : (
+        <NoData />
+      )}
     </>
   );
 };

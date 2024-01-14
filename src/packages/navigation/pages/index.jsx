@@ -175,6 +175,8 @@ const FavoriteList = ({ sort }) => {
             title={item.title}
             name={item.userName}
             avatar={item.photoUrl}
+            count={item.count}
+            likeCount={item.likeNumber}
             onGo={() => navigate("./collect/" + item.id)}
           />
         )}

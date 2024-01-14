@@ -131,3 +131,50 @@ export const DelAllMarks = () =>
       carry: ["site", "auth"],
     }
   );
+
+// 获取市场团队下的书签列表
+export const GetMarkeTeamMarks = ({ id, classId, pageNum, pageSize }) =>
+  request(
+    {
+      url: "/myTeam/getMarketTeamWebsiteByid",
+      method: "POST",
+      data: {
+        id,
+        classId,
+        pageNum,
+        pageSize,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 获取市场收藏夹下的书签
+export const GetMarkeFavoriteMarks = ({ id, pageNum, pageSize }) =>
+  request(
+    {
+      url: "/myCollection/getMarketCollectionWebsiteByid",
+      method: "POST",
+      data: { id, pageNum, pageSize },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
+
+// 导入书签
+export const ImportMarks = (formData) =>
+  request(
+    {
+      url: "/collections/website/uploadAddwebsite",
+      method: "POST",
+      data: formData,
+    },
+    {
+      responseDataType: "json",
+      carry: ["site", "auth"],
+    }
+  );
