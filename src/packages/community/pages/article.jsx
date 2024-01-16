@@ -7,7 +7,16 @@ import {
   DownloadPostAttach,
 } from "@package_community/services/post";
 import { styled, css } from "styled-components";
-import { Typography, Avatar, Tag, Image, Space, message } from "antd";
+import {
+  App,
+  Alert,
+  Typography,
+  Avatar,
+  Tag,
+  Image,
+  Space,
+  message,
+} from "antd";
 import { LinkOutlined, DownloadOutlined, LockFilled } from "@ant-design/icons";
 import { useUser } from "@hooks/user";
 import { useNavigatorPath } from "@hooks/recordPath";
@@ -140,6 +149,7 @@ const LockTip = styled(UnLockContent)`
 const Component = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const app = App.useApp();
   const { user } = useUser();
   const { download } = useDownload();
   const [messageApi, contextHolder] = message.useMessage();
@@ -162,6 +172,9 @@ const Component = () => {
     error: hidePostError,
   } = useRequest(() => GetPostHideContent({ tid: params.id }), {
     manual: true,
+    onError(err) {
+      app.message.error(err.message);
+    },
   });
 
   useEffect(() => {
@@ -293,9 +306,7 @@ const Component = () => {
       <Container $gutter={[16, 24]}>
         <ProCard>
           {showError && (
-            <div style={{ textAlign: "center", padding: "16px" }}>
-              {showError?.message}
-            </div>
+            <Alert showIcon type="error" message={showError?.message} />
           )}
           {showPost && (
             <Article>

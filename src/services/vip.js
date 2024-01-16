@@ -27,10 +27,29 @@ export const BuyVipUserGroupCardKey = ({ groupId, code }) =>
     }
   );
 
-// 获取VIP用户组
-export const GetAdminVipUserGroups = () =>
+// 获取VIP用户组项目列表
+export const GetVipUserGroupProjects = () =>
   request(
-    { url: "/yunUserGroup/getList", method: "POST" },
+    {
+      url: "/yunUserGroup/getGroupProjectList",
+      method: "POST",
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
+// 获取VIP用户组
+export const GetAdminVipUserGroups = ({ projectId }) =>
+  request(
+    {
+      url: "/yunUserGroup/getGroupListByProjectId",
+      method: "POST",
+      data: {
+        projectId,
+      },
+    },
     {
       responseDataType: "json",
       carry: ["auth", "site"],
@@ -54,13 +73,31 @@ export const UpdateAdminVipUserGroup = ({ groupId, sellPrice }) =>
     }
   );
 
-// 绑定VIP用户组卡密
-export const BindVipUserGroupCardKey = ({ urlLink, remark }) =>
+// 获取VIP用户组卡密配置信息
+export const GetVipUserGroupCarKeyInfo = ({ groupId, projectId }) =>
+  request(
+    {
+      url: "/yunUserGroup/getGroupInfoListByProjectId",
+      method: "POST",
+      data: {
+        groupId,
+        projectId,
+      },
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
+// 配置VIP用户组卡密链接
+export const UpdateVipUserGroupCardKeyLink = ({ groupId, urlLink, remark }) =>
   request(
     {
       url: "/yunUserGroup/addGropupInfoList",
       method: "POST",
       data: {
+        groupId,
         urlLink,
         remark,
       },
@@ -71,13 +108,14 @@ export const BindVipUserGroupCardKey = ({ urlLink, remark }) =>
     }
   );
 
-// 绑定分站卡密
-export const BindSiteCardKey = ({ urlLink, remark }) =>
+// 配置分站卡密链接
+export const UpdateSiteCardKeyLink = ({ groupId, urlLink, remark }) =>
   request(
     {
       url: "/yunAdminDomain/addDomainEditionInfo",
       method: "POST",
       data: {
+        groupId,
         urlLink,
         remark,
       },

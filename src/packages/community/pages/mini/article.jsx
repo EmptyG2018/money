@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Button, NavBar, Image, Space, Tag, Avatar } from "antd-mobile";
+import { Toast, Button, NavBar, Image, Space, Tag, Avatar } from "antd-mobile";
 import { LinkOutline, DownCircleOutline, LockFill } from "antd-mobile-icons";
 import { useRequest } from "ahooks";
 import { useUser } from "@hooks/user";
@@ -127,6 +127,9 @@ const Component = () => {
     error: hidePostError,
   } = useRequest(() => GetPostHideContent({ tid: params.id }), {
     manual: true,
+    onError(err) {
+      Toast.show({ icon: "fail", content: err.message });
+    },
   });
 
   useEffect(() => {
@@ -249,7 +252,15 @@ const Component = () => {
       <div style={{ height: "10px", backgroundColor: "#f5f5f5" }}></div>
       <Page yScroll gutter={[16]}>
         {showError && (
-          <div style={{ textAlign: "center", padding: "16px" }}>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "8px 16px",
+              color: "red",
+              backgroundColor: "rgba(255, 0, 0, .08)",
+              borderRadius: 4,
+            }}
+          >
             {showError?.message}
           </div>
         )}

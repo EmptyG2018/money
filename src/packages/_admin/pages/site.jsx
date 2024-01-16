@@ -8,7 +8,7 @@ import {
   ProFormTextArea,
 } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { BindSiteCardKey } from "../../../services/vip";
+import { UpdateSiteCardKeyLink } from "../../../services/vip";
 import { GetAdminSites, UpdateAdminSite } from "../../../services/agent";
 import { PageContainer } from "@components/Container";
 
@@ -60,9 +60,12 @@ const Component = () => {
   const { runAsync: updateAdminSite } = useRequest(UpdateAdminSite, {
     manual: true,
   });
-  const { runAsync: bindSiteCardKey } = useRequest(BindSiteCardKey, {
-    manual: true,
-  });
+  const { runAsync: updateSiteCardKeyLink } = useRequest(
+    UpdateSiteCardKeyLink,
+    {
+      manual: true,
+    }
+  );
 
   useEffect(() => {
     const { urlLink, remark } = site?.domainInfo || {};
@@ -74,8 +77,8 @@ const Component = () => {
 
   const submit = async (values) => {
     try {
-      await bindSiteCardKey(values);
-      messageApi.success("绑定成功！");
+      await updateSiteCardKeyLink(values);
+      messageApi.success("保存成功！");
     } catch (err) {
       messageApi.error(err.message);
     }

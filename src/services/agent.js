@@ -122,3 +122,28 @@ export const DelDomain = ({ id }) =>
       carry: ["auth", "site"],
     }
   );
+
+export const GetDomainNavigateLinks = () =>
+  request(
+    {
+      url: "/YunSystemPath/getDlIdyunSystemPathList",
+      method: "POST",
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );
+
+export const UpdateDomainNavigateLink = ({ id, goPathId }) =>
+  request(
+    {
+      url: "/yunAdminDomain/updateDomainPathById",
+      method: "POST",
+      data: { id, goPathId },
+    },
+    {
+      responseDataType: "json",
+      carry: ["auth", "site"],
+    }
+  );

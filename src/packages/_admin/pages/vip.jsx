@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Button, message } from "antd";
+import { useState, useEffect, useRef } from "react";
+import { App, Button, Drawer } from "antd";
 import {
   ProCard,
   ProTable,
@@ -9,19 +9,113 @@ import {
 } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
 import {
+  GetVipUserGroupProjects,
   GetAdminVipUserGroups,
+  GetVipUserGroupCarKeyInfo,
   UpdateAdminVipUserGroup,
-  BindVipUserGroupCardKey,
+  UpdateVipUserGroupCardKeyLink,
 } from "@services/vip";
 import { PageContainer } from "@components/Container";
 
-const Component = () => {
+const ConfigBuyKeyLink = ({ groupId, open, onClose, ...props }) => {
+  const app = App.useApp();
+  const formRef = useRef();
+
+  const { refresh: refreshVipUserGroupCarKeyInfo } = useRequest(
+    () => GetVipUserGroupCarKeyInfo({ groupId }),
+    {
+      manual: true,
+      onSuccess(groupInfo) {
+        const { urlLink, remark } = groupInfo;
+        formRef.current.setFieldsValue({
+          urlLink,
+          remark,
+        });
+      },
+    }
+  );
+
+  const { runAsync: updateVipUserGroupCardKeyLink } = useRequest(
+    UpdateVipUserGroupCardKeyLink,
+    {
+      manual: true,
+    }
+  );
+
+  const submit = async (values) => {
+    try {
+      await updateVipUserGroupCardKeyLink({ groupId, ...values });
+      app.message.success("保存成功！");
+
+      onClose && onClose();
+    } catch (err) {
+      app.message.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    open && refreshVipUserGroupCarKeyInfo();
+  }, [open]);
+
+  return (
+    <Drawer
+      width={480}
+      placement="right"
+      title="配置购买卡密链接"
+      open={open}
+      destroyOnClose
+      onClose={onClose}
+      {...props}
+    >
+      <ProCard headerBordered>
+        <ProForm
+          formRef={formRef}
+          onFinish={submit}
+          submitter={{
+            render: (_, __) => {
+              return (
+                <Button type="primary" htmlType="submit">
+                  保存
+                </Button>
+              );
+            },
+          }}
+        >
+          <ProFormText
+            label="卡密地址"
+            width="lg"
+            name="urlLink"
+            rules={[
+              {
+                required: true,
+                message: "请输入卡密地址",
+              },
+            ]}
+          />
+          <ProFormTextArea
+            label="提示信息"
+            width="lg"
+            name="remark"
+            rules={[
+              {
+                required: true,
+                message: "请输入提示信息",
+              },
+            ]}
+          />
+        </ProForm>
+      </ProCard>
+    </Drawer>
+  );
+};
+
+const VipUserGroupList = ({ projects }) => {
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
+      title: "序号",
+      dataIndex: "index",
+      valueType: "indexBorder",
       width: 48,
-      editable: false,
     },
     {
       title: "会员组",
@@ -49,7 +143,15 @@ const Component = () => {
       width: 100,
       key: "option",
       valueType: "option",
-      render: (text, record, _, action) => [
+      render: (_, record, __, action) => [
+        <a
+          key="configBuyKeyLink"
+          onClick={() =>
+            setConfigBuyKeyAction({ show: true, groupId: record.id })
+          }
+        >
+          配置
+        </a>,
         <a
           key="editable"
           onClick={() => {
@@ -62,113 +164,92 @@ const Component = () => {
     },
   ];
 
-  const formRef = useRef(null);
-  const [messageApi, contextHolder] = message.useMessage();
-  const { refresh: refreshVipGroup, data: vipGroup } = useRequest(
-    GetAdminVipUserGroups
-  );
+  const app = App.useApp();
+  const actionRef = useRef();
+  const tabKey = useRef(projects[0].id);
+  const [configBuyKeyAction, setConfigBuyKeyAction] = useState({
+    show: false,
+    groupId: null,
+  });
+
+  const { runAsync: getVipUserGroups } = useRequest(GetAdminVipUserGroups, {
+    manual: true,
+  });
+
   const { runAsync: updateAdminVipUserGroup } = useRequest(
     UpdateAdminVipUserGroup,
     { manual: true }
   );
-  const { runAsync: bindVipUserGroupCardKey } = useRequest(
-    BindVipUserGroupCardKey,
-    {
-      manual: true,
-    }
-  );
-
-  useEffect(() => {
-    const { urlLink, remark } = vipGroup?.groupInfo || {};
-    formRef.current.setFieldsValue({
-      urlLink,
-      remark,
-    });
-  }, [vipGroup]);
-
-  const submit = async (values) => {
-    try {
-      await bindVipUserGroupCardKey(values);
-      messageApi.success("绑定成功！");
-    } catch (err) {
-      messageApi.error(err.message);
-    }
-  };
 
   return (
     <>
-      {contextHolder}
-      <PageContainer
-        fixedHeader
-        header={{
-          title: "会员管理",
-          style: { background: "#fff" },
-        }}
-      >
-        <ProTable
-          columns={columns}
-          rowKey="id"
-          headerTitle="会员组列表"
-          cardBordered
-          search={false}
-          pagination={false}
-          editable={{
-            actionRender: (row, config, dom) => [dom.save, dom.cancel],
-            onSave: async (rowKey, data) => {
-              try {
-                await updateAdminVipUserGroup({
-                  groupId: rowKey,
-                  sellPrice: data.defaultSellPrice,
-                });
-                refreshVipGroup();
-              } catch (err) {
-                messageApi.error(err.message);
-              }
+      <ProTable
+        actionRef={actionRef}
+        columns={columns}
+        rowKey="id"
+        headerTitle="会员组列表"
+        toolbar={{
+          menu: {
+            type: "tab",
+            defaultActiveKey: tabKey.current,
+            items: projects.map((item) => ({
+              key: "" + item.id,
+              label: item.name,
+            })),
+            onChange: (key) => {
+              tabKey.current = key;
+              actionRef.current?.reload();
             },
-          }}
-          dataSource={vipGroup?.groupList || []}
-        />
-        <br />
-        <ProCard headerBordered>
-          <ProForm
-            formRef={formRef}
-            onFinish={submit}
-            submitter={{
-              render: (props, dom) => {
-                return (
-                  <Button type="primary" htmlType="submit">
-                    确认绑定
-                  </Button>
-                );
-              },
-            }}
-          >
-            <ProFormText
-              label="卡密地址"
-              width="lg"
-              name="urlLink"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入卡密地址",
-                },
-              ]}
-            />
-            <ProFormTextArea
-              label="提示信息"
-              width="lg"
-              name="remark"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入提示信息",
-                },
-              ]}
-            />
-          </ProForm>
-        </ProCard>
-      </PageContainer>
+          },
+        }}
+        cardBordered
+        search={false}
+        pagination={false}
+        request={async () => {
+          const res = await getVipUserGroups({ projectId: tabKey.current });
+          return { data: res, success: true };
+        }}
+        editable={{
+          actionRender: (_, __, dom) => [dom.save, dom.cancel],
+          onSave: async (rowKey, { defaultSellPrice }) => {
+            try {
+              await updateAdminVipUserGroup({
+                groupId: rowKey,
+                sellPrice: defaultSellPrice,
+              });
+              actionRef.current?.reload();
+            } catch (err) {
+              app.message.error(err.message);
+            }
+          },
+        }}
+      />
+      <ConfigBuyKeyLink
+        open={configBuyKeyAction.show}
+        groupId={configBuyKeyAction.groupId}
+        onClose={() =>
+          setConfigBuyKeyAction({ ...configBuyKeyAction, show: false })
+        }
+      />
     </>
+  );
+};
+
+const Component = () => {
+  const { data: vipUserGroupProjects } = useRequest(GetVipUserGroupProjects);
+
+  return (
+    <PageContainer
+      fixedHeader
+      header={{
+        title: "会员管理",
+        style: { background: "#fff" },
+      }}
+    >
+      {!!vipUserGroupProjects?.length && (
+        <VipUserGroupList projects={vipUserGroupProjects} />
+      )}
+    </PageContainer>
   );
 };
 

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { Button, Alert, message, Popconfirm } from "antd";
+import { App, Button, Alert, Popconfirm } from "antd";
 import {
   ProCard,
   ProTable,
@@ -7,35 +7,69 @@ import {
   ProFormText,
 } from "@ant-design/pro-components";
 import { useRequest } from "ahooks";
-import { GetDomains, DelDomain, CreateDomain } from "@services/agent";
+import {
+  GetDomains,
+  DelDomain,
+  CreateDomain,
+  GetDomainNavigateLinks,
+  UpdateDomainNavigateLink,
+} from "@services/agent";
 import { PageContainer } from "@components/Container";
 
 const Component = () => {
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
+      title: "序号",
+      dataIndex: "index",
+      valueType: "indexBorder",
       width: 48,
     },
     {
       title: "域名",
       dataIndex: "domain",
+      editable: false,
+    },
+    {
+      title: "落地页",
+      dataIndex: "goPathId",
+      valueType: "select",
+      renderText: (text) => text || "未配置",
+      request: async () => {
+        const navigateLinks = await getDomainNavigateLinks();
+        return navigateLinks.map((item) => ({
+          label: item.name,
+          value: item.id,
+        }));
+      },
+      width: 140,
     },
     {
       title: "二级域名",
       dataIndex: "secondName",
+      editable: false,
+      width: 280,
     },
     {
       title: "创建时间",
       dataIndex: "createTime",
       valueType: "dateTime",
+      width: 220,
+      editable: false,
     },
     {
       title: "操作",
-      width: 100,
+      width: 120,
       key: "option",
       valueType: "option",
-      render: (text, record, _, action) => [
+      render: (_, record, __, action) => [
+        <a
+          key="editable"
+          onClick={() => {
+            action?.startEditable?.(record.id);
+          }}
+        >
+          编辑
+        </a>,
         <Popconfirm
           key="delete"
           title="删除记录"
@@ -48,86 +82,107 @@ const Component = () => {
     },
   ];
 
-  const formRef = useRef(null);
-  const [messageApi, contextHolder] = message.useMessage();
-  const { refresh: refreshDomains, data: domains } = useRequest(GetDomains);
+  const formRef = useRef();
+  const actionRef = useRef();
+  const app = App.useApp();
+  const { runAsync: getDomains } = useRequest(GetDomains, { manual: true });
+  const { runAsync: getDomainNavigateLinks } = useRequest(
+    GetDomainNavigateLinks,
+    { manual: true }
+  );
+  const { runAsync: updateDomainNavigateLink } = useRequest(
+    UpdateDomainNavigateLink,
+    { manual: true }
+  );
   const { runAsync: createDomain } = useRequest(CreateDomain, { manual: true });
   const { runAsync: deleteDomain } = useRequest(DelDomain, { manual: true });
 
   const submit = async (values) => {
     try {
       await createDomain(values);
-      refreshDomains();
-      formRef.current?.resetFields();
+      actionRef.current?.reload();
     } catch (err) {
-      messageApi.error(err.message);
+      app.message.error(err.message);
     }
   };
 
   const deleteRecord = async ({ id }) => {
     try {
       await deleteDomain({ id });
-      refreshDomains();
+      actionRef.current?.reload();
     } catch (err) {
-      messageApi.error(err.message);
+      app.message.error(err.message);
     }
   };
 
   return (
-    <>
-      {contextHolder}
-      <PageContainer
-        fixedHeader
-        header={{
-          title: "域名管理",
-          style: { background: "#fff" },
-        }}
-      >
-        <ProCard headerBordered>
-          <Alert
-            message="绑定前请在域名DNS 设置中添加一条CNAME记录指向别名8376e98599001ac1.kanclouds.cn"
-            type="info"
-            showIcon
-          />
-          <br />
-          <ProForm
-            formRef={formRef}
-            onFinish={submit}
-            submitter={{
-              render: (props, dom) => {
-                return (
-                  <Button type="primary" htmlType="submit">
-                    检测并保存
-                  </Button>
-                );
-              },
-            }}
-          >
-            <ProFormText
-              width="lg"
-              name="domain"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入域名",
-                },
-              ]}
-              placeholder="自定义域名"
-            />
-          </ProForm>
-        </ProCard>
-        <br />
-        <ProTable
-          columns={columns}
-          rowKey="id"
-          headerTitle="域名列表"
-          cardBordered
-          search={false}
-          pagination={false}
-          dataSource={domains}
+    <PageContainer
+      fixedHeader
+      header={{
+        title: "域名管理",
+        style: { background: "#fff" },
+      }}
+    >
+      <ProCard headerBordered>
+        <Alert
+          message="绑定前请在域名DNS 设置中添加一条CNAME记录指向别名8376e98599001ac1.kanclouds.cn"
+          type="info"
+          showIcon
         />
-      </PageContainer>
-    </>
+        <br />
+        <ProForm
+          formRef={formRef}
+          onFinish={submit}
+          submitter={{
+            render: (_, __) => {
+              return (
+                <Button type="primary" htmlType="submit">
+                  检测并保存
+                </Button>
+              );
+            },
+          }}
+        >
+          <ProFormText
+            width="lg"
+            name="domain"
+            rules={[
+              {
+                required: true,
+                message: "请输入域名",
+              },
+            ]}
+            placeholder="自定义域名"
+          />
+        </ProForm>
+      </ProCard>
+      <br />
+      <ProTable
+        actionRef={actionRef}
+        columns={columns}
+        rowKey="id"
+        headerTitle="域名列表"
+        cardBordered
+        editable={{
+          type: "single",
+          actionRender: (_, __, dom) => [dom.save, dom.cancel],
+          onSave: async (rowKey, { goPathId }) => {
+            try {
+              await updateDomainNavigateLink({ id: rowKey, goPathId });
+              actionRef.current?.reload();
+            } catch (err) {
+              app.message.error(err.message);
+            }
+          },
+        }}
+        search={false}
+        pagination={false}
+        request={async () => {
+          const domains = await getDomains();
+          return { data: domains, success: true };
+        }}
+      />
+    </PageContainer>
   );
 };
 
