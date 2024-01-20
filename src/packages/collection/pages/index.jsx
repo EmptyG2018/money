@@ -691,6 +691,7 @@ export default () => {
 
       <ExportMarksFormModal
         open={importModalShow}
+        onCancel={() => setImportModalShow(false)}
         onSubmit={async ({ groupName, file }) => {
           const formData = new FormData();
           formData.append("groupName", groupName);
