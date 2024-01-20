@@ -43,7 +43,7 @@ const Component = () => {
     try {
       const result = await uploadAvatar(formData);
       infoRef.current.setFieldsValue({
-        photoUrl: [{ uid: "-1", status: "done", url: result?.result?.fullUrl }],
+        photoUrl: [{ uid: "-1", status: "done", url: result?.fullUrl }],
       });
     } catch (err) {
       messageApi.error(err.message);
