@@ -1,11 +1,14 @@
 import request from "./_request";
 
-// 获取VIP用户组
-export const GetVipUserGroups = () =>
+// 根据项目获取VIP用户组
+export const GetVipUserGroupsByProject = ({ projectId }) =>
   request(
     {
-      url: "/yunGroup/getCreateGroupList",
+      url: "/yunGroup/getAllCreateGroupList",
       method: "POST",
+      data: {
+        projectId,
+      },
     },
     {
       responseDataType: "json",

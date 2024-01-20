@@ -147,3 +147,17 @@ export const UpdateDomainNavigateLink = ({ id, goPathId }) =>
       carry: ["auth", "site"],
     }
   );
+
+// 获取菜单
+export const GetMenusByProject = ({ projectId }) =>
+  request(
+    {
+      url: "/YunMenuNavigation/getDlMenuNavigationList",
+      method: "POST",
+      data: { projectId },
+    },
+    {
+      responseDataType: "json",
+      carry: ["site"],
+    }
+  );

@@ -149,7 +149,7 @@ const Component = () => {
             showPost.readRole === 0 ? (
               <LockTip>
                 <LockFill /> 此处内容已隐藏，
-                <TextDecoration onClick={() => navigate("/buykey")}>
+                <TextDecoration onClick={() => navigate("/buykey?id=2")}>
                   开通会员
                 </TextDecoration>
                 可查看
@@ -213,7 +213,7 @@ const Component = () => {
                     <Button
                       block
                       color="warning"
-                      onClick={() => navigate("/buykey")}
+                      onClick={() => navigate("/buykey?id=2")}
                     >
                       <LinkOutline /> 购买会员可下载附件
                     </Button>

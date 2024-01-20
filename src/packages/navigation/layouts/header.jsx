@@ -9,10 +9,11 @@ import {
   HighlightOutlined,
 } from "@ant-design/icons";
 import { ProConfigProvider, ProLayout } from "@ant-design/pro-components";
-import { styled } from "styled-components";
 import { WHITELIST, useAdmin } from "@plugins/access";
 import { useAgentSetting } from "@plugins/agent";
 import { useUser } from "@hooks/user";
+import { GetMenusByProject } from "@services/agent";
+import { styled } from "styled-components";
 import Copyright from "@layouts/copyright";
 import FixedHelpBtn from "@components/FixedHelpBtn";
 
@@ -36,24 +37,24 @@ const defaultLayout = {
   splitMenus: false,
 };
 
-const defaultProps = {
-  route: {
-    path: "/navigation",
-    routes: [
-      {
-        path: "/navigation/hall",
-        name: "广场",
-        icon: <FlagOutlined />,
-      },
-      {
-        path: "/collection",
-        target: "_blank",
-        name: "工作台",
-        icon: <HighlightOutlined />,
-      },
-    ],
-  },
-};
+// const defaultProps = {
+//   route: {
+//     path: "/navigation",
+//     routes: [
+//       {
+//         path: "/navigation/hall",
+//         name: "广场",
+//         icon: <FlagOutlined />,
+//       },
+//       {
+//         path: "/collection",
+//         target: "_blank",
+//         name: "工作台",
+//         icon: <HighlightOutlined />,
+//       },
+//     ],
+//   },
+// };
 
 export default () => {
   const location = useLocation();
@@ -126,7 +127,16 @@ export default () => {
               logo={agentSetting?.weblogoUrl || undefined}
               title={agentSetting?.webname}
               {...defaultLayout}
-              {...defaultProps}
+              menu={{
+                request: async () => {
+                  const menus = await GetMenusByProject({ projectId: 1 });
+                  return menus.map((item) => ({
+                    path: item.url,
+                    name: item.title,
+                    target: item.target,
+                  }));
+                },
+              }}
               location={{
                 pathname: location.pathname,
               }}
@@ -149,7 +159,7 @@ export default () => {
                   width={36}
                   height={36}
                   title="开通会员"
-                  onClick={() => navigate("/buykey")}
+                  onClick={() => navigate("/buykey?id=1")}
                 />,
                 <img
                   src="/imgs/cooperation.png"

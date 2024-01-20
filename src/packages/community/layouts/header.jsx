@@ -13,6 +13,7 @@ import { styled } from "styled-components";
 import { WHITELIST, useAdmin } from "@plugins/access";
 import { useAgentSetting } from "@plugins/agent";
 import { useUser } from "@hooks/user";
+import { GetMenusByProject } from "@services/agent";
 import Copyright from "@layouts/copyright";
 import FixedHelpBtn from "@components/FixedHelpBtn";
 
@@ -36,18 +37,18 @@ const defaultLayout = {
   splitMenus: false,
 };
 
-const defaultProps = {
-  route: {
-    path: "/community",
-    routes: [
-      {
-        path: "/community/category",
-        name: "分类",
-        icon: <UnorderedListOutlined />,
-      },
-    ],
-  },
-};
+// const defaultProps = {
+//   route: {
+//     path: "/community",
+//     routes: [
+//       {
+//         path: "/community/category",
+//         name: "分类",
+//         icon: <UnorderedListOutlined />,
+//       },
+//     ],
+//   },
+// };
 
 export default () => {
   const location = useLocation();
@@ -120,7 +121,16 @@ export default () => {
               logo={agentSetting?.weblogoUrl || undefined}
               title={agentSetting?.webname}
               {...defaultLayout}
-              {...defaultProps}
+              menu={{
+                request: async () => {
+                  const menus = await GetMenusByProject({ projectId: 2 });
+                  return menus.map((item) => ({
+                    path: item.url,
+                    name: item.title,
+                    target: item.target,
+                  }));
+                },
+              }}
               location={{
                 pathname: location.pathname,
               }}
@@ -174,7 +184,7 @@ export default () => {
                   width={36}
                   height={36}
                   title="开通会员"
-                  onClick={() => navigate("/buykey")}
+                  onClick={() => navigate("/buykey?id=2")}
                 />,
                 <img
                   src="/imgs/cooperation.png"

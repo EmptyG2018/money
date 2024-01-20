@@ -198,7 +198,7 @@ const Component = () => {
                   <Typography.Text
                     underline
                     style={{ color: "inherit" }}
-                    onClick={() => navigate("/buykey")}
+                    onClick={() => navigate("/buykey?id=2")}
                   >
                     开通会员
                   </Typography.Text>
@@ -272,7 +272,7 @@ const Component = () => {
                   showPost.downRole === 0 ? (
                     <DownloadBtn
                       color="warning"
-                      onClick={() => navigate("/buykey")}
+                      onClick={() => navigate("/buykey?id=2")}
                     >
                       <LinkOutlined /> 购买会员可下载附件
                     </DownloadBtn>
