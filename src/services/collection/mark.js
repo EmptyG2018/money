@@ -152,12 +152,12 @@ export const GetMarkeTeamMarks = ({ id, classId, pageNum, pageSize }) =>
   );
 
 // 获取市场收藏夹下的书签
-export const GetMarkeFavoriteMarks = ({ id, pageNum, pageSize }) =>
+export const GetMarkeFavoriteMarks = ({ pid, id, pageNum, pageSize }) =>
   request(
     {
       url: "/myCollection/getMarketCollectionWebsiteByid",
       method: "POST",
-      data: { id, pageNum, pageSize },
+      data: { pid, id, pageNum, pageSize },
     },
     {
       responseDataType: "json",

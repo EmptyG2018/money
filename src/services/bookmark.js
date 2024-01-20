@@ -117,7 +117,7 @@ export const GetBookmarkUserCollect = ({ userId, pageNum, pageSize }) =>
 export const GetBookmarkUserOpenTeam = ({ userId, pageNum, pageSize }) =>
   request(
     {
-      url: "/collections/getUsermarketList",
+      url: "/myTeam/getUserMarkeTeam",
       method: "POST",
       data: { userId, pageNum, pageSize },
     },
@@ -131,7 +131,7 @@ export const GetBookmarkUserOpenTeam = ({ userId, pageNum, pageSize }) =>
 export const GetBookmarkUserJoinTeam = ({ userId, pageNum, pageSize }) =>
   request(
     {
-      url: "/collections/getUsermarketList",
+      url: "/myTeam/getUserJoinMarkeTeam",
       method: "POST",
       data: { userId, pageNum, pageSize },
     },
