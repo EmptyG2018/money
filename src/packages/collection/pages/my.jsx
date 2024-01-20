@@ -1,11 +1,6 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Avatar, Card, Image, Tag, Row, Col, Space, Pagination } from "antd";
-import {
-  FolderOpenOutlined,
-  PayCircleOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { useState, useEffect, useRef, createContext, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { Row, Col, Pagination } from "antd";
 import { useRequest } from "ahooks";
 import { GetMyCollectLikes } from "@services/collection/collect";
 import { GetMyTeamLikes } from "@services/collection/team";
@@ -13,252 +8,129 @@ import {
   ResourceSearch,
   HeaderPanel,
 } from "@components/collection/HeaderPanel";
-import ToggleCollapsedBtn from "@components/collection/ToggleCollapsedBtn";
 import { ProCard } from "@ant-design/pro-components";
+import ToggleCollapsedBtn from "@components/collection/ToggleCollapsedBtn";
+import Team from "@components/Team";
+import Favorite from "@components/Favorite";
 import styled from "styled-components";
+
+const SearchContext = createContext("");
 
 const PAGE_SIZE = 16;
 
 const DataPlaceholder = styled.div`
-  height: calc(100vh - 166px);
+  height: calc(100vh - 198px);
   overflow-y: auto;
 `;
 
-const TeamRoot = styled(Card)``;
+const FavoriteList = ({ list }) => {
+  const navigate = useNavigate();
 
-const TeamCell = styled.div`
-  min-height: 52px;
-`;
-
-const TeamThumb = styled(Image)`
-  margin-bottom: 6px;
-`;
-
-const TeamTitle = styled.h2`
-  margin: 0;
-  padding: 0;
-  font-size: 15px;
-  color: #000;
-`;
-
-const TeamDesc = styled.p`
-  margin: 0;
-  padding: 0;
-  color: #5f5f5f;
-  font-size: 12px;
-`;
-
-const TeamTag = styled(Tag)`
-  border: none;
-  line-height: 18px;
-  padding-inline: 4px;
-  color: rgba(0, 0, 0, 0.48);
-`;
-
-const TeamInfo = styled.div``;
-
-const TeamInfoItem = styled.span`
-  color: #666;
-  font-size: 12px;
-`;
-
-const TeamDate = styled.div`
-  color: #666;
-  font-size: 12px;
-  text-align: right;
-`;
-
-const Team = ({ title, desc, thumb, tags, name, avatar, date }) => {
   return (
-    <TeamRoot
-      bodyStyle={{ display: "flex", flexDirection: "column", padding: 14 }}
-    >
-      <Row>
-        <Col xs={{ md: 24, order: 2 }} md={{ span: 14, order: 1 }}>
-          <TeamCell>
-            <TeamTitle>{title}</TeamTitle>
-            <TeamDesc>{desc}</TeamDesc>
-            {tags.map((item, index) => (
-              <TeamTag bordered={false} key={index}>
-                {item}
-              </TeamTag>
-            ))}
-          </TeamCell>
-        </Col>
-        <Col xs={{ md: 24, order: 1 }} md={{ span: 10, order: 2 }}>
-          <TeamThumb width="100%" preview={false} src={thumb} />
-        </Col>
+    <DataPlaceholder>
+      <Row
+        gutter={[
+          { xs: 8, sm: 12, md: 18, lg: 20 },
+          { xs: 4, sm: 8, md: 12, lg: 16 },
+        ]}
+      >
+        {(list?.rows || []).map((item) => (
+          <Col xs={24} sm={12} lg={6} key={item.id}>
+            <Favorite
+              title={item.title}
+              name={item.userName}
+              count={item.count}
+              likeCount={item.likeNumber}
+              avatar={item.photoUrl}
+              onGo={() => navigate("/navigation/collect/" + item.id)}
+            />
+          </Col>
+        ))}
       </Row>
-      <Row style={{ display: "flex", alignItems: "center" }}>
-        <Col xs={24} md={12}>
-          <TeamInfo>
-            <Space size={6}>
-              <Avatar size={14} src={avatar} />
-              <TeamInfoItem>{name}</TeamInfoItem>
-              <TeamInfoItem>0</TeamInfoItem>
-              <TeamInfoItem>0</TeamInfoItem>
-              <TeamInfoItem>0</TeamInfoItem>
-            </Space>
-          </TeamInfo>
-        </Col>
-        <Col xs={24} md={12}>
-          <TeamDate>{date}</TeamDate>
-        </Col>
-      </Row>
-    </TeamRoot>
+    </DataPlaceholder>
   );
 };
 
-const CollectFolderRoot = styled(Card)``;
-
-const CollectFolderName = styled.h2`
-  margin: 0;
-  padding: 0;
-  font-size: 15px;
-  color: #000;
-`;
-
-const CollectFolderStat = styled.div`
-  margin-top: 6px;
-`;
-
-const CollectFolderFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 6px;
-`;
-
-const CollectFolderDate = styled.span`
-  color: #666;
-  font-size: 12px;
-  text-align: right;
-`;
-
-const CollectFolder = ({
-  title,
-  avatar,
-  date,
-  cloneCount,
-  viewCount,
-  likeCount,
-}) => {
+const TeamList = ({ list }) => {
   return (
-    <CollectFolderRoot
-      bodyStyle={{ display: "flex", flexDirection: "column", padding: 14 }}
-    >
-      <CollectFolderName>{title}</CollectFolderName>
-      <CollectFolderStat>
-        <Space>
-          <span>
-            <FolderOpenOutlined /> {cloneCount}
-          </span>
-          <span>
-            <PayCircleOutlined /> {likeCount}
-          </span>
-          <span>
-            <EyeOutlined /> {viewCount}
-          </span>
-        </Space>
-      </CollectFolderStat>
-      <CollectFolderFooter>
-        <Avatar src={avatar} size={28} />
-        <CollectFolderDate>{date}</CollectFolderDate>
-      </CollectFolderFooter>
-    </CollectFolderRoot>
+    <DataPlaceholder>
+      <Row
+        gutter={[
+          { xs: 8, sm: 12, md: 18, lg: 20 },
+          { xs: 4, sm: 8, md: 12, lg: 16 },
+        ]}
+      >
+        {(list?.rows || []).map((item) => (
+          <Col xs={24} sm={12} lg={6} key={item.id}>
+          <Team
+            title={item.title}
+            desc={item.description}
+            thumb={item.iconUri}
+            tags={item.tagVoList}
+            name={item.userName}
+            avatar={item.photoUrl}
+            onGo={() => navigate("/navigation/team/" + item.id)}
+          />
+          </Col>
+        ))}
+      </Row>
+    </DataPlaceholder>
   );
 };
 
-const CollectView = ({ keyword }) => {
-  const [pageNum, setPageNum] = useState(1);
-  const { data: collects } = useRequest(
-    () => GetMyCollectLikes({ title: keyword, pageNum, pageSize: PAGE_SIZE }),
-    {
-      refreshDeps: [pageNum, keyword],
-    }
-  );
+const FavoriteView = () => {
+  const keyword = useContext(SearchContext);
+  const pageNum = useRef(1);
 
-  useEffect(() => {
-    setPageNum(1);
-  }, [keyword]);
+  const { data: favorite, refresh: refreshFavorites } = useRequest(() =>
+    GetMyCollectLikes({
+      title: keyword,
+      pageNum: pageNum.current,
+      pageSize: PAGE_SIZE,
+    })
+  );
 
   return (
     <>
-      <DataPlaceholder>
-        <Row
-          gutter={[
-            { xs: 8, sm: 12, md: 18, lg: 20 },
-            { xs: 4, sm: 8, md: 12, lg: 16 },
-          ]}
-        >
-          {(collects?.rows || []).map((item) => (
-            <Col xs={24} sm={12} lg={8} key={item.id}>
-              <CollectFolder
-                title={item.title}
-                cloneCount={item.cloneNumber}
-                likeCount={item.likeNumber}
-                viewCount={item.viewNumber}
-                avatar={item.photoUrl}
-                date={item.createTime}
-              />
-            </Col>
-          ))}
-        </Row>
-      </DataPlaceholder>
+      <FavoriteList list={favorite} />
       <Pagination
-        style={{ textAlign: "center" }}
-        current={pageNum}
+        style={{ textAlign: "center", marginBlockStart: 32 }}
+        defaultCurrent={pageNum.current}
         pageSize={PAGE_SIZE}
-        total={collects?.total}
-        onChange={setPageNum}
+        total={favorite?.total}
+        onChange={(current) => {
+          pageNum.current = current;
+          refreshFavorites();
+        }}
       />
     </>
   );
 };
 
-const TeamView = ({ keyword }) => {
-  const [pageNum, setPageNum] = useState(1);
-  const { data: teams } = useRequest(
-    () => GetMyTeamLikes({ title: keyword, pageNum, pageSize: PAGE_SIZE }),
-    {
-      refreshDeps: [pageNum, keyword],
-    }
-  );
+const TeamView = () => {
+  const keyword = useContext(SearchContext);
+  const pageNum = useRef(1);
 
-  useEffect(() => {
-    setPageNum(1);
-  }, [keyword]);
+  const { data: team, refresh: refreshTeams } = useRequest(() =>
+    GetMyTeamLikes({
+      title: keyword,
+      pageNum: pageNum.current,
+      pageSize: PAGE_SIZE,
+    })
+  );
 
   return (
     <>
-      <DataPlaceholder>
-        <Row
-          gutter={[
-            { xs: 8, sm: 12, md: 18, lg: 20 },
-            { xs: 4, sm: 8, md: 12, lg: 16 },
-          ]}
-        >
-          {(teams?.rows || []).map((item) => (
-            <Col xs={12} lg={8} key={item.id}>
-              <Team
-                title={item.title}
-                desc={item.description}
-                thumb={item.iconUri}
-                tags={item.tagVoList.map((item) => item.tagName)}
-                name={item.userName}
-                avatar={item.photoUrl}
-                date={item.createTime}
-              />
-            </Col>
-          ))}
-        </Row>
-      </DataPlaceholder>
+      <TeamList list={team} />
       <Pagination
-        style={{ textAlign: "center" }}
-        current={pageNum}
+        style={{ textAlign: "center", marginBlockStart: 32 }}
+        current={pageNum.current}
         pageSize={PAGE_SIZE}
-        total={teams?.total}
-        onChange={setPageNum}
+        total={team?.total}
+        onChange={(current) => {
+          pageNum.current = current;
+          refreshTeams();
+        }}
       />
     </>
   );
@@ -279,13 +151,7 @@ const Container = styled.div`
 `;
 
 export default () => {
-  const [searchParams] = useSearchParams();
-  const [activeKey, setActiveKey] = useState("");
   const [keyword, setKeyword] = useState("");
-
-  useEffect(() => {
-    setActiveKey(searchParams.get("active") !== "team" ? "collect" : "team");
-  }, [searchParams]);
 
   return (
     <Content>
@@ -298,26 +164,26 @@ export default () => {
         }
       />
       <Container>
-        <ProCard
-          colSpan={{ sm: 24, md: 16, lg: 18 }}
-          tabs={{
-            activeKey,
-            items: [
-              {
-                label: `收藏夹`,
-                key: "collect",
-                children: <CollectView keyword={keyword} />,
-              },
-              {
-                label: `公开团队`,
-                key: "team",
-                children: <TeamView keyword={keyword} />,
-              },
-            ],
-            destroyInactiveTabPane: true,
-            onChange: setActiveKey,
-          }}
-        ></ProCard>
+        <SearchContext.Provider value={keyword}>
+          <ProCard
+            colSpan={{ sm: 24, md: 16, lg: 18 }}
+            tabs={{
+              destroyInactiveTabPane: true,
+              items: [
+                {
+                  label: `收藏夹`,
+                  key: "collect",
+                  children: <FavoriteView />,
+                },
+                {
+                  label: `公开团队`,
+                  key: "team",
+                  children: <TeamView />,
+                },
+              ],
+            }}
+          ></ProCard>
+        </SearchContext.Provider>
       </Container>
     </Content>
   );
