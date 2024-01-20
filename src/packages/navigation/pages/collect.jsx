@@ -39,11 +39,13 @@ const MarkLayout = styled.div`
 `;
 
 const FavoriteDataView = ({ activeKey }) => {
+  const params = useParams();
   const pageNum = useRef(1);
 
   const { data: mark, refresh: refreshMarks } = useRequest(
     () =>
       GetMarkeFavoriteMarks({
+        pid: params.id,
         id: activeKey,
         pageNum: pageNum.current,
         pageSize: PAGE_SIZE,
@@ -125,7 +127,7 @@ const TabBar = styled(Tabs)`
 `;
 
 const FavoriteList = ({ categorys }) => {
-  const [activeKey, setActiveKey] = useState(categorys[0].id);
+  const [activeKey, setActiveKey] = useState("" + categorys[0].id);
 
   return (
     <>
@@ -135,7 +137,7 @@ const FavoriteList = ({ categorys }) => {
             activeKey={activeKey}
             items={[
               ...categorys.map((item) => ({
-                key: item.id,
+                key: "" + item.id,
                 label: item.title,
               })),
             ]}
