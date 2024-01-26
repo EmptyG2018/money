@@ -118,7 +118,7 @@ const Component = () => {
                   label="分站版本"
                   radioType="button"
                   options={(editionInfo || []).map((item) => ({
-                    label: item.name,
+                    label: item.name + `（¥${item.defaultSellPrice}）`,
                     value: item.id,
                   }))}
                   rules={[

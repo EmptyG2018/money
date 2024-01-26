@@ -14,7 +14,7 @@ export const GetAgentProperty = () =>
 export const DrawAgentAliMoney = ({ money }) =>
   request(
     {
-      url: "/yunDlAgnetInfo/getAdminDlIdInfo",
+      url: "/yunDlAgentCashout/addDlAgentCashout",
       method: "POST",
       data: { money },
     },
