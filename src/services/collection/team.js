@@ -435,7 +435,7 @@ export const JoinMarkeTeam = ({ teamId }) =>
 export const UpdateMarkeTeamCollection = ({ id }) =>
   request(
     {
-      url: "/myCollection/addmarketCollectionLike",
+      url: "/myTeam/addmarketTeamLike",
       method: "POST",
       data: {
         id,
