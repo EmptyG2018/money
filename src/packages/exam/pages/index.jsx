@@ -162,7 +162,7 @@ const FullCarousel = ({
         </FullCarouselControl>
       )}
       <FullCarouselMenu>
-        {categorys.map((item) => (
+        {categorys.slice(0, 8).map((item) => (
           <FullCarouselMenuItem key={item.parentId}>
             <div className="full-carousel__menu-item">
               {menuItemRender(item)}
