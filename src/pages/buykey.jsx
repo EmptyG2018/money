@@ -21,24 +21,22 @@ const BuySelect = styled.div`
   user-select: none;
 `;
 const BuyOption = styled.div`
-  box-sizing: border-box;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-width: 1px;
-  border-style: solid;
-  border-color: ${({ $color }) => $color};
+  border: 1px solid #c1c1c1;
   padding: 16px;
   gap: 8px;
   border-radius: 6px;
-  color: ${({ $color }) => $color};
+  color: #333;
 
   ${({ checked }) =>
     checked &&
     css`
-      color: #fff;
-      background-color: ${({ $color }) => $color};
+      border-color: #1677ff;
+      color: #1677ff;
+      background-color: #d5e6fd;
     `}
 `;
 
@@ -52,7 +50,6 @@ const BuyOptions = ({ buyKey, options, onChange }) => {
     <BuySelect>
       {options.map((item) => (
         <BuyOption
-          $color={item.color}
           key={item.id}
           checked={buyKey === item.id}
           onClick={() => onChange && onChange(item.id)}
