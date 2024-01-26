@@ -125,7 +125,7 @@ const Component = () => {
     >
       <ProCard headerBordered>
         <Alert
-          message="绑定前请在域名DNS 设置中添加一条CNAME记录指向别名8376e98599001ac1.kanclouds.cn"
+          message="绑定前请在域名DNS 设置中添加一条CNAME记录指向别名123pt.5zyyy.com"
           type="info"
           showIcon
         />
