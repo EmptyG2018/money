@@ -268,7 +268,7 @@ const Component = () => {
                     </Space>
                   </>
                 ),
-                value: property?.totleWithdrawalMoney,
+                value: property?.commissionMoney,
                 prefix: "¥",
                 icon: (
                   <PayCircleOutlined
