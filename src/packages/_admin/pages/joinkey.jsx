@@ -97,7 +97,7 @@ const Component = () => {
     },
     {
       title: "用户组",
-      dataIndex: "groupId",
+      dataIndex: "groupTitle",
       valueType: "select",
       fieldProps: {
         options: groupOptions,

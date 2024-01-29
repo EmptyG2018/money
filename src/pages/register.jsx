@@ -100,11 +100,11 @@ const Component = () => {
               rules={[
                 {
                   required: true,
-                  message: "请输入账号！",
+                  message: "请输入邮箱账号！",
                 },
               ]}
             >
-              <Input prefix={<UserOutlined />} placeholder="账号" />
+              <Input prefix={<UserOutlined />} placeholder="邮箱账号" />
             </Form.Item>
             <Form.Item
               name="password"
@@ -128,17 +128,17 @@ const Component = () => {
             >
               <Input prefix={<UserOutlined />} placeholder="用户名" />
             </Form.Item>
-            <Form.Item
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  message: "请输入邮箱！",
-                },
-              ]}
-            >
-              <Input prefix={<MailOutlined />} placeholder="邮箱" />
-            </Form.Item>
+            {/*<Form.Item*/}
+            {/*  name="email"*/}
+            {/*  rules={[*/}
+            {/*    {*/}
+            {/*      required: true,*/}
+            {/*      message: "请输入邮箱！",*/}
+            {/*    },*/}
+            {/*  ]}*/}
+            {/*>*/}
+            {/*  <Input prefix={<MailOutlined />} placeholder="邮箱" />*/}
+            {/*</Form.Item>*/}
             <FormExtra>
               已经有账号？
               去<Link to="/login">登录</Link>吧
