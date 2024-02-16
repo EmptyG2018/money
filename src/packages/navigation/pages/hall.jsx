@@ -222,8 +222,8 @@ const Component = () => {
           <NavBar
             activeKey={navTabKey}
             items={[
-              { key: "team", label: "优秀团队" },
               { key: "collect", label: "收藏集" },
+              { key: "team", label: "优秀团队" },
             ]}
             onChange={setNavTabKey}
           />
