@@ -10,7 +10,7 @@ export const RegisterAccount = ({ account, password, userName }) =>
         account,
         password,
         userName,
-        // email,
+
       },
     },
     {
