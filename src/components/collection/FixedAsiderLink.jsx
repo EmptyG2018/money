@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { StarOutlined, TeamOutlined } from "@ant-design/icons";
+import { StarOutlined, TeamOutlined, SlidersOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 const FixedAsiderLinkRoot = styled.div`
@@ -31,6 +31,10 @@ export default () => {
       <NavItem to="/collection/team">
         <TeamOutlined style={{ marginRight: 4 }} />
         我的团队
+      </NavItem>
+      <NavItem to="/navigation">
+       <SlidersOutlined style={{ marginRight: 4 }} />
+            返回首页
       </NavItem>
     </FixedAsiderLinkRoot>
   );
