@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useRequest } from "ahooks";
+import { useRequest, useTitle } from "ahooks";
 import {
   GetPostContent,
   GetPostHideContent,
@@ -49,6 +49,16 @@ const deepNodeTree = (children) =>
     })
     .join("");
 
+const ArticleTitleRoot = styled.h1`
+  font-size: 22px;
+  font-weight: 600;
+`;
+
+const ArticleTitle = ({ title }) => {
+  useTitle(title);
+  return <ArticleTitleRoot>{title}</ArticleTitleRoot>;
+};
+
 const Article = styled.div`
   word-wrap: break-word;
   word-break: break-all;
@@ -82,11 +92,6 @@ const Article = styled.div`
     padding: 16px;
     background-color: #ececec;
   }
-`;
-
-const ArticleTitle = styled.h1`
-  font-size: 22px;
-  font-weight: 600;
 `;
 
 const ArticleExtra = styled.div`
@@ -310,7 +315,7 @@ const Component = () => {
           )}
           {showPost && (
             <Article>
-              <ArticleTitle>{showPost?.subject}</ArticleTitle>
+              <ArticleTitle title={showPost?.subject} />
               <ArticleExtra>
                 <Space>
                   <Tag bordered={false}>
