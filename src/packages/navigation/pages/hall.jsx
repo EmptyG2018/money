@@ -110,6 +110,7 @@ const CollectView = ({ classId }) => {
                     name={item.userName}
                     count={item.count}
                     likeCount={item.likeNumber}
+                    viewNumber={item.viewNumber}
                     avatar={item.photoUrl}
                     onGo={() => navigate("../collect/" + item.id)}
                   />
@@ -208,7 +209,7 @@ const CategoryBar = styled(NavBar)`
 `;
 
 const Component = () => {
-  const [navTabKey, setNavTabKey] = useState("team");
+  const [navTabKey, setNavTabKey] = useState("collect");
   return (
     <>
       <BannerPanel>
@@ -222,8 +223,8 @@ const Component = () => {
           <NavBar
             activeKey={navTabKey}
             items={[
-              { key: "team", label: "优秀团队" },
               { key: "collect", label: "收藏集" },
+              { key: "team", label: "优秀团队" },
             ]}
             onChange={setNavTabKey}
           />

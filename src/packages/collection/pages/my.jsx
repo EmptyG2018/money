@@ -41,6 +41,7 @@ const FavoriteList = ({ list }) => {
               name={item.userName}
               count={item.count}
               likeCount={item.likeNumber}
+              viewNumber={item.viewNumber}
               avatar={item.photoUrl}
               onGo={() => navigate("/navigation/collect/" + item.id)}
             />

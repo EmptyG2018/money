@@ -37,6 +37,7 @@ const Component = ({
   avatar,
   count,
   likeCount,
+  viewNumber,
   onGo,
   ...props
 }) => {
@@ -44,7 +45,7 @@ const Component = ({
     <FavoriteRoot bodyStyle={{ padding: 32, textAlign: "center" }} {...props}>
       <FavoriteTitle level={5}>{title}</FavoriteTitle>
       <FavoriteInfo>
-        点赞量 {likeCount}
+        阅读量 {viewNumber}
         <Divider type="vertical" />
         书签 {count}
       </FavoriteInfo>

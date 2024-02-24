@@ -4,6 +4,7 @@ import {
   CompassOutline,
   UnorderedListOutline,
   UserOutline,
+  DownCircleOutline,
 } from "antd-mobile-icons";
 import { styled } from "styled-components";
 
@@ -27,13 +28,18 @@ const Component = () => {
   const tabs = [
     {
       key: "/m/community",
-      title: "发现",
+      title: "首页",
       icon: <CompassOutline />,
     },
     {
       key: "/m/community/category",
       title: "分类",
       icon: <UnorderedListOutline />,
+    },
+    {
+      key: "/navigation",
+      title: "书签",
+      icon: <DownCircleOutline />,
     },
     {
       key: "/m/community/user",

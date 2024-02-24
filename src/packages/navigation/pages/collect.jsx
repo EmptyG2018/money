@@ -45,8 +45,8 @@ const FavoriteDataView = ({ activeKey }) => {
   const { data: mark, refresh: refreshMarks } = useRequest(
     () =>
       GetMarkeFavoriteMarks({
-        pid: params.id,
-        id: activeKey,
+        pid: activeKey,
+        id:  params.id,
         pageNum: pageNum.current,
         pageSize: PAGE_SIZE,
       }),

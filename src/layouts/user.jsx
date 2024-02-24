@@ -13,6 +13,14 @@ const menus = [
     path: "/user/editpwd",
     title: "修改密码",
   },
+  {
+    path: "/buykey",
+    title: "开通会员",
+  },
+  {
+    path: "/applyjoin",
+    title: "申请加盟",
+  },
 ];
 
 const TabbarRoot = styled.div`

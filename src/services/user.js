@@ -1,7 +1,7 @@
 import request from "./_request";
 
 // 注册账号
-export const RegisterAccount = ({ account, password, userName, email }) =>
+export const RegisterAccount = ({ account, password, userName }) =>
   request(
     {
       url: "/user/userRegist",
@@ -10,7 +10,7 @@ export const RegisterAccount = ({ account, password, userName, email }) =>
         account,
         password,
         userName,
-        email,
+        // email,
       },
     },
     {
