@@ -17,15 +17,15 @@ const Ellipsis = styled.div`
 const StyleModuleRoot = styled.div`
   box-sizing: border-box;
   cursor: pointer;
-  ${({ bordered }) =>
-    bordered &&
+  ${({ $bordered }) =>
+    $bordered &&
     css`
       border: 1px solid #e5e5e5;
       border-radius: 6px;
       overflow: hidden;
     `}
-  ${({ between }) =>
-    between &&
+  ${({ $between }) =>
+    $between &&
     css`
       display: flex;
       align-items: center;
@@ -52,19 +52,19 @@ const StyleModuleDesc = styled.div`
   color: #444;
 `;
 
-const StyleModuleA = ({ url, title, ...props }) => {
+const StyleModuleA = ({ url, title, imgStyle, ...props }) => {
   return (
     <StyleModuleRoot style={{ width: 154 }} {...props}>
-      <StyleModuleImg src={url} />
+      <StyleModuleImg style={imgStyle} src={url} />
       <StyleModuleTitle>{title}</StyleModuleTitle>
     </StyleModuleRoot>
   );
 };
 
-const StyleModuleB = ({ url, title, ...props }) => {
+const StyleModuleB = ({ url, title, imgStyle, ...props }) => {
   return (
-    <StyleModuleRoot bordered style={{ width: 214 }} {...props}>
-      <StyleModuleImg src={url} />
+    <StyleModuleRoot $bordered style={{ width: 214 }} {...props}>
+      <StyleModuleImg style={imgStyle} src={url} />
       <StyleModuleBody>
         <StyleModuleTitle>{title}</StyleModuleTitle>
       </StyleModuleBody>
@@ -75,7 +75,7 @@ const StyleModuleB = ({ url, title, ...props }) => {
 const StyleModuleC = ({ title, desc, ...props }) => {
   return (
     <StyleModuleRoot
-      between
+      $between
       style={{ paddingInline: "8px", width: 280 }}
       {...props}
     >
@@ -85,7 +85,26 @@ const StyleModuleC = ({ title, desc, ...props }) => {
   );
 };
 
-const StyleModuleTemplate = ({ styleKey, items }) => {
+const StyleModuleD = ({ url, ...props }) => {
+  return (
+    <StyleModuleRoot style={{ width: "100%" }} {...props}>
+      <StyleModuleImg src={url} />
+    </StyleModuleRoot>
+  );
+};
+
+const StyleModuleE = ({ url, title, ...props }) => {
+  return (
+    <StyleModuleRoot $bordered style={{ width: 214 }} {...props}>
+      <StyleModuleImg src={url} />
+      <StyleModuleBody>
+        <StyleModuleTitle>{title}</StyleModuleTitle>
+      </StyleModuleBody>
+    </StyleModuleRoot>
+  );
+};
+
+const StyleModuleTemplate = ({ styleKey, imgStyle, items }) => {
   const navigate = useNavigate();
 
   const styleModuleMap = {
@@ -96,6 +115,7 @@ const StyleModuleTemplate = ({ styleKey, items }) => {
             key={item.tid}
             url={item.attachment}
             title={item.subject}
+            imgStyle={imgStyle}
             onClick={() => navigate("/community/article/" + item.tid)}
           />
         ))}
@@ -108,6 +128,7 @@ const StyleModuleTemplate = ({ styleKey, items }) => {
             key={item.tid}
             url={item.attachment}
             title={item.subject}
+            imgStyle={imgStyle}
             onClick={() => navigate("/community/article/" + item.tid)}
           />
         ))}
@@ -300,9 +321,22 @@ const StyleModueSection = styled.div`
 `;
 
 const StyleModule = ({ items }) => {
+  const imgStyleFn = (style) => {
+    if (!style) return {};
+    try {
+      return JSON.parse(style);
+    } catch {
+      return {};
+    }
+  };
+
   const render = items.map((item) => (
     <StyleModueSection key={item.id}>
-      <StyleModuleTemplate styleKey={item.moduleId} items={item.listfrom} />
+      <StyleModuleTemplate
+        styleKey={item.moduleId}
+        imgStyle={imgStyleFn(item.styleConfig)}
+        items={item.listfrom}
+      />
     </StyleModueSection>
   ));
   return render;
@@ -311,6 +345,7 @@ const StyleModule = ({ items }) => {
 const HeaderTop = styled.div`
   display: flex;
   gap: 8px;
+  margin-block-end: 10px;
 `;
 
 const HeaderTopSide = styled.div`

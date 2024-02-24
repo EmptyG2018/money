@@ -73,6 +73,7 @@ const FullCarouselThumb = styled.img`
   display: block;
   width: 100%;
   height: 400px;
+  object-fit: cover;
 `;
 
 const FullCarouselMenu = styled.div`

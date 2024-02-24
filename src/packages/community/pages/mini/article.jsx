@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Toast, Button, NavBar, Image, Space, Tag, Avatar } from "antd-mobile";
 import { LinkOutline, DownCircleOutline, LockFill } from "antd-mobile-icons";
-import { useRequest } from "ahooks";
+import { useRequest, useTitle } from "ahooks";
 import { useUser } from "@hooks/user";
 import { useNavigatorPath } from "@hooks/recordPath";
 import useDownload from "@hooks/download";
@@ -74,9 +74,14 @@ const Article = styled.div`
   }
 `;
 
-const ArticleTitle = styled.h1`
+const ArticleTitleRoot = styled.h1`
   font-size: 20px;
 `;
+
+const ArticleTitle = ({ title }) => {
+  useTitle(title);
+  return <ArticleTitleRoot>{title}</ArticleTitleRoot>;
+};
 
 const ArticleExtra = styled(Space)`
   margin-bottom: 16px;
@@ -266,7 +271,7 @@ const Component = () => {
         )}
         {showPost && (
           <Article>
-            <ArticleTitle>{showPost.subject}</ArticleTitle>
+            <ArticleTitle title={showPost.subject} />
             <ArticleExtra block>
               <Tag round color="#f0f0f0" style={{ "--text-color": "#707070" }}>
                 <Space style={{ "--gap": "2px" }} align="center">
