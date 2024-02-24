@@ -7,7 +7,7 @@ import {
   StarFilled,
   LikeFilled,
 } from "@ant-design/icons";
-import { useRequest } from "ahooks";
+import { useRequest,useTitle } from "ahooks";
 import {
   GetMarkeFavoriteInfo,
   CloneMarkeFavorite,
@@ -176,13 +176,19 @@ const FavoriteInfoTypography = styled.div`
   flex: 1 0 0;
 `;
 
-const FavoriteInfoTitle = styled(Typography.Title)`
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 360px;
-`;
+// const FavoriteInfoTitle = styled(Typography.Title)`
+//   margin: 0;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+//   max-width: 360px;
+// `;
+
+const FavoriteInfoTitle = ({ title }) => {
+    useTitle(title);
+    return <ArticleTitleRoot>{title}</ArticleTitleRoot>;
+};
+
 const FavoriteInfoUser = styled.span`
   padding: 2px 6px;
   border-radius: 32px;
@@ -196,6 +202,11 @@ const FavoriteInfoAction = styled.div`
   justify-content: flex-end;
   align-items: flex-end;
 `;
+const ArticleTitleRoot = styled.h1`
+  font-size: 22px;
+  font-weight: 600;
+`;
+
 
 const FavoritePanel = ({ info, onClone, onCollection, onLike }) => {
   const app = App.useApp();
@@ -246,7 +257,7 @@ const FavoritePanel = ({ info, onClone, onCollection, onLike }) => {
             <FavoriteInfo>
               <FavoriteInfoCell>
                 <FavoriteInfoTypography>
-                  <FavoriteInfoTitle level={3}>{info.title}</FavoriteInfoTitle>
+                  <FavoriteInfoTitle level={3} title={info.title} style="margin: 0;overflow: hidden;   text-overflow: ellipsis;   white-space: nowrap;   max-width: 360px;">{info.title}</FavoriteInfoTitle>
                   <FavoriteInfoUser>
                     <UserOutlined /> {info.userName}
                   </FavoriteInfoUser>
