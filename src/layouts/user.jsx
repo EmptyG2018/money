@@ -1,4 +1,4 @@
-import { useLocation, Outlet, useOutlet, Link } from "react-router-dom";
+import {useLocation, Outlet, useOutlet, Link, useNavigate} from "react-router-dom";
 import { Avatar } from "antd";
 import { RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { useUser } from "../hooks/user";
@@ -8,6 +8,8 @@ import {
 } from "../services/vip";
 import {useRequest} from "ahooks";
 import {Fragment} from "react";
+import { WHITELIST, useAdmin } from "@plugins/access";
+
 const menus = [
   {
     path: "/user/info",
@@ -230,11 +232,15 @@ const Component = () => {
   const location = useLocation();
   const { user } = useUser();
   const outlet = useOutlet();
+  const navigate = useNavigate();
 
   const checkedMenu = menus.find((item) => item.path === location.pathname);
   const {data: vipOpenVipGroupList } = useRequest(
       () => GetUserOpenVipGroupList()
   );
+
+
+
   return (
     <ComponentRoot>
       <Container>
@@ -284,6 +290,8 @@ const Component = () => {
                 <RightOutlined />
               </UserCellItem>
             ))}
+
+
           </UserCellCard>
           {outlet && (
             <MainView>
