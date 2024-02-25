@@ -3,7 +3,11 @@ import { Avatar } from "antd";
 import { RightOutlined, LeftOutlined } from "@ant-design/icons";
 import { useUser } from "../hooks/user";
 import { styled } from "styled-components";
-
+import {
+  GetUserOpenVipGroupList,
+} from "../services/vip";
+import {useRequest} from "ahooks";
+import {Fragment} from "react";
 const menus = [
   {
     path: "/user/info",
@@ -174,6 +178,17 @@ const UserCellCard = styled.div`
   }
 `;
 
+
+const UserVip = styled.div`
+  width: 100%;
+  background-color: #fff;
+  padding: 8px 0;
+  @media (min-width: 768px) {
+    width: 280px;
+    border-radius: 8px;
+  }
+`;
+
 const UserCellItem = styled(Link)`
   display: flex;
   padding: 0 16px;
@@ -184,6 +199,32 @@ const UserCellItem = styled(Link)`
   color: initial;
   text-decoration: none;
 `;
+const GroupInfo = styled.div`
+  font-size: 12px;
+  color: #ece0e0;
+  border-radius: 5px;
+  margin-block-end: 16px;
+  width:100%;
+  padding: 10px 0px;
+  background: linear-gradient(300deg,#4c4d51,#2a2a31 15%,#85858a 40%,#393a3c 60%,#393838 80%,#5e5f62 100%);
+  text-align: center;
+`;
+const StyleModuleImg = styled.img`
+    height: 1em;
+    vertical-align: -.15em;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: inline-block;
+    margin-right: 6px;
+`;
+const StyleTime = styled.span`
+        font-size: .9em;
+    padding: .2em 6px;
+    vertical-align: -.1em;
+    color:#ffffff;
+      background: linear-gradient(135deg, #f59f54 10%, #ff6922 100%);
+      margin-left:5px;
+`;
 
 const Component = () => {
   const location = useLocation();
@@ -191,7 +232,9 @@ const Component = () => {
   const outlet = useOutlet();
 
   const checkedMenu = menus.find((item) => item.path === location.pathname);
-
+  const {data: vipOpenVipGroupList } = useRequest(
+      () => GetUserOpenVipGroupList()
+  );
   return (
     <ComponentRoot>
       <Container>
@@ -216,7 +259,24 @@ const Component = () => {
             </UserName>
           </UserProfile>
         </UserHeader>
+        <UserVip>
+          {(vipOpenVipGroupList || []).map((item) => (
+              <GroupInfo>
+                <StyleModuleImg  src={item.icon} />
+
+                {item.groupTitle}
+                {item.endTime != "" && (
+                <StyleTime>
+                  {item.endTime}
+                </StyleTime>
+                )}
+              </GroupInfo>
+          ))}
+
+
+        </UserVip>
         <UserMain>
+
           <UserCellCard>
             {menus.map((item) => (
               <UserCellItem to={item.path} key={item.path}>

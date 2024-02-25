@@ -128,3 +128,16 @@ export const UpdateSiteCardKeyLink = ({ groupId, urlLink, remark }) =>
       carry: ["auth", "site"],
     }
   );
+
+// 获取用户开通用户主
+export const GetUserOpenVipGroupList = () =>
+    request(
+        {
+            url: "/yunGroup/getUserOpenGroupList",
+            method: "POST",
+        },
+        {
+            responseDataType: "json",
+            carry: ["auth", "site"],
+        }
+    );

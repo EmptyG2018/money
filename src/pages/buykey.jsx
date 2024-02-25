@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Flex, App, Input, Button, Card, Tabs } from "antd";
+import {Flex, App, Input, Button, Card, Tabs, message, Row} from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useRequest } from "ahooks";
 import {
   GetVipUserGroupsByProject,
   BuyVipUserGroupCardKey,
+  GetUserOpenVipGroupList,
 } from "../services/vip";
 import { useUser } from "@hooks/user";
 import { Container } from "@components/Container";
@@ -107,10 +108,16 @@ const VipUserForm = () => {
     defaultParams: [{ projectId: searchParams.get("id") }],
   });
 
+
+
   const { run: buyVipUserGroupCardKey } = useRequest(
     () => BuyVipUserGroupCardKey({ groupId: buyKey, code: key }),
     {
       manual: true,
+        onSuccess(err) {
+         app.message.success("开通成功!");
+            window.location.reload();
+        },
       onError(err) {
         app.message.error(err.message);
       },
@@ -139,7 +146,7 @@ const VipUserForm = () => {
         onBuyKeyChange={setBuyKey}
         onChange={() => setBuyKey("")}
       />
-      <Input.Password
+      <Input
         value={key}
         size="large"
         placeholder="卡密"
@@ -211,8 +218,19 @@ const UserInfo = styled.span`
   margin-block-end: 16px;
 `;
 
+const GroupInfo = styled.span`
+  display: inline-block;
+  font-size: 12px;
+  color: #555;
+`;
+
+
 const VipUserGroup = () => {
   const { user } = useUser();
+
+    const {data: vipOpenVipGroupList } = useRequest(
+        () => GetUserOpenVipGroupList()
+    );
 
   return (
     <VipFormSide>
@@ -222,9 +240,12 @@ const VipUserGroup = () => {
           <Description>
             享受独家特权、优质内容和个性化服务，加入会员社区，探索无限可能！
           </Description>
-          {!!user && (
+          {!!user &&  (
             <UserInfo>
-              <UserOutlined /> {user.username}・{user.groupTitle}
+              <UserOutlined /> {user.username}・
+                {(vipOpenVipGroupList || []).map((item) => (
+                    <GroupInfo  style={{ color: "red" }}> 《{item.groupTitle}》</GroupInfo>
+                ))}
             </UserInfo>
           )}
         </CardTop>
@@ -255,6 +276,8 @@ const BgAnimated = styled(VipFormSide)`
 `;
 
 const Component = () => {
+
+
   return (
     <ComponentRoot>
       <Container>
