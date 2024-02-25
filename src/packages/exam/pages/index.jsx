@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, Tabs, Carousel, Spin } from "antd";
 import { FileTextTwoTone } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 import { useRequest } from "ahooks";
 import { GetCrousel } from "../../../services/exam/setting";
 import {
@@ -165,7 +165,7 @@ const FullCarousel = ({
       <FullCarouselMenu>
         {categorys.slice(0, 8).map((item) => (
           <FullCarouselMenuItem key={item.parentId}>
-            <div className="full-carousel__menu-item">
+            <div className="full-carousel__menu-item" >
               {menuItemRender(item)}
             </div>
             {!!item.children?.length && (
@@ -176,8 +176,8 @@ const FullCarousel = ({
                     {!!item.children?.length && (
                       <FullCarouselSubCategory>
                         {item.children.map((item) => (
-                          <FullCarouselSubCategoryItem key={item.id}>
-                            {subCategoryItemRender(item)}
+                          <FullCarouselSubCategoryItem key={item.id} >
+                              {subCategoryItemRender(item)}
                           </FullCarouselSubCategoryItem>
                         ))}
                       </FullCarouselSubCategory>
@@ -248,6 +248,7 @@ const SectionCardSide = styled.div`
 `;
 
 const SectionBlock = ({ title, items }) => {
+  const navigate = useNavigate();
   const [activeKey, setActiveKey] = useState("");
   const {
     run: getExamPapers,
@@ -292,7 +293,9 @@ const SectionBlock = ({ title, items }) => {
             {examPaper &&
               !!examPaper.paper.length &&
               examPaper.paper.map((item) => (
-                <ExamPaper title={item.name} key={item.id} />
+                  <Link to={"/exam/exercise/sjkm/" + item.id} >
+                  <ExamPaper title={item.name} key={item.id}  />
+                  </Link>
               ))}
           </Spin>
         </SectionCardMain>
@@ -301,21 +304,29 @@ const SectionBlock = ({ title, items }) => {
             title="每日一练"
             desc="Practice daily"
             style={{ backgroundColor: "#2ed0a7" }}
+            onClick={() => navigate("/exam/certificate/"+activeKey)}
+
           />
           <EntryCard
             title="模拟考题"
             desc="Mock test"
             style={{ backgroundColor: "#578ef9" }}
+            onClick={() => navigate("/exam/certificate/"+activeKey)}
+
           />
           <EntryCard
             title="历年真题"
             desc="Past real questions"
             style={{ backgroundColor: "#ffc123" }}
+            onClick={() => navigate("/exam/certificate/"+activeKey)}
+
           />
           <EntryCard
             title="章节练习"
             desc="Chapter exercises"
             style={{ backgroundColor: "#fe5656" }}
+            onClick={() => navigate("/exam/certificate/"+activeKey)}
+
           />
         </SectionCardSide>
       </SectionCardBody>
@@ -338,7 +349,13 @@ const CategoryHeader = styled.div`
 `;
 
 const CategoryItem = styled(Link)`
-  color: #333;
+  color: #0e0e0e;
+    & > a {
+    color: #0e0e0e;
+    &:hover {
+      color: #1677ff;
+    }
+  }
 `;
 
 const Component = () => {
@@ -365,7 +382,11 @@ const Component = () => {
           <CategoryHeader>{item.name}</CategoryHeader>
         )}
         subCategoryItemRender={(item) => (
-          <CategoryItem>{item.name}</CategoryItem>
+          <CategoryItem >
+            <Link to={"/exam/certificate/" + item.id}>
+            {item.name}
+            </Link>
+          </CategoryItem>
         )}
       />
       <Container $gutter={[0, 24]}>

@@ -8,6 +8,7 @@ import { GetCorrelationCategoryTrees } from "../../../../services/exam/category"
 import { GetExamPaperByCertificateId } from "../../../../services/exam/exampaper";
 import { styled } from "styled-components";
 import Page from "../../../../components/community/mini/Page";
+import {ProCard} from "@ant-design/pro-components";
 
 const ExamPaperRoot = styled.div`
   display: flex;
@@ -103,7 +104,9 @@ const SectionBlock = ({ title, items }) => {
         {examPaper &&
           !!examPaper.paper.length &&
           examPaper.paper.map((item) => (
-            <ExamPaper title={item.name} key={item.id} />
+              <Link to={"/m/exam/exercise/sjkm/" + item.id}>
+              <ExamPaper title={item.name} key={item.id} />
+              </Link>
           ))}
       </SectionCardMain>
     </SectionBlockRoot>
