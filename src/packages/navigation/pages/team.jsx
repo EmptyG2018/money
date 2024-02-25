@@ -7,7 +7,7 @@ import {
   StarFilled,
   LikeFilled,
 } from "@ant-design/icons";
-import { useRequest } from "ahooks";
+import {useRequest, useTitle} from "ahooks";
 import {
   GetMarkeTeamInfo,
   JoinMarkeTeam,
@@ -21,6 +21,7 @@ import { Mark, ImgMark, WordMark } from "@components/Mark";
 import AuthNavigator from "@components/AuthNavigator";
 import NoData from "@components/NoData";
 import styled from "styled-components";
+import { useAgentSetting } from "@plugins/agent";
 
 const PAGE_SIZE = 16;
 
@@ -211,8 +212,13 @@ const TeamInfoAction = styled.div`
   align-items: flex-end;
 `;
 
+const TeamTitle = ({ title,webname }) => {
+    useTitle(title+"_优秀团队_"+webname);
+};
 const TeamPanel = ({ info, onJoin, onCollection, onLike }) => {
   const app = App.useApp();
+
+    const { agentSetting } = useAgentSetting();
 
   const { run: joinMarkeTeam } = useRequest(
     () => JoinMarkeTeam({ teamId: info.id }),
@@ -276,6 +282,7 @@ const TeamPanel = ({ info, onJoin, onCollection, onLike }) => {
                 <Avatar src={info.iconUri} size={96} />
                 <TeamInfoTypography>
                   <TeamInfoTitle level={3}>{info.title}</TeamInfoTitle>
+                    <TeamTitle title={info.title} webname={agentSetting.webname}></TeamTitle>
                   <TeamInfoDesc type="secondary">
                     {info.description}
                   </TeamInfoDesc>
@@ -337,7 +344,8 @@ const TeamPanel = ({ info, onJoin, onCollection, onLike }) => {
 };
 
 const Component = () => {
-  const params = useParams();
+
+    const params = useParams();
   const { mutate, data: team } = useRequest(GetMarkeTeamInfo, {
     defaultParams: [{ id: params.id }],
   });

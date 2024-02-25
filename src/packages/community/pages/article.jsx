@@ -26,6 +26,7 @@ import BBcodeRender from "@components/BBCodeRender";
 import DownloadFile from "@components/community/DownloadFile";
 import { Container } from "@components/Container";
 import { ProCard } from "@ant-design/pro-components";
+import { useAgentSetting } from "@plugins/agent";
 
 const SINGLE_TAG = ["img", "br", "hr", "input", "link", "meta"];
 
@@ -54,8 +55,8 @@ const ArticleTitleRoot = styled.h1`
   font-weight: 600;
 `;
 
-const ArticleTitle = ({ title }) => {
-  useTitle(title);
+const ArticleTitle = ({ title,webName }) => {
+  useTitle(title+"_"+webName);
   return <ArticleTitleRoot>{title}</ArticleTitleRoot>;
 };
 
@@ -159,7 +160,7 @@ const Component = () => {
   const { download } = useDownload();
   const [messageApi, contextHolder] = message.useMessage();
   const navigationPath = useNavigatorPath("/login");
-
+  const { agentSetting } = useAgentSetting();
   const { data: post, error: postError } = useRequest(GetPostContent, {
     defaultParams: [{ tid: params.id }],
   });
@@ -315,7 +316,7 @@ const Component = () => {
           )}
           {showPost && (
             <Article>
-              <ArticleTitle title={showPost?.subject} />
+              <ArticleTitle title={showPost?.subject} webName={agentSetting.webname}/>
               <ArticleExtra>
                 <Space>
                   <Tag bordered={false}>

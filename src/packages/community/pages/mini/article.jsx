@@ -16,6 +16,7 @@ import Page from "@components/community/mini/Page";
 import Byte from "@components/Byte";
 import BBcodeRender from "@components/BBCodeRender";
 import DownloadFile from "@components/community/mini/DownloadFile";
+import { useAgentSetting } from "@plugins/agent";
 
 const SINGLE_TAG = ["img", "br", "hr", "input", "link", "meta"];
 
@@ -78,8 +79,8 @@ const ArticleTitleRoot = styled.h1`
   font-size: 20px;
 `;
 
-const ArticleTitle = ({ title }) => {
-  useTitle(title);
+const ArticleTitle = ({ title,webName }) => {
+  useTitle(title+"_"+webName);
   return <ArticleTitleRoot>{title}</ArticleTitleRoot>;
 };
 
@@ -117,6 +118,7 @@ const Component = () => {
   const params = useParams();
   const { download } = useDownload();
   const navigationPath = useNavigatorPath("/login");
+  const { agentSetting } = useAgentSetting();
 
   const { data: post, error: postError } = useRequest(GetPostContent, {
     defaultParams: [{ tid: params.id }],
@@ -253,7 +255,7 @@ const Component = () => {
 
   return (
     <>
-      <NavBar onBack={() => history.back()}>{showPost?.subject}</NavBar>
+      <NavBar onBack={() => history.back()}>内容</NavBar>
       <div style={{ height: "10px", backgroundColor: "#f5f5f5" }}></div>
       <Page yScroll gutter={[16]}>
         {showError && (
@@ -271,7 +273,7 @@ const Component = () => {
         )}
         {showPost && (
           <Article>
-            <ArticleTitle title={showPost.subject} />
+            <ArticleTitle title={showPost.subject} webName={agentSetting.webname} />
             <ArticleExtra block>
               <Tag round color="#f0f0f0" style={{ "--text-color": "#707070" }}>
                 <Space style={{ "--gap": "2px" }} align="center">

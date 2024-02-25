@@ -20,6 +20,7 @@ import { Mark, ImgMark, WordMark } from "@components/Mark";
 import AuthNavigator from "@components/AuthNavigator";
 import NoData from "@components/NoData";
 import styled from "styled-components";
+import { useAgentSetting } from "@plugins/agent";
 
 const PAGE_SIZE = 16;
 
@@ -184,8 +185,8 @@ const FavoriteInfoTypography = styled.div`
 //   max-width: 360px;
 // `;
 
-const FavoriteInfoTitle = ({ title }) => {
-    useTitle(title);
+const FavoriteInfoTitle = ({ title,siteTitle }) => {
+    useTitle(title+"_优秀收藏夹_"+siteTitle);
     return <ArticleTitleRoot>{title}</ArticleTitleRoot>;
 };
 
@@ -210,6 +211,7 @@ const ArticleTitleRoot = styled.h1`
 
 const FavoritePanel = ({ info, onClone, onCollection, onLike }) => {
   const app = App.useApp();
+    const { agentSetting } = useAgentSetting();
   const { run: cloneMarkeFavorite } = useRequest(
     () => CloneMarkeFavorite({ id: info.id }),
     {
@@ -257,7 +259,7 @@ const FavoritePanel = ({ info, onClone, onCollection, onLike }) => {
             <FavoriteInfo>
               <FavoriteInfoCell>
                 <FavoriteInfoTypography>
-                  <FavoriteInfoTitle level={3} title={info.title} style="margin: 0;overflow: hidden;   text-overflow: ellipsis;   white-space: nowrap;   max-width: 360px;">{info.title}</FavoriteInfoTitle>
+                  <FavoriteInfoTitle level={3} title={info.title} siteTitle={agentSetting.webname} style="margin: 0;overflow: hidden;   text-overflow: ellipsis;   white-space: nowrap;   max-width: 360px;">{info.title}</FavoriteInfoTitle>
                   <FavoriteInfoUser>
                     <UserOutlined /> {info.userName}
                   </FavoriteInfoUser>

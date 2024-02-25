@@ -2,11 +2,12 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { NavBar, Card, Grid, Divider } from "antd-mobile";
 import { FileOutline, DownOutline, CalendarOutline } from "antd-mobile-icons";
-import { useRequest } from "ahooks";
+import { useRequest,useTitle } from "ahooks";
 import { GetSubjectByCourseId } from "../../../../services/exam/category";
 import { GetTopicQuery } from "../../../../services/exam/topic";
 import Page from "../../../../components/community/mini/Page";
 import styled, { css } from "styled-components";
+import { useAgentSetting } from "@plugins/agent";
 
 const ActionDiyIcon = styled.div`
   display: flex;
@@ -125,6 +126,8 @@ const CollapseCardItem = styled.div`
     `}
 `;
 
+
+
 const ActionGrid = styled(Link)`
   box-sizing: border-box;
   display: flex;
@@ -169,7 +172,13 @@ const ActionDesc = styled.p`
 
 const TopicCard = styled(NoStyledCard)``;
 
+const ArticleTile= ({ title,subject ,webName}) => {
+  useTitle(title+"_"+subject+"_"+webName);
+};
+
 const Component = () => {
+  const { agentSetting } = useAgentSetting();
+
   const scrollBar = useRef();
   const params = useParams();
   const [collpased, setCollpased] = useState(false);
@@ -302,12 +311,13 @@ const Component = () => {
                       style={{ marginInline: "4px" }}
                     />
                     {subjectInfo?.name}
+                    <ArticleTile title={subjectInfo?.name} subject={subject?.courseName} webName={agentSetting?.webname}/>
                   </CollapseTitle>
                   <ToggleBtn onClick={() => setCollpased(!collpased)}>
                     <DownOutline style={{ fontSize: "16px" }} />
                   </ToggleBtn>
                 </CollapseHeader>
-                <CollapseDesc>章节介绍： 共有0个章节</CollapseDesc>
+                <CollapseDesc>章节介绍： 共有{subject?.subList.length}个章节</CollapseDesc>
               </CollapseCell>
             </CollapsePanel>
             {collpased && (

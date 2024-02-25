@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, Divider, List } from "antd";
 import { BookFilled, SwapOutlined, CarryOutFilled } from "@ant-design/icons";
-import { useRequest } from "ahooks";
+import {useRequest, useTitle} from "ahooks";
 import { GetSubjectByCourseId } from "../../../services/exam/category";
 import { GetTopicQuery } from "../../../services/exam/topic";
 import styled, { css } from "styled-components";
 import { Container } from "../../../components/Container";
+import { useAgentSetting } from "@plugins/agent";
 
 const ActionDiyIcon = styled.div`
   display: flex;
@@ -148,11 +149,14 @@ const ActionDesc = styled.p`
 `;
 
 const TopicCard = styled(NoStyledCard)``;
-
+const ArticleTile= ({ title,subject ,webName}) => {
+  useTitle(title+"_"+subject+"_"+webName);
+};
 const Component = () => {
   const params = useParams();
   const [collpased, setCollpased] = useState(false);
   const [active, setActive] = useState("");
+  const { agentSetting } = useAgentSetting();
 
   const { data: subject } = useRequest(GetSubjectByCourseId, {
     defaultParams: [{ pId: params.id }],
@@ -273,11 +277,13 @@ const Component = () => {
                 <b>{subject?.courseName}</b>
                 <Divider type="vertical" />
                 {subjectInfo?.name}
+                <ArticleTile title={subjectInfo?.name} subject={subject?.courseName} webName={agentSetting?.webname}/>
+
                 <ToggleBtn onClick={() => setCollpased(!collpased)}>
                   <SwapOutlined style={{ fontSize: "14px" }} /> 切换科目
                 </ToggleBtn>
               </CollapseHeader>
-              <CollapseDesc>章节介绍： 共有0个章节</CollapseDesc>
+              <CollapseDesc>章节介绍： 共有{subject?.subList.length}个章节</CollapseDesc>
             </CollapseCell>
           </CollapsePanel>
           {collpased && (
