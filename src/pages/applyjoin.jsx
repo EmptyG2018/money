@@ -17,6 +17,7 @@ import {
 import { useUser } from "@hooks/user";
 import { useNavigatorPath } from "@hooks/recordPath";
 import styled from "styled-components";
+import {useNavigate} from "react-router-dom";
 
 const ComponentRoot = styled.div`
   height: 100vh;
@@ -80,6 +81,7 @@ const Component = () => {
   const { runAsync: createAgentSite } = useRequest(CreateAgentSite, {
     manual: true,
   });
+  const navigate = useNavigate();
 
   const submit = async () => {
     if (!user) return navigationPath();
@@ -88,8 +90,9 @@ const Component = () => {
     const { pass, ...values } = fields;
     if (!pass) return messageApi.warning("需要先同意《会员服务条款》协议");
     try {
-      await createAgentSite(values);
+      let data1=await createAgentSite(values);
       messageApi.success("创建成功！");
+      window.location.href=data1;
     } catch (err) {
       messageApi.error(err.message);
     }
@@ -105,7 +108,7 @@ const Component = () => {
           <Container>
             <FormCard bordered={false}>
               <CardTop>
-                <Title>申请加盟</Title>
+                <Title>自助开通属于自己平台</Title>
               </CardTop>
 
               <ProForm
@@ -204,7 +207,7 @@ const Component = () => {
                     ]}
                   />
                 </ProForm.Group>
-                <ProFormText.Password
+                <ProFormText
                   width="md"
                   name="code"
                   label="输入卡密"
@@ -221,11 +224,18 @@ const Component = () => {
                 <Button type="primary" onClick={submit}>
                   创建分站
                 </Button>
+
                 {gourl?.remark && (
                   <Button type="link" target="_blank" href={gourl.urlLink}>
                     {gourl.remark}
                   </Button>
                 )}
+                <Button style={{ "margin-top": "10px","display":"block" }}
+                        type="primary"
+                        onClick={() => navigate("/", { replace: true })}
+                >
+                  返回首页
+                </Button>
               </ProForm>
             </FormCard>
           </Container>

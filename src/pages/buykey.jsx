@@ -12,6 +12,7 @@ import { useUser } from "@hooks/user";
 import { Container } from "@components/Container";
 import AuthNavigator from "@components/AuthNavigator";
 import styled, { css } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const BuySelect = styled.div`
   display: flex;
@@ -103,6 +104,7 @@ const VipUserForm = () => {
   const [searchParams] = useSearchParams();
   const [buyKey, setBuyKey] = useState("");
   const [key, setKey] = useState("");
+    const navigate = useNavigate();
 
   const { data: vipUserKeyProject } = useRequest(GetVipUserGroupsByProject, {
     defaultParams: [{ projectId: searchParams.get("id") }],
@@ -170,6 +172,15 @@ const VipUserForm = () => {
         >
           确认购买
         </Button>
+          <Button
+              block
+              type="primary"
+              size="large"
+              style={{ "margin-top": "10px" }}
+              onClick={() => navigate("/", { replace: true })}
+          >
+              回到首页
+          </Button>
       </AuthNavigator>
     </>
   );
