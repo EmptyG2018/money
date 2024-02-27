@@ -85,22 +85,24 @@ const StyleModuleC = ({ title, desc, ...props }) => {
   );
 };
 
-const StyleModuleD = ({ url, ...props }) => {
-  return (
-    <StyleModuleRoot style={{ width: "100%" }} {...props}>
-      <StyleModuleImg src={url} />
-    </StyleModuleRoot>
-  );
-};
 
-const StyleModuleE = ({ url, title, ...props }) => {
+
+const StyleModuleD = ({ url, title,imgStyle, ...props }) => {
   return (
-    <StyleModuleRoot $bordered style={{ width: 214 }} {...props}>
-      <StyleModuleImg src={url} />
+    <StyleModuleRoot $bordered style={{ width: "19%" }} {...props}>
+      <StyleModuleImg src={url} style={imgStyle}  />
       <StyleModuleBody>
         <StyleModuleTitle>{title}</StyleModuleTitle>
       </StyleModuleBody>
     </StyleModuleRoot>
+  );
+};
+
+const StyleModuleE = ({ url,imgStyle, ...props }) => {
+  return (
+      <StyleModuleRoot style={{ width: "100%" }} {...props}>
+        <StyleModuleImg src={url} style={imgStyle} />
+      </StyleModuleRoot>
   );
 };
 
@@ -144,6 +146,30 @@ const StyleModuleTemplate = ({ styleKey, imgStyle, items }) => {
           />
         ))}
       </div>
+    ),
+    4: ({ items }) => (
+        <div style={{ display: "flex",  gap: "12px",flexWrap: "wrap" }}>
+          {items.map((item) => (
+              <StyleModuleD
+                  key={item.tid}
+                  url={item.attachment}
+                  title={item.subject}
+                  imgStyle={imgStyle}
+                  onClick={() => navigate("/community/list/" + item.fid)}
+              />
+          ))}
+        </div>
+    ),
+    5: ({ items }) => (
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          {items.map((item) => (
+              <StyleModuleE
+                  key={item.tid}
+                  url={item.photoUrl}
+                  onClick={() => navigate(item.goUrl)}
+              />
+          ))}
+        </div>
     ),
   };
   return styleModuleMap[styleKey] ? styleModuleMap[styleKey]({ items }) : null;
