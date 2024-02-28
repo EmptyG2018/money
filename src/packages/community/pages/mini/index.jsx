@@ -10,6 +10,7 @@ import { styled } from "styled-components";
 import { useRequest } from "ahooks";
 import { GetPostCarsouels, GetIfPosts } from "@package_community/services/post";
 import Page from "@components/community/mini/Page";
+import { useAgentSetting } from "@plugins/agent";
 
 const CONSTAVATARIMG =
   "http://6uzy.com/uc_server/avatar.php?uid=1&size=middle&ts=1";
@@ -98,6 +99,7 @@ const Component = () => {
   const { data: hostPosts } = useRequest(GetIfPosts, {
     defaultParams: [{ pageNum: 1, pageSize: 12, sort: "host" }],
   });
+    const { agentSetting } = useAgentSetting();
 
   return (
     <>
@@ -109,7 +111,7 @@ const Component = () => {
           </Link>
         }
       >
-        资料下载网
+          {agentSetting.webname}
       </NavBar>
       <Page background="#f5f5f5" yScroll style={{ position: "relative" }}>
         {postBannars?.length && (
@@ -223,6 +225,8 @@ const Component = () => {
             ))}
           </ArticleList>
         )}
+
+
       </Page>
     </>
   );
