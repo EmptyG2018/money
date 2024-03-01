@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Tag, Carousel, Space } from "antd";
+import {Tag, Carousel, Space, Button, Image} from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useRequest } from "ahooks";
@@ -7,6 +7,7 @@ import { GetConfigStyleModuleList } from "@services/setting";
 import { GetPostCarsouels, GetIfPosts } from "@package_community/services/post";
 import styled, { css } from "styled-components";
 import { Container } from "@components/Container";
+import {ProCard} from "@ant-design/pro-components";
 
 const Ellipsis = styled.div`
   overflow: hidden;
@@ -52,6 +53,8 @@ const StyleModuleDesc = styled.div`
   color: #444;
 `;
 
+
+
 const StyleModuleA = ({ url, title, imgStyle, ...props }) => {
   return (
     <StyleModuleRoot style={{ width: 154 }} {...props}>
@@ -90,18 +93,30 @@ const StyleModuleC = ({ title, desc, ...props }) => {
 const StyleModuleD = ({ url, title,imgStyle, ...props }) => {
   return (
     <StyleModuleRoot $bordered style={{ width: "19%" }} {...props}>
-      <StyleModuleImg src={url} style={imgStyle}  />
-      <StyleModuleBody>
-        <StyleModuleTitle>{title}</StyleModuleTitle>
-      </StyleModuleBody>
+
+      <ProCard ghost style={{display: "block" , "box-sizing": "border-box","text-overflow": "ellipsis", height: "100%", "padding-inline": "24px", "padding-block": "16px"}}>
+        <Space>
+          <Image
+              src={url}
+              preview={false}
+              width={50}
+              height={50}
+          />
+          {title}
+        </Space>
+      </ProCard>
+
     </StyleModuleRoot>
   );
 };
 
-const StyleModuleE = ({ url,imgStyle, ...props }) => {
+const StyleModuleE = ({ url,imgStyle,goUrl, ...props }) => {
   return (
       <StyleModuleRoot style={{ width: "100%" }} {...props}>
+        <Link
+            to={goUrl}>
         <StyleModuleImg src={url} style={imgStyle} />
+        </Link>
       </StyleModuleRoot>
   );
 };
@@ -166,7 +181,7 @@ const StyleModuleTemplate = ({ styleKey, imgStyle, items }) => {
               <StyleModuleE
                   key={item.tid}
                   url={item.photoUrl}
-                  onClick={() => navigate(item.goUrl)}
+                  goUrl={item.goUrl }
               />
           ))}
         </div>
