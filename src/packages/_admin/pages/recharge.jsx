@@ -107,6 +107,8 @@ const Component = () => {
             充值金额用于抵扣用户开通时产生的系统成本价
             <br/>
             不支持提现,只能用于平台消耗抵扣
+            <br/>
+            金额不足请及时充值,否则会影响用户购买
           </Alert>
         </ProCard>
       </PageContainer>
