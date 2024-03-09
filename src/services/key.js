@@ -119,3 +119,23 @@ export const DelJoinkey = (params) => {
     }
   );
 };
+
+export const GetUserList = (params) => {
+    return request(
+        { url: "/yunAdminDlIdUser/getYunAdminDlIdUserList", method: "POST", data: params },
+        {
+            responseDataType: "json",
+            carry: ["auth", "site"],
+        }
+    );
+};
+
+export const GetDlidUserList = (params) => {
+    return request(
+        { url: "/yunAdminDlIdUser/getYunAdminDlIdJoinUserList", method: "POST", data: params },
+        {
+            responseDataType: "json",
+            carry: ["auth", "site"],
+        }
+    );
+};

@@ -74,6 +74,8 @@ export const GetPostContent = ({ tid }) =>
     }
   );
 
+
+
 // 获取帖子banner
 export const GetPostBannars = ({ modeId }) =>
   request(
@@ -158,3 +160,19 @@ export const DownloadPostAttach = ({ aid }) => {
     }
   );
 };
+
+
+
+// 获取帖子内容 上下篇
+export const GetPostContentUpDown = ({ tid }) =>{
+    request(
+        {
+            url: "/PreForumPost/getForumPostUpDownById",
+            method: "POST",
+            data: { tid },
+        },
+        {
+            responseDataType: "json",
+            carry: ["site", "auth"],
+        }
+    );}

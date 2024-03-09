@@ -95,6 +95,16 @@ const defaultProps = {
             name: "配置客服",
             icon: <RobotOutlined />,
           },
+          {
+            path: "/admin/base/_userlist",
+            name: "用户管理",
+            icon: <RobotOutlined />,
+          },
+          {
+            path: "/admin/base/_adminDlidUserlist",
+            name: "加盟商管理",
+            icon: <RobotOutlined />,
+          },
         ],
       },
       {

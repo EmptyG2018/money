@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {useParams, useNavigate, Link} from "react-router-dom";
 import { useRequest, useTitle } from "ahooks";
 import {
   GetPostContent,
   GetPostHideContent,
-  DownloadPostAttach,
+  DownloadPostAttach
 } from "@package_community/services/post";
 import { styled, css } from "styled-components";
 import {
@@ -335,6 +335,17 @@ const Component = () => {
               />
             </Article>
           )}
+        </ProCard>
+        <ProCard>
+         <Space style={{ width: "50%","border-right":"1px dashed #eaeaea",float:"left",whiteSpace: "pre-line"}}>
+           <Tag>上一篇</Tag>
+
+
+         </Space>
+          <Space style={{ width: "50%","border-right":"1px dashed #eaeaea" ,"text-align": "center"}}>下一篇
+
+          </Space>
+
         </ProCard>
       </Container>
     </>

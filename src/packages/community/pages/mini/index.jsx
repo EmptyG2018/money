@@ -125,6 +125,25 @@ const StyleModuleRoot = styled.div`
 `;
 
 
+const StyleModuleRootbk = styled.div`
+  box-sizing: border-box;
+  cursor: pointer;
+  ${({ $bordered }) =>
+    $bordered &&
+    css`
+      border-radius: 6px;
+      overflow: hidden;
+      margin:auto;
+    `}
+  ${({ $between }) =>
+    $between &&
+    css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    `}
+`;
+
 const StyleModuleRootTitle = styled.div`
     border-bottom: 1px solid #eee;
         display: block;
@@ -166,7 +185,7 @@ const StyleModuleA = ({ url, title, imgStyle, ...props }) => {
 
 const StyleModuleB = ({ url, title, imgStyle, ...props }) => {
     return (
-        <Col xs={11} sm={7} lg={6}  style={{float: "left",margin: "8px"}}>
+        <Col xs={11} sm={7} lg={6}  style={{float: "left","margin-left":"12px",    "padding-top": "8px","padd   ing-bottom": "8px"}}>
         <StyleModuleRoot $bordered {...props}>
             <StyleModuleImg style={imgStyle} src={url} />
             <StyleModuleBody>
@@ -197,21 +216,21 @@ const StyleModuleC = ({ title, desc,photoUrl, ...props }) => {
 
 const StyleModuleD = ({ url, title,imgStyle, ...props }) => {
     return (
-        <StyleModuleRoot $bordered style={{ width: "19%" }} {...props}>
+        <StyleModuleRootbk $bordered style={{ width: "19%",display: "block"  }} {...props}>
 
-            <ProCard ghost style={{display: "block" , "box-sizing": "border-box","text-overflow": "ellipsis", height: "100%", "padding-inline": "24px", "padding-block": "16px"}}>
-                <Space>
+            <ProCard ghost style={{ "box-sizing": "border-box","text-overflow": "ellipsis", height: "100%", "padding-inline": "12px", "padding-block": "16px"}}>
+
                     <Image
                         src={url}
                         preview={false}
-                        width={50}
-                        height={50}
+                        style={{width: "2.5rem",height: "2.5rem",    margin:" 0 2px","border-radius":"50%"}}
                     />
+                <Space style={{    overflow: "hidden", "font-size": "12px",   width: "50px"}}>
                     {title}
                 </Space>
             </ProCard>
 
-        </StyleModuleRoot>
+        </StyleModuleRootbk>
     );
 };
 
@@ -249,14 +268,15 @@ const StyleModuleTemplate = ({ styleKey, imgStyle, items,title,titleStyle }) => 
             </div>
         ),
         2: ({ items }) => (
-            <div style={{ display: "flex",  flexWrap: "wrap","background-color": "#fff" }}>
-                <ArticleList
-                    header={
-                        <span style={titleStyle}>
+            <ArticleList
+                header={
+                    <span style={titleStyle}>
                     <FireFill /> {title}
                     </span>
-                    }
-                >
+                }
+            >
+            <div style={{ display: "flex",  flexWrap: "wrap","background-color": "#fff" }}>
+
 
                 {items.map((item) => (
 
@@ -268,8 +288,9 @@ const StyleModuleTemplate = ({ styleKey, imgStyle, items,title,titleStyle }) => 
                         onClick={() => navigate("/m/community/article/" + item.tid)}
                     />
                 ))}
-                </ArticleList>
+
             </div>
+            </ArticleList>
         ),
         3: ({ items }) => (
             <div style={{ display: "flex", flexWrap: "wrap" }}>
@@ -317,7 +338,7 @@ const StyleModuleTemplate = ({ styleKey, imgStyle, items,title,titleStyle }) => 
             </div>
         ),
         4: ({ items }) => (
-            <div style={{ display: "flex",  gap: "12px",flexWrap: "wrap" }}>
+            <div style={{ display: "flex",  gap: "3px",flexWrap: "wrap","background-color": "#fff"}}>
                 {items.map((item) => (
                     <StyleModuleD
                         key={item.tid}

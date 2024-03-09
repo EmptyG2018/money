@@ -16,6 +16,10 @@ const _Recharge = lazy(() => import("@package_admin/pages/recharge"));
 const _FlowRecord = lazy(() => import("@package_admin/pages/flowrecord"));
 const _Income = lazy(() => import("@package_admin/pages/income"));
 const _Help = lazy(() => import("@package_admin/pages/help"));
+const _Userlist = lazy(() => import("@package_admin/pages/userlist"));
+const _AdminDlidUserlist = lazy(() => import("@package_admin/pages/admindlIduser"));
+
+
 const _CommunityModule = lazy(() =>
   import("@package_admin/pages/community/module")
 );
@@ -87,6 +91,14 @@ export default [
           {
             path: "_help",
             element: <LazyRoute element={<_Help />} />,
+          },
+          {
+            path: "_userlist",
+            element: <LazyRoute element={<_Userlist />} />,
+          },
+          {
+            path: "_adminDlidUserlist",
+            element: <LazyRoute element={<_AdminDlidUserlist />} />,
           },
         ],
       },
