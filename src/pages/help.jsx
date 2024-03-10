@@ -53,7 +53,7 @@ const Component = () => {
           direction="column"
           style={{ background: "#f5f5f5" }}
         >
-          <SubTitle>使用过程中遇到任何问题，请联系我们哦<a href="https://support.qq.com/products/363758#label=default">反馈入口</a></SubTitle>
+          <SubTitle>使用过程中遇到任何问题，请联系我们<a href="https://support.qq.com/products/363758#label=default">反馈入口</a></SubTitle>
           <Space size={24} wrap>
             {(helpMethods || []).map((item) => (
               <Contact key={item.id}>
