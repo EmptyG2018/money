@@ -14,6 +14,7 @@ import { GetConfigStyleModuleList } from "@services/setting";
 import {ProCard} from "@ant-design/pro-components";
 import styled, { css } from "styled-components";
 import {Col} from "antd";
+import FixedHelpBtn from "@components/FixedHelpBtn";
 
 
 const CONSTAVATARIMG =
@@ -545,6 +546,7 @@ const Component = () => {
           </Main>
 
       </Page>
+        <FixedHelpBtn />
 
 
 

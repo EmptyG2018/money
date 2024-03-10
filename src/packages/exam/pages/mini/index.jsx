@@ -9,7 +9,7 @@ import { GetExamPaperByCertificateId } from "../../../../services/exam/exampaper
 import { styled } from "styled-components";
 import Page from "../../../../components/community/mini/Page";
 import {ProCard} from "@ant-design/pro-components";
-
+import FixedHelpBtn from "@components/FixedHelpBtn";
 const ExamPaperRoot = styled.div`
   display: flex;
   align-items: center;
@@ -189,6 +189,7 @@ const Component = () => {
           ))}
         </ColumnLayout>
       </Page>
+        <FixedHelpBtn />
     </>
   );
 };
