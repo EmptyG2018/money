@@ -84,7 +84,6 @@ const Component = () => {
           <CardTop>
             <Header>
               <Logo src={agentSetting?.weblogoUrl || undefined} />
-              <Title>{agentSetting?.webname}</Title>
             </Header>
             <Description>{agentSetting?.description}</Description>
           </CardTop>

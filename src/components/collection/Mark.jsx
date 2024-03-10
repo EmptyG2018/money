@@ -153,7 +153,7 @@ export const Mark = ({ title, icon, thumb, ...props }) => (
       {title}
     </MarkTitle>
     <MarkContent>
-      <MarkThumb fallback={DefaultWebsite} src={thumb} preview={false} />
+      <MarkThumb  src={thumb} preview={false} />
     </MarkContent>
   </CardMark>
 );
@@ -164,7 +164,7 @@ Mark.Compact = ({ title, icon, thumb, ...props }) => (
       {!!icon && <Avatar size={18} src={icon} />}
       {title}
     </MarkTitle>
-    <MarkThumb fallback={DefaultWebsite} src={thumb} preview={false} />
+    <MarkThumb src={thumb} preview={false} />
   </CardMark>
 );
 

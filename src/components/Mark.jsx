@@ -125,7 +125,7 @@ export const Mark = ({ title, icon, thumb, url, ...props }) => {
         {title}
       </MarkTitle>
       <MarkContent>
-        <MarkThumb fallback={DefaultWebsite} src={thumb} preview={false} />
+        <MarkThumb  src={thumb} preview={false} />
       </MarkContent>
     </CardMark>
   );

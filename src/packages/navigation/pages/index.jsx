@@ -315,14 +315,7 @@ const SearchBar = () => {
 
   return (
     <SearchPanel>
-      <SearchPrefix>
-        <Image
-          src={agentSetting?.weblogoUrl}
-          width={72}
-          height={72}
-          preview={false}
-        />
-      </SearchPrefix>
+
       <NavBar
         centered
         activeKey={navTabKey}

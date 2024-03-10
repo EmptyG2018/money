@@ -119,7 +119,7 @@ export default () => {
           >
             <ProLayout
               logo={agentSetting?.weblogoUrl || undefined}
-              title={agentSetting?.webname}
+              title=""
               {...defaultLayout}
               menu={{
                 request: async () => {

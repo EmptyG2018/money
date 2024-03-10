@@ -6,7 +6,7 @@ import {
   DelCollection,
 } from "../../services/collection/category";
 import { GetCategoryMarkCount } from "../../services/collection/mark";
-import { COLLECTION_SYSTEM_COLLECTIONS } from "../../utils/constants";
+import {   } from "../../utils/constants";
 
 const systemCollectionCountAtom = atom({
   key: "systemCollectionCount",
