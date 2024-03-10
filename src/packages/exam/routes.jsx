@@ -30,6 +30,11 @@ const MobileCertificate = lazy(() =>
 const MobileExercise = lazy(() => import("@package_exam/pages/mini/exercise"));
 const MobileAnswer = lazy(() => import("@package_exam/pages/mini/answer"));
 const MobileArticle = lazy(() => import("@package_exam/pages/mini/article"));
+const MobileTopictype = lazy(() => import("@package_exam/pages/mini/topictype"));
+const MobileChapter= lazy(() => import("@package_exam/pages/mini/chapter"));
+const MobileHistorypaper= lazy(() => import("@package_exam/pages/mini/historypaper"));
+
+
 
 export const examRoutes = [
   {
@@ -126,6 +131,18 @@ export const examMobileRoutes = [
       {
         path: "article/:id",
         element: <LazyRoute element={<MobileArticle />} />,
+      },
+      {
+        path: "topictype/:id",
+        element: <LazyRoute element={<MobileTopictype />} />,
+      },
+      {
+        path: "chapter/:id",
+        element: <LazyRoute element={<MobileChapter />} />,
+      },
+      {
+        path: "historypaper/:id",
+        element: <LazyRoute element={<MobileHistorypaper />} />,
       },
     ],
   },
