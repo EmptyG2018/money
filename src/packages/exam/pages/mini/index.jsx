@@ -10,6 +10,8 @@ import { styled } from "styled-components";
 import Page from "../../../../components/community/mini/Page";
 import {ProCard} from "@ant-design/pro-components";
 import FixedHelpBtn from "@components/FixedHelpBtn";
+import { useAgentSetting } from "@plugins/agent";
+
 const ExamPaperRoot = styled.div`
   display: flex;
   align-items: center;
@@ -131,7 +133,9 @@ const DotIndicator = styled.div`
 `;
 
 const Component = () => {
-  const navigate = useNavigate();
+    const { agentSetting } = useAgentSetting();
+
+    const navigate = useNavigate();
   const { data: carousels } = useRequest(GetCrousel, {
     defaultParams: [
       {
@@ -154,7 +158,8 @@ const Component = () => {
           </Link>
         }
       >
-        资料下载网
+          {agentSetting.webname}
+
       </NavBar>
       <Page background="#f5f5f5" yScroll style={{ position: "relative" }}>
         {!!carousels?.length && (
