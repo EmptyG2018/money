@@ -7,7 +7,9 @@
     "dev": "vite --mode development",
     "build": "vite build --mode production",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky install | chmod ug+x .husky/*",
+    "commit": "cz"
   },
   "dependencies": {
     "@ant-design/pro-components": "^2.6.43",
@@ -38,13 +40,18 @@
     "styled-components": "^6.1.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
+    "@commitlint/cz-commitlint": "^19.2.0",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^4.0.0",
+    "commitizen": "^4.3.0",
     "eslint": "^8.38.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "husky": "^9.0.11",
     "vite": "^4.3.9"
   }
 }

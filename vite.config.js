@@ -28,7 +28,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/proxy": {
-        target: "http://2345by.com",
+        target: "http://119.45.13.22:9010",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/proxy/, ""),
       },
