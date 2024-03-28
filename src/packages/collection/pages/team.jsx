@@ -6,8 +6,8 @@ import {
   useMemo,
   useContext,
   createContext,
-} from "react";
-import { useNavigate } from "react-router-dom";
+} from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Space,
   Avatar,
@@ -17,223 +17,41 @@ import {
   Popconfirm,
   Modal,
   message,
-  Tag,
-  Input,
-} from "antd";
+} from 'antd';
 import {
   SettingOutlined,
   FlagOutlined,
   LogoutOutlined,
   HighlightOutlined,
   DeleteOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-import { ProCard } from "@ant-design/pro-components";
-import { useRequest } from "ahooks";
+} from '@ant-design/icons';
+import { ProCard } from '@ant-design/pro-components';
+import { useRequest } from 'ahooks';
 import {
   GetTeamWebsites,
   DelTeamWebsites,
   UpdateTeamWebsite,
-} from "@services/website";
+} from '@services/website';
 import {
   CreateTeam,
   GetMyTeams,
   UpdateLogoutTeam,
-  GetTeamCategorys,
-  AddTeamCategory,
-  UpdateTeamCategory,
-  DeleteTeamCategory,
-} from "@services/collection/team";
-import { JoinTeamPlaza } from "@services/collection/plaza";
-import { HeaderPanel } from "@components/collection/HeaderPanel";
-import { Mark } from "@components/collection/Mark";
+} from '@services/collection/team';
+import { JoinTeamPlaza } from '@services/collection/plaza';
+import { HeaderPanel } from '@components/collection/HeaderPanel';
+import { Mark } from '@components/collection/Mark';
 import {
   CreateTeamFormModal,
   WebsiteEditFormModal,
-} from "@components/collection/TeamFormAction";
-import { PlazaFormModal } from "@components/collection/FavoriteFormAction";
-import ToggleCollapsedBtn from "@components/collection/ToggleCollapsedBtn";
-import styled from "styled-components";
+} from '@components/collection/TeamFormAction';
+import { PlazaFormModal } from '@components/collection/FavoriteFormAction';
+import ToggleCollapsedBtn from '@components/collection/ToggleCollapsedBtn';
+import TeamCategory from '@package_collection/components/team/TeamCategory';
+import styled from 'styled-components';
 
 const PAGE_SIZE = 16;
 
 const TeamConext = createContext({});
-
-const TeamCagegoryRoot = styled.div`
-  display: inline-block;
-  vertical-align: middle;
-  white-space: nowrap;
-  overflow-x: auto;
-  width: 120px;
-  margin-left: 10px;
-
-  @media (min-width: 768px) {
-    width: 480px;
-  }
-`;
-
-const TeamCategroy = () => {
-  const [messageApi, conextHolder] = message.useMessage();
-  const { currentTeam } = useContext(TeamConext);
-
-  const inputRef = useRef(null);
-  const editInputRef = useRef(null);
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [editInputIndex, setEditInputIndex] = useState(-1);
-  const [editInputValue, setEditInputValue] = useState("");
-
-  const { data: teamCategorys, refresh: refreshTeamCategorys } = useRequest(
-    () => GetTeamCategorys({ teamId: currentTeam.id })
-  );
-
-  const { runAsync: addTeamCategory } = useRequest(AddTeamCategory, {
-    mutate: true,
-  });
-
-  const { runAsync: updateTeamCategory } = useRequest(UpdateTeamCategory, {
-    mutate: true,
-  });
-
-  const { runAsync: deleteTeamCategory } = useRequest(DeleteTeamCategory, {
-    manual: true,
-  });
-
-  useEffect(() => {
-    if (inputVisible) {
-      inputRef.current?.focus();
-    }
-  }, [inputVisible]);
-
-  useEffect(() => {
-    editInputRef.current?.focus();
-  }, [editInputValue]);
-
-  const handleInputConfirm = async () => {
-    if (inputValue.trim()) {
-      try {
-        await addTeamCategory({ teamId: currentTeam.id, title: inputValue });
-        setInputVisible(false);
-        setInputValue("");
-
-        refreshTeamCategorys();
-      } catch (err) {
-        messageApi.error(err.message);
-      }
-    } else {
-      setInputVisible(false);
-      setInputValue("");
-    }
-  };
-
-  const handleEditInputConfirm = async () => {
-    if (editInputValue.trim()) {
-      try {
-        await updateTeamCategory({
-          teamId: currentTeam.id,
-          title: editInputValue,
-          id: teamCategorys[editInputIndex].id,
-        });
-        setEditInputIndex(-1);
-        setEditInputValue("");
-
-        refreshTeamCategorys();
-      } catch (err) {
-        messageApi.error(err.message);
-      }
-    } else {
-      setEditInputIndex(-1);
-      setEditInputValue("");
-    }
-  };
-
-  const handleClose = async (id) => {
-    try {
-      await deleteTeamCategory({ teamId: currentTeam.id, id });
-      refreshTeamCategorys();
-    } catch (err) {
-      messageApi.error(err.message);
-    }
-  };
-
-  return (
-    <>
-      {conextHolder}
-
-      <TeamCagegoryRoot>
-        {(teamCategorys || []).map((item, index) => {
-          if (editInputIndex === index) {
-            return (
-              <Input
-                ref={editInputRef}
-                key={item.id}
-                size="small"
-                style={{
-                  width: 64,
-                  height: 22,
-                  marginInlineEnd: 8,
-                  verticalAlign: "top",
-                }}
-                value={editInputValue}
-                onChange={(e) => setEditInputValue(e.target.value)}
-                onBlur={handleEditInputConfirm}
-                onPressEnter={handleEditInputConfirm}
-              />
-            );
-          }
-          const isLongTag = item.title > 20;
-
-          return (
-            <Tag
-              key={item.id}
-              closable
-              style={{
-                userSelect: "none",
-              }}
-              onClose={() => handleClose(item.id)}
-            >
-              <span
-                onDoubleClick={(e) => {
-                  setEditInputIndex(index);
-                  setEditInputValue(item.title);
-                  e.preventDefault();
-                }}
-              >
-                {isLongTag ? `${item.title.slice(0, 20)}...` : item.title}
-              </span>
-            </Tag>
-          );
-        })}
-
-        {inputVisible ? (
-          <Input
-            ref={inputRef}
-            type="text"
-            size="small"
-            style={{
-              width: 64,
-              height: 22,
-              marginInlineEnd: 8,
-              verticalAlign: "top",
-            }}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onBlur={handleInputConfirm}
-            onPressEnter={handleInputConfirm}
-          />
-        ) : (
-          <Tag
-            style={{ height: 22, borderStyle: "solid" }}
-            icon={<PlusOutlined />}
-            onClick={() => setInputVisible(true)}
-          >
-            新增分类
-          </Tag>
-        )}
-      </TeamCagegoryRoot>
-    </>
-  );
-};
 
 const ActionPanelRoot = styled.div`
   position: relative;
@@ -300,6 +118,7 @@ const MarkView = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { currentTeam } = useContext(TeamConext);
   const [editKeys, setEditKeys] = useState([]);
+  const [categoryKey, setCategoryKey] = useState('');
   const [websiteFormModal, setWebsiteFormModal] = useState({
     open: false,
     record: null,
@@ -351,7 +170,11 @@ const MarkView = () => {
         title={
           <>
             <span>{`已选中(${editKeys.length})`}</span>
-            <TeamCategroy />
+            <TeamCategory
+              activeKey={categoryKey}
+              teamId={currentTeam.id}
+              onActiveChange={setCategoryKey}
+            />
           </>
         }
         actions={[
@@ -359,14 +182,14 @@ const MarkView = () => {
             disabled={!editKeys.length}
             onClick={() => {
               Modal.confirm({
-                title: "删除网址",
-                content: "您确认删除所选中的书签吗？",
-                okType: "danger",
+                title: '删除网址',
+                content: '您确认删除所选中的书签吗？',
+                okType: 'danger',
                 onOk: async (close) => {
                   try {
                     await delWebsites({
                       teamId: currentTeam.id,
-                      ids: editKeys.join(","),
+                      ids: editKeys.join(','),
                     });
                     close();
 
@@ -385,14 +208,14 @@ const MarkView = () => {
             disabled={!editKeys.length}
             onClick={() => {
               Modal.confirm({
-                title: "删除网址",
-                content: "您确认删除所选中的书签吗？",
-                okType: "danger",
+                title: '删除网址',
+                content: '您确认删除所选中的书签吗？',
+                okType: 'danger',
                 onOk: async (close) => {
                   try {
                     await delWebsites({
                       teamId: currentTeam.id,
-                      ids: editKeys.join(","),
+                      ids: editKeys.join(','),
                     });
                     close();
 
@@ -450,9 +273,9 @@ const MarkView = () => {
                   icon={<DeleteOutlined />}
                   onClick={() => {
                     Modal.confirm({
-                      title: "删除网址",
+                      title: '删除网址',
                       content: `您确认删除名为 “${item.title}” 的网址吗`,
-                      okType: "danger",
+                      okType: 'danger',
                       onOk: async (close) => {
                         try {
                           await delWebsites({
@@ -483,9 +306,9 @@ const MarkView = () => {
       </MarkMain>
       <Pagination
         style={{
-          textAlign: "center",
+          textAlign: 'center',
           paddingBlockStart: 8,
-          borderTop: "1px solid #eee",
+          borderTop: '1px solid #eee',
         }}
         current={pageNum}
         pageSize={PAGE_SIZE}
@@ -552,7 +375,7 @@ const TeamItem = () => {
       {contextHolder}
       <TeamItemMain
         tabs={{
-          type: "card",
+          type: 'card',
           tabBarGutter: 8,
           tabBarExtraContent: {
             right: (
@@ -575,7 +398,7 @@ const TeamItem = () => {
                   onConfirm={async () => {
                     try {
                       await UpdateLogoutTeam({ teamId: currentTeam.id });
-                      messageApi.success("退出成功！");
+                      messageApi.success('退出成功！');
 
                       refreshTeams();
                     } catch (err) {
@@ -595,7 +418,7 @@ const TeamItem = () => {
               </Space>
             ),
           },
-          items: [{ key: "www", label: "团队网址", children: <MarkView /> }],
+          items: [{ key: 'www', label: '团队网址', children: <MarkView /> }],
         }}
       />
 
@@ -658,7 +481,7 @@ const TeamMain = styled(ProCard)`
 export default () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [activeKey, setActiveKey] = useState("");
+  const [activeKey, setActiveKey] = useState('');
   const [createTeamModalShow, setCreateTeamModalShow] = useState(false);
   const {
     refresh: refreshTeams,
