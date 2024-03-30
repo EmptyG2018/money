@@ -1,19 +1,26 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Tabs, Row, Col, Pagination } from "antd";
-import { useRequest } from "ahooks";
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Tabs, Row, Col, Pagination } from 'antd';
+import { useRequest } from 'ahooks';
 import {
   GetBookmarkMarketCategorys,
   GetBookmarkMarketCollects,
   GetBookmarkMarketTeams,
-} from "@services/bookmark";
-import { Container } from "@components/Container";
-import Team from "@components/Team";
-import Favorite from "@components/Favorite";
-import NoData from "@components/NoData";
-import styled from "styled-components";
+} from '@services/bookmark';
+import { Container } from '@components/Container';
+import Team from '@components/Team';
+import Favorite from '@components/Favorite';
+import NoData from '@components/NoData';
+import styled from 'styled-components';
 
 const PAGE_SIZE = 16;
+
+const InitialGroupkey = 'collect';
+
+const GroupCategorys = [
+  { key: 'collect', label: '收藏集' },
+  { key: 'team', label: '优秀团队' },
+];
 
 const View = styled.div`
   min-height: 520px;
@@ -29,7 +36,7 @@ const TeamView = ({ classId }) => {
         classId,
         pageNum,
         pageSize: PAGE_SIZE,
-        searchKey: "",
+        searchKey: '',
       }),
     { refreshDeps: [classId, pageNum] }
   );
@@ -55,14 +62,14 @@ const TeamView = ({ classId }) => {
                     tags={item.tagVoList}
                     name={item.userName}
                     avatar={item.photoUrl}
-                    onGo={() => navigate("../team/" + item.id)}
+                    onGo={() => navigate('../team/' + item.id)}
                   />
                 </Col>
               ))}
             </Row>
           </View>
           <Pagination
-            style={{ textAlign: "center", marginBlockStart: 32 }}
+            style={{ textAlign: 'center', marginBlockStart: 32 }}
             current={pageNum}
             pageSize={PAGE_SIZE}
             onChange={setPageNum}
@@ -86,7 +93,7 @@ const CollectView = ({ classId }) => {
         classId,
         pageNum,
         pageSize: PAGE_SIZE,
-        searchKey: "",
+        searchKey: '',
       }),
     { refreshDeps: [classId, pageNum] }
   );
@@ -112,14 +119,14 @@ const CollectView = ({ classId }) => {
                     likeCount={item.likeNumber}
                     viewNumber={item.viewNumber}
                     avatar={item.photoUrl}
-                    onGo={() => navigate("../collect/" + item.id)}
+                    onGo={() => navigate('../collect/' + item.id)}
                   />
                 </Col>
               ))}
             </Row>
           </View>
           <Pagination
-            style={{ textAlign: "center" }}
+            style={{ textAlign: 'center' }}
             current={pageNum}
             pageSize={PAGE_SIZE}
             onChange={setPageNum}
@@ -134,45 +141,101 @@ const CollectView = ({ classId }) => {
   );
 };
 
-const SubTypeView = ({ typeKey }) => {
+const CategoryContainer = styled.div`
+  background-color: #fff;
+`;
+
+const CategoryBar = styled(Tabs)`
+  .ant-tabs-nav::before {
+    border-bottom: none;
+  }
+`;
+
+const ChildCategoryBar = styled(CategoryBar)`
+  .ant-tabs-tab-btn {
+    color: #5f5f5f;
+  }
+  .ant-tabs-ink-bar {
+    background: none;
+  }
+`;
+
+/**
+ * @title 子级分类
+ * @param {string} activeKey 当前分类key
+ * @param {array} items
+ */
+const ChildCategory = ({ activeKey, items, onActiveKeyChange }) => {
+  const ConstCategory = { key: '全部', key: '' };
+  const categorys = items?.length
+    ? [
+        ConstCategory,
+        ...items.map((item) => ({
+          label: item.title,
+          key: item.id,
+        })),
+      ]
+    : [ConstCategory];
+
+  return (
+    <CategoryContainer>
+      <Container $gutter={[16, 0]}>
+        <ChildCategoryBar
+          size="small"
+          animated={false}
+          activeKey={activeKey}
+          items={categorys}
+          onChange={onActiveKeyChange}
+        />
+      </Container>
+    </CategoryContainer>
+  );
+};
+
+/**
+ * @title 组合展示容器
+ * @param {string} groupKey 当前分类key
+ */
+const GroupContainer = ({ groupKey }) => {
   const { data: bookmarkCategorys } = useRequest(GetBookmarkMarketCategorys);
-  const [navCategoryKey, setNavCategoryKey] = useState("");
+  const [activeKey, setActiveKey] = useState('');
 
   useEffect(() => {
-    setNavCategoryKey("");
-  }, [typeKey]);
+    setActiveKey('');
+  }, [groupKey]);
 
   return (
     <>
-      <TabWrap>
-        <Container $gutter={[16, 0]}>
-          <CategoryBar
-            size="small"
-            animated={false}
-            activeKey={navCategoryKey}
-            items={[
-              {
-                label: "全部",
-                key: "",
-              },
-              ...(bookmarkCategorys || []).map((item) => ({
-                label: item.title,
-                key: item.id,
-              })),
-            ]}
-            onChange={setNavCategoryKey}
-          />
-        </Container>
-      </TabWrap>
+      <ChildCategory
+        activeKey={groupKey}
+        items={bookmarkCategorys}
+        onActiveKeyChange={setActiveKey}
+      />
       <Container $gutter={[16, 0]}>
-        {typeKey === "team" && (
-          <TeamView classId={navCategoryKey} key={navCategoryKey} />
-        )}
-        {typeKey === "collect" && (
-          <CollectView classId={navCategoryKey} key={navCategoryKey} />
-        )}
+        {groupKey === 'team' && <TeamView classId={activeKey} />}
+        {groupKey === 'collect' && <CollectView classId={activeKey} />}
       </Container>
     </>
+  );
+};
+
+/**
+ * @title 组合分类
+ * @param {string} activeKey 当前分类key
+ * @param {Function} onActiveKeyChange 切换分类key
+ *
+ */
+const GroupCategory = ({ activeKey, onActiveKeyChange }) => {
+  return (
+    <CategoryContainer>
+      <Container $gutter={[16, 0]}>
+        <CategoryBar
+          activeKey={activeKey}
+          items={GroupCategorys}
+          onChange={onActiveKeyChange}
+        />
+      </Container>
+    </CategoryContainer>
   );
 };
 
@@ -189,48 +252,23 @@ const Desc = styled.p`
   font-size: 14px;
 `;
 
-const TabWrap = styled.div`
-  background-color: #fff;
-`;
-
-const NavBar = styled(Tabs)`
-  .ant-tabs-nav::before {
-    border-bottom: none;
-  }
-`;
-
-const CategoryBar = styled(NavBar)`
-  .ant-tabs-tab-btn {
-    color: #5f5f5f;
-  }
-  .ant-tabs-ink-bar {
-    background: none;
-  }
-`;
+const TopBG = () => (
+  <BannerPanel>
+    <Container $gutter={[16, 24]}>
+      <Title>发现你身边有趣好玩的事物</Title>
+      <Desc>发现·收藏·分享--记忆·兴趣·智慧</Desc>
+    </Container>
+  </BannerPanel>
+);
 
 const Component = () => {
-  const [navTabKey, setNavTabKey] = useState("collect");
+  const [groupKey, setGroupKey] = useState(InitialGroupkey);
+
   return (
     <>
-      <BannerPanel>
-        <Container $gutter={[16, 24]}>
-          <Title>发现你身边有趣好玩的事物</Title>
-          <Desc>发现·收藏·分享--记忆·兴趣·智慧</Desc>
-        </Container>
-      </BannerPanel>
-      <TabWrap>
-        <Container $gutter={[16, 0]}>
-          <NavBar
-            activeKey={navTabKey}
-            items={[
-              { key: "collect", label: "收藏集" },
-              { key: "team", label: "优秀团队" },
-            ]}
-            onChange={setNavTabKey}
-          />
-        </Container>
-      </TabWrap>
-      <SubTypeView typeKey={navTabKey} />
+      <TopBG />
+      <GroupCategory activeKey={groupKey} onActiveKeyChange={setGroupKey} />
+      <GroupContainer groupKey={groupKey} />
     </>
   );
 };

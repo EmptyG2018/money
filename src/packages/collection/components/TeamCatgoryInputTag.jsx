@@ -181,8 +181,6 @@ const TeamCategoryContainer = ({ teamId, activeKey, onActiveChange }) => {
     () => GetTeamCategorys({ teamId })
   );
 
-  if (!teamCategorys) return null;
-
   const addRecord = async (newValue) => {
     if (!newValue.trim()) return;
 
@@ -220,6 +218,8 @@ const TeamCategoryContainer = ({ teamId, activeKey, onActiveChange }) => {
       app.message.error(err.message);
     }
   };
+
+  if (!teamCategorys) return null;
 
   return (
     <TeamCategoryList

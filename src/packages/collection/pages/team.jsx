@@ -1,12 +1,4 @@
-import {
-  Fragment,
-  useState,
-  useEffect,
-  useRef,
-  useMemo,
-  useContext,
-  createContext,
-} from 'react';
+import { Fragment, useState, useMemo, useContext, createContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Space,
@@ -46,7 +38,7 @@ import {
 } from '@components/collection/TeamFormAction';
 import { PlazaFormModal } from '@components/collection/FavoriteFormAction';
 import ToggleCollapsedBtn from '@components/collection/ToggleCollapsedBtn';
-import TeamCategory from '@package_collection/components/team/TeamCategory';
+import TeamCatgoryInputTag from '@package_collection/components/TeamCatgoryInputTag';
 import styled from 'styled-components';
 
 const PAGE_SIZE = 16;
@@ -127,9 +119,14 @@ const MarkView = () => {
 
   const { refresh: refreshWebsites, data: website } = useRequest(
     () =>
-      GetTeamWebsites({ teamId: currentTeam.id, pageNum, pageSize: PAGE_SIZE }),
+      GetTeamWebsites({
+        teamId: currentTeam.id,
+        classId: categoryKey,
+        pageNum,
+        pageSize: PAGE_SIZE,
+      }),
     {
-      refreshDeps: [currentTeam, pageNum],
+      refreshDeps: [currentTeam, categoryKey, pageNum],
     }
   );
 
@@ -170,7 +167,7 @@ const MarkView = () => {
         title={
           <>
             <span>{`已选中(${editKeys.length})`}</span>
-            <TeamCategory
+            <TeamCatgoryInputTag
               activeKey={categoryKey}
               teamId={currentTeam.id}
               onActiveChange={setCategoryKey}
